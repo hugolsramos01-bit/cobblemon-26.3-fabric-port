@@ -1,6 +1,6 @@
 # Minecraft 26.3 port candidate
 
-This branch is a review candidate for porting Cobblemon 1.8.2 from the upstream base commit `7511facebc` to Minecraft 26.3. The source tree and original assets are retained, with the port changes and follow-up fixes organized in the branch history.
+This branch is a review candidate for porting Cobblemon 1.8.2 from the upstream base commit `7511facebc` to Minecraft 26.3. The port and its follow-up fixes are presented as one review snapshot, keeping local development journals and unrelated private artifacts out of candidate history.
 
 ## Scope
 
