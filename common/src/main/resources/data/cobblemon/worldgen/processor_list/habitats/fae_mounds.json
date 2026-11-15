@@ -19,7 +19,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:air"
+                        "id": "minecraft:air"
                     }
                 },
                 {
@@ -32,7 +32,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:moss_block"
+                        "id": "minecraft:moss_block"
                     }
                 },
                 {
@@ -45,7 +45,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:podzol"
+                        "id": "minecraft:podzol"
                     }
                 },
                 {
@@ -58,7 +58,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:mycelium"
+                        "id": "minecraft:mycelium"
                     }
                 },
                 {
@@ -71,7 +71,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:rooted_dirt"
+                        "id": "minecraft:rooted_dirt"
                     }
                 },
                 {
@@ -84,7 +84,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:mycelium"
+                        "id": "minecraft:mycelium"
                     }
                 }
             ]

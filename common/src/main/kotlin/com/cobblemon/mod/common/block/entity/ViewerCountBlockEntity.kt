@@ -12,10 +12,13 @@ import com.cobblemon.mod.common.util.DataKeys
 import net.minecraft.core.BlockPos
 import net.minecraft.core.HolderLookup
 import net.minecraft.nbt.CompoundTag
+import net.minecraft.world.level.storage.ValueOutput
+import net.minecraft.world.level.storage.ValueInput
 import net.minecraft.network.protocol.Packet
 import net.minecraft.network.protocol.game.ClientGamePacketListener
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket
 import net.minecraft.world.entity.player.Player
+import net.minecraft.world.entity.Entity
 import net.minecraft.world.level.ClipContext
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.entity.BlockEntity
@@ -25,7 +28,7 @@ import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.entity.EntityTypeTest
 import net.minecraft.world.phys.AABB
 
-open class ViewerCountBlockEntity(type: BlockEntityType<*>?, blockPos: BlockPos, blockState: BlockState) : BlockEntity(type, blockPos, blockState) {
+open class ViewerCountBlockEntity(type: BlockEntityType<*>, blockPos: BlockPos, blockState: BlockState) : BlockEntity(type, blockPos, blockState) {
 
     companion object {
         internal val TICKER = BlockEntityTicker<ViewerCountBlockEntity> { world, _, _, blockEntity ->
@@ -41,14 +44,14 @@ open class ViewerCountBlockEntity(type: BlockEntityType<*>?, blockPos: BlockPos,
         if (inRangeViewers < viewerCount) changeViewerCount(inRangeViewers)
     }
 
-    override fun saveAdditional(compoundTag: CompoundTag, registryLookup: HolderLookup.Provider) {
-        super.saveAdditional(compoundTag, registryLookup)
+    override fun saveAdditional(compoundTag: ValueOutput) {
+        super.saveAdditional(compoundTag)
         compoundTag.putInt(DataKeys.BLOCK_ENTITY_USER_AMOUNT, viewerCount)
     }
 
-    override fun loadAdditional(compoundTag: CompoundTag, registryLookup: HolderLookup.Provider) {
-        super.loadAdditional(compoundTag, registryLookup)
-        viewerCount = if (compoundTag.contains(DataKeys.BLOCK_ENTITY_USER_AMOUNT)) compoundTag.getInt(DataKeys.BLOCK_ENTITY_USER_AMOUNT) else 0
+    override fun loadAdditional(compoundTag: ValueInput) {
+        super.loadAdditional(compoundTag)
+        viewerCount = compoundTag.getIntOr(DataKeys.BLOCK_ENTITY_USER_AMOUNT, 0)
     }
 
     override fun getUpdatePacket(): Packet<ClientGamePacketListener>? {
@@ -66,7 +69,7 @@ open class ViewerCountBlockEntity(type: BlockEntityType<*>?, blockPos: BlockPos,
 
     private fun isPlayerLookingAt(world: Level, player: Player, blockPos: BlockPos): Boolean {
         val vec3 = player.eyePosition
-        val vec32 = vec3.add(player.calculateViewVector(player.xRot, player.yRot).scale(player.blockInteractionRange()))
+        val vec32 = vec3.add(Entity.calculateViewVector(player.xRot, player.yRot).scale(player.blockInteractionRange()))
         val blockHitResult = world.clip(ClipContext(vec3, vec32, ClipContext.Block.OUTLINE, ClipContext.Fluid.ANY, player))
         return blockPos == blockHitResult.blockPos
     }

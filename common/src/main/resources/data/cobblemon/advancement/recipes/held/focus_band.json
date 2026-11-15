@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:focus_band"
+        "recipes": "cobblemon:focus_band"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

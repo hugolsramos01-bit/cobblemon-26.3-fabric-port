@@ -115,27 +115,39 @@ object PokemonBrain {
         val brain = entity.brain
         brain.addActivity(
             Activity.CORE,
-            ImmutableList.copyOf(coreTasks(pokemon))
+            ImmutableList.copyOf(coreTasks(pokemon)),
+            emptySet(),
+            emptySet()
         )
         brain.addActivity(
             Activity.IDLE,
-            ImmutableList.copyOf(idleTasks(pokemon))
+            ImmutableList.copyOf(idleTasks(pokemon)),
+            emptySet(),
+            emptySet()
         )
         brain.addActivity(
             CobblemonActivities.BATTLING,
-            ImmutableList.copyOf(battlingTasks())
+            ImmutableList.copyOf(battlingTasks()),
+            emptySet(),
+            emptySet()
         )
         brain.addActivity(
             Activity.FIGHT,
-            ImmutableList.copyOf(fightTasks(pokemon))
+            ImmutableList.copyOf(fightTasks(pokemon)),
+            emptySet(),
+            emptySet()
         )
         brain.addActivity(
             Activity.AVOID,
-            ImmutableList.copyOf(avoidTasks(pokemon))
+            ImmutableList.copyOf(avoidTasks(pokemon)),
+            emptySet(),
+            emptySet()
         )
         brain.addActivity(
             CobblemonActivities.POKEMON_SLEEPING_ACTIVITY,
-            ImmutableList.copyOf(sleepingTasks())
+            ImmutableList.copyOf(sleepingTasks()),
+            emptySet(),
+            emptySet()
         )
 //        brain.addActivityAndRemoveMemoryWhenStopped(
 //            Activity.AVOID,
@@ -155,10 +167,11 @@ object PokemonBrain {
 //            ),
 //            MemoryModuleType.AVOID_TARGET
 //        )
-        brain.addActivityWithConditions(
+        brain.addActivity(
             CobblemonActivities.POKEMON_GROW_CROP,
             ImmutableList.copyOf(growingPlantTasks(pokemon)),
-            ImmutableSet.of(Pair.of(MemoryModuleType.LOOK_TARGET, MemoryStatus.VALUE_PRESENT))
+            ImmutableSet.of(Pair.of(MemoryModuleType.LOOK_TARGET, MemoryStatus.VALUE_PRESENT)),
+            emptySet()
         )
 
         brain.setCoreActivities(setOf(Activity.CORE))

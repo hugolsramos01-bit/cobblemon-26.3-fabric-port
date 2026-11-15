@@ -3,7 +3,11 @@
     "icon": {
       "id": "cobblemon:poke_bait",
       "components": {
-        "cobblemon:food_colour": [ "white", "light_blue", "red" ]
+        "cobblemon:food_colour": [
+          "white",
+          "light_blue",
+          "red"
+        ]
       }
     },
     "title": {
@@ -23,6 +27,8 @@
     }
   },
   "requirements": [
-    ["use_poke_bait"]
+    [
+      "use_poke_bait"
+    ]
   ]
 }

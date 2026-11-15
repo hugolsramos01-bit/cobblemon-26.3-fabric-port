@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:hard_stone"
+        "recipes": "cobblemon:hard_stone"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

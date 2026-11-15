@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:wise_glasses"
+        "recipes": "cobblemon:wise_glasses"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

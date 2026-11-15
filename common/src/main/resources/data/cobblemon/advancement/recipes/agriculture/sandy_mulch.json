@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:sandy_mulch"
+        "recipes": "cobblemon:sandy_mulch"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

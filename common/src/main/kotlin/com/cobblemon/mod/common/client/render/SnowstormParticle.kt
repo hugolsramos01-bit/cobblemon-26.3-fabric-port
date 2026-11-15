@@ -10,8 +10,7 @@ package com.cobblemon.mod.common.client.render
 
 import com.bedrockk.molang.runtime.MoLangRuntime
 import com.bedrockk.molang.runtime.value.DoubleValue
-import com.cobblemon.mod.common.Cobblemon
-import com.cobblemon.mod.common.ModAPI
+import com.cobblemon.mod.common.client.particle.SnowstormParticleRenderState
 import com.cobblemon.mod.common.api.snowstorm.ParticleMaterial
 import com.cobblemon.mod.common.api.snowstorm.ParticleMaterials
 import com.cobblemon.mod.common.api.snowstorm.UVDetails
@@ -20,11 +19,10 @@ import com.cobblemon.mod.common.util.math.geometry.transformDirection
 import com.cobblemon.mod.common.util.resolveBoolean
 import com.cobblemon.mod.common.util.resolveDouble
 import kotlin.math.abs
+import net.minecraft.data.AtlasIds
 import net.minecraft.client.Minecraft
 import net.minecraft.client.particle.Particle
-import net.minecraft.client.particle.ParticleRenderType
-import net.minecraft.client.particle.ParticleRenderType.NO_RENDER
-import com.mojang.blaze3d.vertex.VertexConsumer
+import net.minecraft.client.particle.SingleQuadParticle
 import net.minecraft.client.Camera
 import net.minecraft.client.multiplayer.ClientLevel
 import net.minecraft.client.renderer.texture.TextureAtlasSprite
@@ -58,7 +56,9 @@ class SnowstormParticle(
 
     val sprite = getSpriteFromAtlas()
 
-    val particleTextureSheet: ParticleRenderType
+    val particleTextureSheet: SingleQuadParticle.Layer
+    private var roll = 0F
+    private var oRoll = 0F
     var angularVelocity = 0.0
     var colliding = false
 
@@ -94,7 +94,8 @@ class SnowstormParticle(
     fun getVelocityZ() = zd
 
     fun getSpriteFromAtlas(): TextureAtlasSprite {
-        val atlas = Minecraft.getInstance().particleEngine.textureAtlas
+        // AtlasManager is keyed by atlas IDs (e.g. minecraft:particles), not GPU texture locations.
+        val atlas = Minecraft.getInstance().atlasManager.getAtlasOrThrow(AtlasIds.PARTICLES)
         val sprite = atlas.getSprite(storm.effect.particle.texture)
         return sprite
     }
@@ -116,28 +117,18 @@ class SnowstormParticle(
         lifetime = (runtime.resolveDouble(storm.effect.particle.maxAge) * 20).toInt()
         storm.particles.add(this)
         gravity = 0F
-        particleTextureSheet = if (invisible) {
-            NO_RENDER
-        } else {
-            when (storm.effect.particle.material) {
-                ParticleMaterial.ALPHA -> ParticleMaterials.ALPHA
-                ParticleMaterial.OPAQUE -> ParticleMaterials.OPAQUE
-                ParticleMaterial.BLEND -> ParticleMaterials.BLEND
-                ParticleMaterial.ADD -> ParticleMaterials.ADD
-            }
+        particleTextureSheet = when (storm.effect.particle.material) {
+            ParticleMaterial.ALPHA -> ParticleMaterials.ALPHA
+            ParticleMaterial.OPAQUE -> ParticleMaterials.OPAQUE
+            ParticleMaterial.BLEND -> ParticleMaterials.BLEND
+            ParticleMaterial.ADD -> ParticleMaterials.ADD
         }
         storm.effect.particle.creationEvents.forEach { it.trigger(storm, this) }
     }
 
-    override fun render(vertexConsumer: VertexConsumer, camera: Camera, tickDelta: Float) {
+    fun extract(state: SnowstormParticleRenderState, camera: Camera, tickDelta: Float) {
         if (invisible) {
             return
-        }
-
-        if (Cobblemon.implementation.modAPI != ModAPI.FORGE) {
-           if (!Minecraft.getInstance().levelRenderer.cullingFrustum.isVisible(boundingBox)) {
-               return
-           }
         }
 
         applyRandoms()
@@ -145,7 +136,7 @@ class SnowstormParticle(
         storm.effect.curves.forEach { it.apply(runtime) }
         runtime.execute(storm.effect.particle.renderExpressions)
 
-        val vec3d = camera.position
+        val vec3d = camera.position()
 
         val interpLocalX = Mth.lerp(tickDelta.toDouble(), prevLocalX, localX)
         val interpLocalY = Mth.lerp(tickDelta.toDouble(), prevLocalY, localY)
@@ -169,10 +160,10 @@ class SnowstormParticle(
             angle = roll,
             deltaTicks = tickDelta,
             particlePosition = Vec3(x, y, z),
-            cameraPosition = camera.position,
+            cameraPosition = camera.position(),
             cameraAngle = camera.rotation(),
-            cameraYaw = camera.yRot,
-            cameraPitch = camera.xRot,
+            cameraYaw = camera.yRot(),
+            cameraPitch = camera.xRot(),
             viewDirection = viewDirection
         )
         val xSize = runtime.resolveDouble(storm.effect.particle.sizeX).toFloat() / 1.5.toFloat()
@@ -202,27 +193,8 @@ class SnowstormParticle(
         val minV = uvs.startV * spriteVRange + sprite.v0
         val maxV = uvs.endV * spriteVRange + sprite.v0
 
-        val p = if (storm.effect.particle.environmentLighting) getLightColor(tickDelta) else (15 shl 20 or (15 shl 4))
-        vertexConsumer
-            .addVertex(particleVertices[0].x, particleVertices[0].y, particleVertices[0].z)
-            .setUv(maxU, maxV)
-            .setColor(colour.x, colour.y, colour.z, colour.w)
-            .setLight(p)
-        vertexConsumer
-            .addVertex(particleVertices[1].x, particleVertices[1].y, particleVertices[1].z)
-            .setUv(maxU, minV)
-            .setColor(colour.x, colour.y, colour.z, colour.w)
-            .setLight(p)
-        vertexConsumer
-            .addVertex(particleVertices[2].x, particleVertices[2].y, particleVertices[2].z)
-            .setUv(minU, minV)
-            .setColor(colour.x, colour.y, colour.z, colour.w)
-            .setLight(p)
-        vertexConsumer
-            .addVertex(particleVertices[3].x, particleVertices[3].y, particleVertices[3].z)
-            .setUv(minU, maxV)
-            .setColor(colour.x, colour.y, colour.z, colour.w)
-            .setLight(p)
+        val p = if (storm.effect.particle.environmentLighting) getLightCoords(tickDelta) else (15 shl 20 or (15 shl 4))
+        state.addQuad(particleTextureSheet, particleVertices, minU, maxU, minV, maxV, colour, p)
     }
 
     fun runExpirationEvents() {
@@ -496,7 +468,7 @@ class SnowstormParticle(
         runtime.environment.variable.setDirectly("particle_lifetime", DoubleValue(lifetime / 20.0))
     }
 
-    override fun getRenderType() = particleTextureSheet
+    override fun getGroup() = ParticleMaterials.SNOWSTORM
 
     override fun remove() {
         super.remove()

@@ -9,34 +9,34 @@
 package com.cobblemon.mod.common.client.gui.tmmachine
 
 import com.cobblemon.mod.common.CobblemonSounds
-import com.cobblemon.mod.common.api.gui.blitk
 import com.cobblemon.mod.common.api.text.text
 import com.cobblemon.mod.common.client.gui.CobblemonRenderable
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
+import net.minecraft.client.input.MouseButtonEvent
 import net.minecraft.client.gui.components.Button
 import net.minecraft.client.gui.narration.NarrationElementOutput
 import net.minecraft.client.resources.sounds.SimpleSoundInstance
 import net.minecraft.client.sounds.SoundManager
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 
 class IconButton(
     var buttonX: Float,
     var buttonY: Float,
     val buttonWidth: Number,
     val buttonHeight: Number,
-    var resource: ResourceLocation? = null,
+    var resource: Identifier? = null,
     val scale: Float = 0.5F,
     val silent: Boolean = false,
     val clickAction: OnPress
 ): Button(buttonX.toInt(), buttonY.toInt(), buttonWidth.toInt(), buttonHeight.toInt(), "".text(), clickAction, DEFAULT_NARRATION), CobblemonRenderable {
-    override fun mouseDragged(d: Double, e: Double, i: Int, f: Double, g: Double) = false
+    override fun mouseDragged(event: MouseButtonEvent, deltaX: Double, deltaY: Double) = false
     override fun defaultButtonNarrationText(builder: NarrationElementOutput) {}
 
-    override fun renderWidget(context: GuiGraphics, mouseX: Int, mouseY: Int, partialTicks: Float) {
+    override fun extractContents(context: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, partialTicks: Float) {
         resource?.let {
             blitk(
-                matrixStack = context.pose(),
+                matrixStack = context,
                 texture = it,
                 x = buttonX / scale,
                 y = buttonY / scale,
@@ -49,14 +49,8 @@ class IconButton(
         }
     }
 
-    override fun mouseClicked(mouseX: Double, mouseY: Double, button: Int): Boolean {
-        if (active && visible && button == 0 && isMouseOver(mouseX, mouseY)) {
-            playDownSound(Minecraft.getInstance().soundManager)
-            onClick(mouseX, mouseY)
-            return true
-        }
-        return false
-    }
+    override fun mouseClicked(event: MouseButtonEvent, doubleClick: Boolean): Boolean =
+        super.mouseClicked(event, doubleClick)
 
     override fun isMouseOver(mouseX: Double, mouseY: Double): Boolean {
         val minX = x.toDouble()

@@ -21,7 +21,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipe": "cobblemon:tumblestone_brick_wall"
+        "recipes": "cobblemon:tumblestone_brick_wall"
       }
     }
   },

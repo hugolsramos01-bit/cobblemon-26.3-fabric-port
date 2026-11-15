@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:magnet"
+        "recipes": "cobblemon:magnet"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

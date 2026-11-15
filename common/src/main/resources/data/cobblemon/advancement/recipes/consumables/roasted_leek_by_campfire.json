@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:roasted_leek_by_campfire"
+        "recipes": "cobblemon:roasted_leek_by_campfire"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

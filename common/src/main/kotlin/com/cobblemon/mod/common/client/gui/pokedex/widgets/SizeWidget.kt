@@ -25,7 +25,7 @@ import com.cobblemon.mod.common.pokemon.RenderablePokemon
 import com.cobblemon.mod.common.util.cobblemonResource
 import com.cobblemon.mod.common.util.lang
 import com.cobblemon.mod.common.util.math.fromEulerXYZDegrees
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.network.chat.Component
 import org.joml.Quaternionf
 import org.joml.Vector3f
@@ -48,7 +48,7 @@ class SizeWidget(val pX: Int, val pY: Int) : SoundlessWidget(
     var pokemonHeight: Float = 0F
     var weight: Float = 0F
 
-    override fun renderWidget(context: GuiGraphics, mouseX: Int, mouseY: Int, delta: Float) {
+    override fun extractWidgetRenderState(context: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, delta: Float) {
         val matrices = context.pose()
 
 //        drawScaledTextJustifiedRight(
@@ -78,15 +78,14 @@ class SizeWidget(val pX: Int, val pY: Int) : SoundlessWidget(
 
         val modelScale = 7.5F
 
-        matrices.pushPose()
+        matrices.pushMatrix()
         matrices.translate(
-            pX.toDouble() + 50,
-            pY.toDouble() + (POKEMON_DESCRIPTION_HEIGHT / 2) + 18.5,
-            0.0
+            (pX + 50).toFloat(),
+            (pY + (POKEMON_DESCRIPTION_HEIGHT / 2) + 18.5).toFloat()
         )
         drawProfilePokemon(
             renderablePokemon = renderablePokemon!!,
-            matrixStack =  matrices,
+            context = context,
             partialTicks = delta,
             rotation = Quaternionf().fromEulerXYZDegrees(Vector3f(0F, 0F, 0F)),
             state = FloatingState(),
@@ -97,15 +96,14 @@ class SizeWidget(val pX: Int, val pY: Int) : SoundlessWidget(
             g = 0F,
             b = 0F
         )
-        matrices.popPose()
+        matrices.popMatrix()
         context.disableScissor()
 
         // Ensure elements are not hidden behind Pokémon render
-        matrices.pushPose()
-        matrices.translate(0.0, 0.0, 100.0)
+        context.nextStratum()
 
         blitk(
-            matrixStack = context.pose(),
+            context = context,
             texture = gridPlayer,
             x = pX + 85,
             y = pY + 23.5,
@@ -114,7 +112,7 @@ class SizeWidget(val pX: Int, val pY: Int) : SoundlessWidget(
         )
 
         blitk(
-            matrixStack = matrices,
+            context = context,
             texture = heightGrid,
             x = pX + 1,
             y = pY,
@@ -123,7 +121,7 @@ class SizeWidget(val pX: Int, val pY: Int) : SoundlessWidget(
         )
 
         blitk(
-            matrixStack = context.pose(),
+            context = context,
             texture = scrollBorder,
             x = (pX + 1) / SCALE,
             y = pY / SCALE,
@@ -135,7 +133,7 @@ class SizeWidget(val pX: Int, val pY: Int) : SoundlessWidget(
         )
 
         blitk(
-            matrixStack = context.pose(),
+            context = context,
             texture = scrollBorder,
             x = (pX + 1) / SCALE,
             y = (pY + 40) / SCALE,
@@ -146,6 +144,5 @@ class SizeWidget(val pX: Int, val pY: Int) : SoundlessWidget(
             scale = SCALE
         )
 
-        matrices.popPose()
     }
 }

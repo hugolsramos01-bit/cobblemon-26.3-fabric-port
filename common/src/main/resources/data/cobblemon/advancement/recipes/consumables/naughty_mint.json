@@ -27,7 +27,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:naughty_mint"
+        "recipes": "cobblemon:naughty_mint"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -37,7 +37,7 @@
       "has_benefit_mint",
       "has_the_recipe"
     ],
-	[
+    [
       "has_detriment_mint",
       "has_the_recipe"
     ]

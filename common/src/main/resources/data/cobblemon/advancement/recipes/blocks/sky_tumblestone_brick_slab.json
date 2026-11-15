@@ -21,7 +21,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipe": "cobblemon:sky_tumblestone_brick_slab"
+        "recipes": "cobblemon:sky_tumblestone_brick_slab"
       }
     }
   },

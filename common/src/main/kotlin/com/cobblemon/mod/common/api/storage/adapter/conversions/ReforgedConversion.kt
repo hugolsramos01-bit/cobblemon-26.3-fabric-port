@@ -20,6 +20,7 @@ import com.cobblemon.mod.common.api.storage.PokemonStore
 import com.cobblemon.mod.common.api.storage.StorePosition
 import com.cobblemon.mod.common.api.storage.party.PlayerPartyStore
 import com.cobblemon.mod.common.api.storage.pc.PCStore
+import com.cobblemon.mod.common.util.getUUID
 import com.cobblemon.mod.common.pokemon.EVs
 import com.cobblemon.mod.common.pokemon.Gender
 import com.cobblemon.mod.common.pokemon.IVs
@@ -29,7 +30,8 @@ import java.util.UUID
 import net.minecraft.core.RegistryAccess
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.nbt.NbtIo
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.nbt.ListTag
+import net.minecraft.resources.Identifier
 
 const val REFORGED_POKEMON_PER_BOX = 30
 class ReforgedConversion(val base: Path) : CobblemonConverter<CompoundTag> {
@@ -60,7 +62,7 @@ class ReforgedConversion(val base: Path) : CobblemonConverter<CompoundTag> {
         for (x in 0..5) {
             val key = "party$x"
             if (nbt.contains(key)) {
-                result.add(this.translate(nbt.getCompound(key)))
+                result.add(this.translate(nbt.getCompound(key).orElseGet { CompoundTag() }))
             }
         }
 
@@ -71,10 +73,10 @@ class ReforgedConversion(val base: Path) : CobblemonConverter<CompoundTag> {
         val result = PCStore(user)
         var box = 0
         while (nbt.contains("BoxNumber$box")) {
-            val storage = nbt.getCompound("BoxNumber$box")
+            val storage = nbt.getCompound("BoxNumber$box").orElseGet { CompoundTag() }
             for (x in 0 until REFORGED_POKEMON_PER_BOX) {
                 if (storage.contains("pc$x")) {
-                    val pokemon = this.translate(storage.getCompound("pc$x"))
+                    val pokemon = this.translate(storage.getCompound("pc$x").orElseGet { CompoundTag() })
                     if (!result.add(pokemon)) {
                         result.backupStore.add(pokemon)
                     }
@@ -90,39 +92,43 @@ class ReforgedConversion(val base: Path) : CobblemonConverter<CompoundTag> {
     override fun translate(nbt: CompoundTag) : Pokemon {
         val result = Pokemon()
         result.uuid = nbt.getUUID("UUID")
-        result.species = PokemonSpecies.getByPokedexNumber(nbt.getInt("ndex"))
-            ?: throw IllegalStateException("Failed to read a species with pokedex identifier ${nbt.getInt("ndex")}")
-        PokemonProperties.parse((result.species.forms.find { it.name == nbt.getString("Variant") } ?: result.species.standardForm).name).apply(result)
+        val pokedexNumber = nbt.getInt("ndex").orElse(0)
+        result.species = PokemonSpecies.getByPokedexNumber(pokedexNumber)
+            ?: throw IllegalStateException("Failed to read a species with pokedex identifier $pokedexNumber")
+        val variant = nbt.getString("Variant").orElse("")
+        PokemonProperties.parse((result.species.forms.find { it.name == variant } ?: result.species.standardForm).name).apply(result)
 
-        result.gender = Gender.values()[nbt.getInt("Gender")]
-        result.shiny = this.find(nbt, "IsShiny", CompoundTag::getBoolean) ?:
-                        this.find(nbt, "palette", CompoundTag::getString)?.equals("shiny") ?: false
-        result.level = nbt.getInt("Level")
-        result.addExperience(SidemodExperienceSource("Reforged"), nbt.getInt("EXP"))
-        result.setFriendship(nbt.getInt("Friendship"))
-        Abilities.get(nbt.getString("Ability"))?.let { template ->
+        result.gender = Gender.entries.getOrElse(nbt.getInt("Gender").orElse(0)) { Gender.GENDERLESS }
+        result.shiny = if (nbt.contains("IsShiny")) nbt.getBoolean("IsShiny").orElse(false)
+            else nbt.getString("palette").orElse("") == "shiny"
+        result.level = nbt.getInt("Level").orElse(1)
+        result.addExperience(SidemodExperienceSource("Reforged"), nbt.getInt("EXP").orElse(0))
+        result.setFriendship(nbt.getInt("Friendship").orElse(0))
+        Abilities.get(nbt.getString("Ability").orElse(""))?.let { template ->
             result.updateAbility(template.create(forced = result.form.abilities.none { it.template == template }))
         }
-        result.nature = Natures.getNature(ResourceLocation.parse(ReforgedNatures.entries[nbt.getInt("Nature")].name.lowercase())) ?: Natures.getRandomNature()
-        result.mintedNature = Natures.getNature(ResourceLocation.parse(ReforgedNatures.entries[nbt.getInt("MintNature")].name.lowercase()))
-        result.currentHealth = nbt.getInt("Health")
+        val natureIndex = nbt.getInt("Nature").orElse(0).coerceIn(ReforgedNatures.entries.indices)
+        val mintNatureIndex = nbt.getInt("MintNature").orElse(0).coerceIn(ReforgedNatures.entries.indices)
+        result.nature = Natures.getNature(Identifier.parse(ReforgedNatures.entries[natureIndex].name.lowercase())) ?: Natures.getRandomNature()
+        result.mintedNature = Natures.getNature(Identifier.parse(ReforgedNatures.entries[mintNatureIndex].name.lowercase()))
+        result.currentHealth = nbt.getInt("Health").orElse(0)
 
         // Stats
         val ivs = IVs()
-        ivs[Stats.HP] = nbt.getInt("IVHP")
-        ivs[Stats.ATTACK] = nbt.getInt("IVAttack")
-        ivs[Stats.DEFENCE] = nbt.getInt("IVDefense")
-        ivs[Stats.SPECIAL_ATTACK] = nbt.getInt("IVSpAtt")
-        ivs[Stats.SPECIAL_DEFENCE] = nbt.getInt("IVSpDef")
-        ivs[Stats.SPEED] = nbt.getInt("IVSpeed")
+        ivs[Stats.HP] = nbt.getInt("IVHP").orElse(0)
+        ivs[Stats.ATTACK] = nbt.getInt("IVAttack").orElse(0)
+        ivs[Stats.DEFENCE] = nbt.getInt("IVDefense").orElse(0)
+        ivs[Stats.SPECIAL_ATTACK] = nbt.getInt("IVSpAtt").orElse(0)
+        ivs[Stats.SPECIAL_DEFENCE] = nbt.getInt("IVSpDef").orElse(0)
+        ivs[Stats.SPEED] = nbt.getInt("IVSpeed").orElse(0)
 
         val evs = EVs()
-        evs[Stats.HP] = nbt.getInt("EVHP")
-        evs[Stats.ATTACK] = nbt.getInt("EVAttack")
-        evs[Stats.DEFENCE] = nbt.getInt("EVDefense")
-        evs[Stats.SPECIAL_ATTACK] = nbt.getInt("EVSpecialAttack")
-        evs[Stats.SPECIAL_DEFENCE] = nbt.getInt("EVSpecialDefense")
-        evs[Stats.SPEED] = nbt.getInt("EVSpeed")
+        evs[Stats.HP] = nbt.getInt("EVHP").orElse(0)
+        evs[Stats.ATTACK] = nbt.getInt("EVAttack").orElse(0)
+        evs[Stats.DEFENCE] = nbt.getInt("EVDefense").orElse(0)
+        evs[Stats.SPECIAL_ATTACK] = nbt.getInt("EVSpecialAttack").orElse(0)
+        evs[Stats.SPECIAL_DEFENCE] = nbt.getInt("EVSpecialDefense").orElse(0)
+        evs[Stats.SPEED] = nbt.getInt("EVSpeed").orElse(0)
 
         ivs.forEach { stat ->
             result.setIV(stat.key, stat.value)
@@ -131,11 +137,11 @@ class ReforgedConversion(val base: Path) : CobblemonConverter<CompoundTag> {
             result.setEV(stat.key, stat.value)
         }
 
-        for (move in nbt.getList("Moveset", 10)) {
+        for (move in nbt.getList("Moveset").orElseGet { ListTag() }) {
             val compound = move as CompoundTag
-            val id = compound.getString("MoveID").replace(Regex("[-\\s]", RegexOption.IGNORE_CASE), "")
-            val pp = compound.getInt("MovePP")
-            val level = compound.getInt("MovePPLevel")
+            val id = compound.getString("MoveID").orElse("").replace(Regex("[-\\s]", RegexOption.IGNORE_CASE), "")
+            val pp = compound.getInt("MovePP").orElse(0)
+            val level = compound.getInt("MovePPLevel").orElse(0)
 
             val template = Moves.getByNameOrDummy(id.lowercase())
             result.moveSet.add(template.create(pp, level))
@@ -144,8 +150,8 @@ class ReforgedConversion(val base: Path) : CobblemonConverter<CompoundTag> {
         // TODO - Nicknames and Original Trainer Data
         // result.nickname = this.find(nbt, "Nickname", NbtCompound::getString)
 
-        val ball = this.find(nbt, "CaughtBall", CompoundTag::getString)
-        result.caughtBall = if(ball != null) PokeBalls.getPokeBall(ResourceLocation.parse(ball)) ?: PokeBalls.POKE_BALL else PokeBalls.POKE_BALL
+        val ball = nbt.getString("CaughtBall").orElse(null)
+        result.caughtBall = if(ball != null) PokeBalls.getPokeBall(Identifier.parse(ball)) ?: PokeBalls.POKE_BALL else PokeBalls.POKE_BALL
 
         return result
     }

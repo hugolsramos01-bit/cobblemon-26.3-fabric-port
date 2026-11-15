@@ -10,10 +10,8 @@ package com.cobblemon.mod.common.mixin.accessor;
 
 import net.minecraft.client.gui.components.AbstractSelectionList;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.gen.Accessor;
 
+// 26.3 moved list headers into HeaderAndFooterLayout; the old renderHeader field no longer exists.
 @Mixin(AbstractSelectionList.class)
 public interface EntryListWidgetAccessor {
-    @Accessor("renderHeader")
-    boolean getRenderHeader();
 }

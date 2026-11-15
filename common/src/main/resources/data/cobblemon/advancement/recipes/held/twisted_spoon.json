@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:twisted_spoon"
+        "recipes": "cobblemon:twisted_spoon"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

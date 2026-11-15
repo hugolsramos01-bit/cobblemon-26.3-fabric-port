@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:blue_apricorn_smelt_to_dye"
+        "recipes": "cobblemon:blue_apricorn_smelt_to_dye"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

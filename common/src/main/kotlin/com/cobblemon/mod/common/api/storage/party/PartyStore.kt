@@ -162,11 +162,11 @@ open class PartyStore(override val uuid: UUID) : PokemonStore<PartyPosition>() {
     }
 
     override fun loadFromNBT(nbt: CompoundTag, registryAccess: RegistryAccess): PartyStore {
-        val slotCount = nbt.getInt(DataKeys.STORE_SLOT_COUNT).takeIf { it in 1..6 } ?: 6
+        val slotCount = nbt.getInt(DataKeys.STORE_SLOT_COUNT).orElse(6).takeIf { it in 1..6 } ?: 6
         while (slotCount < slots.size) { slots.removeLast() }
         while (slotCount > slots.size) { slots.add(null) }
         for (slot in slots.indices) {
-            val pokemonNBT = nbt.getCompound(DataKeys.STORE_SLOT + slot)
+            val pokemonNBT = nbt.getCompound(DataKeys.STORE_SLOT + slot).orElseGet { CompoundTag() }
             try {
                 if (!pokemonNBT.isEmpty) {
                     slots[slot] = Pokemon.loadFromNBT(registryAccess, pokemonNBT)
@@ -231,7 +231,7 @@ open class PartyStore(override val uuid: UUID) : PokemonStore<PartyPosition>() {
     }
 
     override fun loadPositionFromNBT(nbt: CompoundTag): StoreCoordinates<PartyPosition> {
-        val slot = nbt.getByte(DataKeys.STORE_SLOT).toInt()
+        val slot = nbt.getByte(DataKeys.STORE_SLOT).orElse(0.toByte()).toInt()
         return StoreCoordinates(this, PartyPosition(slot))
     }
 

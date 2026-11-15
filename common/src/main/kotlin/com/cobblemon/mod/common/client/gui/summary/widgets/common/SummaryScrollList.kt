@@ -15,7 +15,7 @@ import com.cobblemon.mod.common.client.gui.CobblemonRenderable
 import com.cobblemon.mod.common.client.render.drawScaledText
 import com.cobblemon.mod.common.util.cobblemonResource
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.components.ObjectSelectionList
 import net.minecraft.network.chat.MutableComponent
 
@@ -52,18 +52,18 @@ abstract class SummaryScrollList<T : ObjectSelectionList.Entry<T>>(
         correctSize()
     }
 
-    override fun getScrollbarPosition(): Int {
+    override fun scrollBarX(): Int {
         return x + width - 3
     }
 
-    override fun renderListBackground(context: GuiGraphics) {}
+    override fun extractListBackground(context: GuiGraphicsExtractor) {}
 
-    override fun renderWidget(context: GuiGraphics, mouseX: Int, mouseY: Int, partialTicks: Float) {
+    override fun extractWidgetRenderState(context: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, partialTicks: Float) {
         val matrices = context.pose()
         correctSize()
 
         blitk(
-            matrixStack = matrices,
+            context = context,
             texture = backgroundResource,
             x = listX,
             y = listY,
@@ -76,13 +76,13 @@ abstract class SummaryScrollList<T : ObjectSelectionList.Entry<T>>(
             x + width,
             y + height
         )
-        super.renderWidget(context, mouseX, mouseY, partialTicks)
+        super.extractWidgetRenderState(context, mouseX, mouseY, partialTicks)
         context.disableScissor()
 
         // Scroll Overlay
         val scrollOverlayOffset = 4
         blitk(
-            matrixStack = matrices,
+            context = context,
             texture = scrollOverlayResource,
             x = listX,
             y = listY - (scrollOverlayOffset / 2) - 1,
@@ -103,31 +103,39 @@ abstract class SummaryScrollList<T : ObjectSelectionList.Entry<T>>(
 
     }
 
-    override fun mouseClicked(mouseX: Double, mouseY: Double, button: Int): Boolean {
+    override fun mouseClicked(event: net.minecraft.client.input.MouseButtonEvent, doubleClick: Boolean): Boolean {
+    val mouseX = event.x()
+    val mouseY = event.y()
+    val button = event.button()
+
         updateScrollingState(mouseX, mouseY)
         if (scrolling) {
             focused = getEntryAtPosition(mouseX, mouseY)
             isDragging = true
         }
-        return super.mouseClicked(mouseX, mouseY, button)
+        return super.mouseClicked(event, doubleClick)
     }
 
-    override fun mouseDragged(mouseX: Double, mouseY: Double, button: Int, deltaX: Double, deltaY: Double): Boolean {
+    override fun mouseDragged(event: net.minecraft.client.input.MouseButtonEvent, deltaX: Double, deltaY: Double): Boolean {
+    val mouseX = event.x()
+    val mouseY = event.y()
+    val button = event.button()
+
         if (scrolling) {
             if (mouseY < listY) {
                 setScrollAmount(0.0)
             } else if (mouseY > bottom) {
-                setScrollAmount(maxScroll.toDouble())
+                setScrollAmount(maxScrollAmount().toDouble())
             } else {
-                setScrollAmount(scrollAmount + deltaY)
+                setScrollAmount(scrollAmount() + deltaY)
             }
         }
-        return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY)
+        return super.mouseDragged(event, deltaX, deltaY)
     }
 
     private fun updateScrollingState(mouseX: Double, mouseY: Double) {
-        scrolling = mouseX >= this.scrollbarPosition.toDouble()
-                && mouseX < (this.scrollbarPosition + 3).toDouble()
+        scrolling = mouseX >= this.scrollBarX().toDouble()
+                && mouseX < (this.scrollBarX() + 3).toDouble()
                 && mouseY >= listY
                 && mouseY < bottom
     }

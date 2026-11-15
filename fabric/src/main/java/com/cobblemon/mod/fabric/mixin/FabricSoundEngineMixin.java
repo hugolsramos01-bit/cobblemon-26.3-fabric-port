@@ -93,7 +93,7 @@ public class FabricSoundEngineMixin {
     }
 
     @Inject(
-            method = "tickNonPaused",
+            method = "tickInGameSound",
             at = @At(
                     value = "INVOKE",
                     target = "Lnet/minecraft/client/sounds/ChannelAccess$ChannelHandle;execute(Ljava/util/function/Consumer;)V",

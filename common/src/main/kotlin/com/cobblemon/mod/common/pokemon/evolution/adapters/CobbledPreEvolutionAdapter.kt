@@ -28,7 +28,9 @@ object CobblemonPreEvolutionAdapter : JsonDeserializer<PreEvolution>, JsonSerial
         if (src.form == src.species.standardForm) {
             return JsonPrimitive(src.species.resourceIdentifier.toString())
         }
-        return JsonPrimitive("${src.species.resourceIdentifier} form=${src.form.name}")
+        // PokemonProperties matches this field against the normalized form ID,
+        // not the display name (for example, White-Striped becomes whitestriped).
+        return JsonPrimitive("${src.species.resourceIdentifier} form=${src.form.formOnlyShowdownId()}")
     }
 
 }

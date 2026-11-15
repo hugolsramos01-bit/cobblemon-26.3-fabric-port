@@ -21,7 +21,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipe": "cobblemon:hearty_grains_from_bale"
+        "recipes": "cobblemon:hearty_grains_from_bale"
       }
     }
   },

@@ -18,10 +18,11 @@ import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.ItemStack
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.InteractionHand
-import net.minecraft.world.InteractionResultHolder
+import com.cobblemon.mod.common.util.CobblemonInteractionResults
+import net.minecraft.world.InteractionResult
 import net.minecraft.world.level.Level
 
-class MintItem(val nature: Nature) : CobblemonItem(Properties()), PokemonSelectingItem {
+class MintItem(properties: net.minecraft.world.item.Item.Properties, val nature: Nature) : CobblemonItem(properties), PokemonSelectingItem {
 
     override val bagItem = null
     override fun canUseOnPokemon(stack: ItemStack, pokemon: Pokemon) = pokemon.effectiveNature != nature
@@ -29,23 +30,23 @@ class MintItem(val nature: Nature) : CobblemonItem(Properties()), PokemonSelecti
         player: ServerPlayer,
         stack: ItemStack,
         pokemon: Pokemon
-    ): InteractionResultHolder<ItemStack> {
+    ): InteractionResult {
         return if (pokemon.effectiveNature != nature) {
             stack.consume(1, player)
             pokemon.entity?.playSound(CobblemonSounds.MEDICINE_HERB_USE, 1F, 1F)
             pokemon.mintedNature = nature
             player.sendSystemMessage(lang("mint.interact", pokemon.getDisplayName(), stack.hoverName), true)
-            InteractionResultHolder.success(stack)
+            CobblemonInteractionResults.success(stack)
         } else {
             player.sendSystemMessage(lang("mint.same_nature", pokemon.getDisplayName(), stack.hoverName), true)
-            InteractionResultHolder.fail(stack)
+            CobblemonInteractionResults.fail(stack)
         }
     }
 
-    override fun use(world: Level, user: Player, hand: InteractionHand): InteractionResultHolder<ItemStack> {
+    override fun use(world: Level, user: Player, hand: InteractionHand): InteractionResult {
         if (user is ServerPlayer) {
             return use(user, user.getItemInHand(hand))
         }
-        return InteractionResultHolder.success(user.getItemInHand(hand))
+        return CobblemonInteractionResults.success(user.getItemInHand(hand))
     }
 }

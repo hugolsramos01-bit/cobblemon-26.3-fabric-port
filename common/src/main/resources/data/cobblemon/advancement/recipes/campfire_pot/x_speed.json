@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:campfire_pot/x_speed"
+        "recipes": "cobblemon:campfire_pot/x_speed"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

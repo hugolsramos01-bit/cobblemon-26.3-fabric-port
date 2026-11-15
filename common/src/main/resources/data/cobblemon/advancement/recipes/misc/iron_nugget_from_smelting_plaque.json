@@ -30,7 +30,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:iron_nugget_from_smelting_plaque"
+        "recipes": "cobblemon:iron_nugget_from_smelting_plaque"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

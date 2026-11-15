@@ -21,7 +21,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipe": "cobblemon:smooth_black_tumblestone_slab_from_stonecutter"
+        "recipes": "cobblemon:smooth_black_tumblestone_slab_from_stonecutter"
       }
     }
   },

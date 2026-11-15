@@ -21,7 +21,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipe": "cobblemon:moon_stone_from_blasting_deepslate_moon_stone_ore"
+        "recipes": "cobblemon:moon_stone_from_blasting_deepslate_moon_stone_ore"
       }
     }
   },

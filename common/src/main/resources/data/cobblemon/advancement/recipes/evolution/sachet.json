@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:sachet"
+        "recipes": "cobblemon:sachet"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

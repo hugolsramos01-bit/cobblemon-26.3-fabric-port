@@ -1,8 +1,8 @@
 {
   "display": {
     "icon": {
-			"id": "cobblemon:shell_helmet"
-		},
+      "id": "cobblemon:shell_helmet"
+    },
     "title": {
       "translate": "advancements.cobblemon.trade_shelmet_karrablast"
     },
@@ -14,19 +14,24 @@
   "criteria": {
     "trade_sk": {
       "trigger": "cobblemon:trade_pokemon",
-	  "conditions": {
-		  "traded": "cobblemon:shelmet",
-		  "received": "cobblemon:karrablast"
-	  }
+      "conditions": {
+        "traded": "cobblemon:shelmet",
+        "received": "cobblemon:karrablast"
+      }
     },
-	"trade_ks": {
+    "trade_ks": {
       "trigger": "cobblemon:trade_pokemon",
-	  "conditions": {
-		  "received": "cobblemon:shelmet",
-		  "traded": "cobblemon:karrablast"
-	  }
+      "conditions": {
+        "received": "cobblemon:shelmet",
+        "traded": "cobblemon:karrablast"
+      }
     }
   },
-  "requirements": [[ "trade_sk", "trade_ks" ]],
+  "requirements": [
+    [
+      "trade_sk",
+      "trade_ks"
+    ]
+  ],
   "sends_telemetry_event": false
 }

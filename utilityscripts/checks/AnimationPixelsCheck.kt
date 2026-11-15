@@ -1,0 +1,30 @@
+import com.cobblemon.mod.common.client.render.interpolateTexturePixel
+
+fun main() {
+    val opaqueRed = 0xFFFF0000.toInt()
+    val opaqueBlue = 0xFF0000FF.toInt()
+    check(interpolateTexturePixel(opaqueRed, opaqueBlue, 0F) == opaqueRed)
+    check(interpolateTexturePixel(opaqueRed, opaqueBlue, 1F) == opaqueBlue)
+    check(interpolateTexturePixel(opaqueRed, opaqueBlue, .5F) == 0xFF7F007F.toInt())
+    check(interpolateTexturePixel(0, opaqueRed, .5F) == 0x7FFF0000)
+    check(interpolateTexturePixel(opaqueBlue, 0, .5F) == 0x7F0000FF)
+    check(interpolateTexturePixel(0x40CC8844, 0x80CC8844.toInt(), .5F) == 0x60CC8844)
+    val camera = net.minecraft.client.Camera::class.java
+    check(camera.getMethod("position").returnType == net.minecraft.world.phys.Vec3::class.java)
+    check(camera.getMethod("xRot").returnType == java.lang.Float.TYPE)
+    check(camera.getMethod("yRot").returnType == java.lang.Float.TYPE)
+    check(com.mojang.blaze3d.platform.NativeImage::class.java.getMethod("getPixel", Integer.TYPE, Integer.TYPE).returnType == Integer.TYPE)
+    check(com.mojang.blaze3d.platform.NativeImage::class.java.getMethod("setPixel", Integer.TYPE, Integer.TYPE, Integer.TYPE).returnType == java.lang.Void.TYPE)
+    check(net.minecraft.client.renderer.texture.DynamicTexture::class.java.getConstructor(java.util.function.Supplier::class.java, com.mojang.blaze3d.platform.NativeImage::class.java).parameterCount == 2)
+    val pose = com.mojang.blaze3d.vertex.PoseStack()
+    pose.rotate(org.joml.Quaternionf().rotateY((Math.PI / 2).toFloat()))
+    val point = pose.last().pose().transformPosition(org.joml.Vector3f(1F, 0F, 0F))
+    check(kotlin.math.abs(point.x) < 0.000001F && kotlin.math.abs(point.z + 1F) < 0.000001F)
+    pose.pushPose()
+    pose.mulPose(org.joml.Matrix4f().translation(0F, 2F, 0F))
+    val translated = pose.last().pose().transformPosition(org.joml.Vector3f())
+    check(kotlin.math.abs(translated.y - 2F) < 0.000001F)
+    pose.popPose()
+    check(pose.last().pose().transformPosition(org.joml.Vector3f()).y == 0F)
+    println("PASS: animation ARGB endpoints, channel order, alpha/fringes and native camera/texture signatures")
+}

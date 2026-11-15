@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:growth_mulch"
+        "recipes": "cobblemon:growth_mulch"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

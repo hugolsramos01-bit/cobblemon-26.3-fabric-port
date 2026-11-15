@@ -3,23 +3,19 @@
   "pools": [
     {
       "bonus_rolls": 0.0,
-      "conditions": [
-        {
-          "condition": "minecraft:survives_explosion"
-        }
-      ],
+      "condition": {
+        "type": "minecraft:survives_explosion"
+      },
       "entries": [
         {
           "type": "minecraft:item",
-          "conditions": [
-            {
-              "block": "cobblemon:lobaila",
-              "condition": "minecraft:block_state_property",
-              "properties": {
-                "half": "lower"
-              }
+          "condition": {
+            "block": "cobblemon:lobaila",
+            "type": "minecraft:match_block",
+            "state": {
+              "half": "lower"
             }
-          ],
+          },
           "name": "cobblemon:lobaila"
         }
       ],

@@ -22,7 +22,7 @@
         ]
       }
     },
-	"citrine_ball": {
+    "citrine_ball": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
@@ -32,7 +32,7 @@
         ]
       }
     },
-	"verdant_ball": {
+    "verdant_ball": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
@@ -42,7 +42,7 @@
         ]
       }
     },
-	"azure_ball": {
+    "azure_ball": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
@@ -52,7 +52,7 @@
         ]
       }
     },
-	"roseate_ball": {
+    "roseate_ball": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
@@ -62,7 +62,7 @@
         ]
       }
     },
-	"slate_ball": {
+    "slate_ball": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
@@ -72,7 +72,7 @@
         ]
       }
     },
-	"premier_ball": {
+    "premier_ball": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
@@ -84,13 +84,27 @@
     }
   },
   "requirements": [
-    ["poke_ball"],
-    ["citrine_ball"],
-	["verdant_ball"],
-	["azure_ball"],
-	["roseate_ball"],
-	["slate_ball"],
-	["premier_ball"]
+    [
+      "poke_ball"
+    ],
+    [
+      "citrine_ball"
+    ],
+    [
+      "verdant_ball"
+    ],
+    [
+      "azure_ball"
+    ],
+    [
+      "roseate_ball"
+    ],
+    [
+      "slate_ball"
+    ],
+    [
+      "premier_ball"
+    ]
   ],
   "sends_telemetry_event": false
 }

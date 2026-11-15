@@ -36,10 +36,9 @@ import net.minecraft.client.model.geom.ModelLayerLocation
 import net.minecraft.client.model.geom.builders.LayerDefinition
 import net.minecraft.client.particle.ParticleProvider
 import net.minecraft.client.particle.SpriteSet
-import net.minecraft.client.renderer.ItemBlockRenderTypes
-import net.minecraft.client.renderer.RenderType
 import net.minecraft.client.renderer.ShaderInstance
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider
+import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers
 import net.minecraft.client.renderer.entity.EntityRendererProvider
 import net.minecraft.client.renderer.entity.EntityRenderers
@@ -142,10 +141,6 @@ object CobblemonNeoForgeClient : CobblemonClientImplementation {
     }
 
     @Suppress("DEPRECATION")
-    override fun registerBlockRenderType(layer: RenderType, vararg blocks: Block) {
-        blocks.forEach { block ->
-            ItemBlockRenderTypes.setRenderLayer(block, layer)
-        }
     }
 
     @Suppress("DEPRECATION")
@@ -158,7 +153,7 @@ object CobblemonNeoForgeClient : CobblemonClientImplementation {
         Minecraft.getInstance().blockColors.register(provider, *blocks)
     }
 
-    override fun <T : BlockEntity> registerBlockEntityRenderer(type: BlockEntityType<out T>, factory: BlockEntityRendererProvider<T>) {
+    override fun <T : BlockEntity, S : BlockEntityRenderState> registerBlockEntityRenderer(type: BlockEntityType<out T>, factory: BlockEntityRendererProvider<T, S>) {
         BlockEntityRenderers.register(type, factory)
     }
 

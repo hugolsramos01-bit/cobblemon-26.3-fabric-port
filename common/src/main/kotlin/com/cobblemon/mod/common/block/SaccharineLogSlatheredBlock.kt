@@ -18,7 +18,7 @@ import net.minecraft.core.particles.ParticleTypes
 import net.minecraft.sounds.SoundEvents
 import net.minecraft.sounds.SoundSource
 import net.minecraft.world.InteractionHand
-import net.minecraft.world.ItemInteractionResult
+import net.minecraft.world.InteractionResult
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.Items
@@ -26,6 +26,7 @@ import net.minecraft.world.item.alchemy.PotionContents
 import net.minecraft.world.item.alchemy.Potions
 import net.minecraft.world.item.context.BlockPlaceContext
 import net.minecraft.world.level.Level
+import net.minecraft.world.level.redstone.Orientation
 import net.minecraft.world.level.block.*
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.block.state.StateDefinition
@@ -38,7 +39,6 @@ class SaccharineLogSlatheredBlock(properties: Properties) : HorizontalDirectiona
     companion object {
         const val HONEY_TYPE_MAX = 5
 
-        val CODEC: MapCodec<SaccharineLogSlatheredBlock> = simpleCodec(::SaccharineLogSlatheredBlock)
         val HONEY_TYPE: IntegerProperty = IntegerProperty.create("honey_type", 0, HONEY_TYPE_MAX)
 
         fun createBehavior(): DispenseItemBehavior {
@@ -68,9 +68,8 @@ class SaccharineLogSlatheredBlock(properties: Properties) : HorizontalDirectiona
         )
     }
 
-    override fun codec() = CODEC
 
-    override fun useItemOn(stack: ItemStack, state: BlockState, level: Level, pos: BlockPos, player: Player, hand: InteractionHand, hitResult: BlockHitResult): ItemInteractionResult {
+    override fun useItemOn(stack: ItemStack, state: BlockState, level: Level, pos: BlockPos, player: Player, hand: InteractionHand, hitResult: BlockHitResult): InteractionResult {
         val itemStack = player.getItemInHand(hand)
         val waterBottle = PotionContents.createItemStack(Items.POTION, Potions.WATER).item
         val blockFace = hitResult.direction
@@ -85,7 +84,7 @@ class SaccharineLogSlatheredBlock(properties: Properties) : HorizontalDirectiona
             }
 
             spawnParticlesAtBlockFace(ParticleTypes.SPLASH, level, pos, blockFace, 40)
-            return ItemInteractionResult.SUCCESS
+            return InteractionResult.SUCCESS
         }
         return super.useItemOn(stack, state, level, pos, player, hand, hitResult)
     }
@@ -99,12 +98,14 @@ class SaccharineLogSlatheredBlock(properties: Properties) : HorizontalDirectiona
         return super.getStateForPlacement(context)
     }
 
-    override fun neighborChanged(state: BlockState, level: Level, pos: BlockPos, neighborBlock: Block, neighborPos: BlockPos,  movedByPiston: Boolean) {
+    override fun neighborChanged(state: BlockState, level: Level, pos: BlockPos, neighborBlock: Block, orientation: Orientation?,  movedByPiston: Boolean) {
         val facingDirection = state.getValue(FACING)
         val targetPos = pos.relative(facingDirection)
 
-        if (neighborPos == targetPos) {
-            val fluidState = level.getFluidState(neighborPos)
+        // Neighbor notifications now carry redstone orientation, not the source position.
+        // Recheck the coated face to preserve washing away when touching fluid.
+        run {
+            val fluidState = level.getFluidState(targetPos)
             // Revert log to non-honey block if touching fluid
             if (fluidState.amount > 3) {
                 val newState = CobblemonBlocks.SACCHARINE_LOG.defaultBlockState()
@@ -114,7 +115,7 @@ class SaccharineLogSlatheredBlock(properties: Properties) : HorizontalDirectiona
             }
         }
 
-        super.neighborChanged(state, level, pos, neighborBlock, neighborPos, movedByPiston)
+        super.neighborChanged(state, level, pos, neighborBlock, orientation, movedByPiston)
     }
 
     override fun createBlockStateDefinition(builder: StateDefinition.Builder<Block, BlockState>) {

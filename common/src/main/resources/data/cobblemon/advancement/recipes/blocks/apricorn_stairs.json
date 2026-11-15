@@ -21,7 +21,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipe": "cobblemon:apricorn_stairs"
+        "recipes": "cobblemon:apricorn_stairs"
       }
     }
   },

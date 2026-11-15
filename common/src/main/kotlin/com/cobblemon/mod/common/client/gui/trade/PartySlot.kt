@@ -19,7 +19,7 @@ import com.cobblemon.mod.common.pokemon.Gender
 import com.cobblemon.mod.common.util.cobblemonResource
 import com.cobblemon.mod.common.util.lang
 import com.cobblemon.mod.common.util.math.fromEulerXYZDegrees
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.components.Button
 import net.minecraft.client.sounds.SoundManager
 import net.minecraft.network.chat.Component
@@ -47,11 +47,11 @@ open class PartySlot(
     override fun playDownSound(soundManager: SoundManager) {
     }
 
-    override fun renderWidget(context: GuiGraphics, mouseX: Int, mouseY: Int, delta: Float) {
+    override fun extractContents(context: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, delta: Float) {
         val matrices = context.pose()
         if (!isOpposing && isHovered(mouseX, mouseY)) {
             blitk(
-                matrixStack = matrices,
+                context = context,
                 texture = hoverBackgroundResource,
                 x = x,
                 y = y,
@@ -63,24 +63,23 @@ open class PartySlot(
         if (pokemon != null) {
             // context.enableScissor(x - 2, y + 2, x + SIZE + 4, y + SIZE + 4)
             // Render Pokémon
-            matrices.pushPose()
-            matrices.translate(x + (SIZE / 2.0), y + 1.0, 0.0)
-            matrices.scale(2.5F, 2.5F, 1F)
+            matrices.pushMatrix()
+            matrices.translate((x + (SIZE / 2.0)).toFloat(), y + 1.0F)
+            matrices.scale(2.5F, 2.5F)
             drawProfilePokemon(
                 renderablePokemon = pokemon.asRenderablePokemon(),
-                matrixStack = matrices,
+                context = context,
                 rotation = Quaternionf().fromEulerXYZDegrees(Vector3f(13F, 35F, 0F)),
                 state = state,
                 scale = 4.5F,
                 partialTicks = delta
             )
-            matrices.popPose()
+            matrices.popMatrix()
 
             // context.disableScissor()
 
             // Ensure elements are not hidden behind Pokémon render
-            matrices.pushPose()
-            matrices.translate(0.0, 0.0, 100.0)
+            context.nextStratum()
             // Level
             drawScaledText(
                 context = context,
@@ -93,7 +92,7 @@ open class PartySlot(
 
             if (pokemon.gender != Gender.GENDERLESS) {
                 blitk(
-                    matrixStack = matrices,
+                    context = context,
                     texture = if (pokemon.gender == Gender.MALE) genderIconMale else genderIconFemale,
                     x = (x + 21) / TradeGUI.SCALE,
                     y = (y + 1) / TradeGUI.SCALE,
@@ -103,10 +102,9 @@ open class PartySlot(
                 )
             }
             if (!pokemon.tradeable) {
-                matrices.pushPose()
-                matrices.translate(0F, 0F, 10F)
+                context.nextStratum()
                 blitk(
-                    matrixStack = matrices,
+                    context = context,
                     texture = untradeableResource,
                     x = (x + 8) / TradeGUI.SCALE,
                     y = (y + 8) / TradeGUI.SCALE,
@@ -114,13 +112,11 @@ open class PartySlot(
                     height = 20,
                     scale = TradeGUI.SCALE
                 )
-                matrices.popPose()
             }
 
-            matrices.popPose()
             if (hasSelected()) {
                 blitk(
-                    matrixStack = matrices,
+                    context = context,
                     texture = selectPointerResource,
                     x = (x + 10) / TradeGUI.SCALE,
                     y = ((y - 3) / TradeGUI.SCALE) - parent.selectPointerOffsetY,
@@ -134,11 +130,11 @@ open class PartySlot(
             val heldItem = pokemon.heldItem
             if (!heldItem.isEmpty) {
                 renderScaledGuiItemIcon(
+                    context = context,
                     itemStack = heldItem,
                     x = x + 16.0,
                     y = y + 16.0,
                     scale = 0.5,
-                    matrixStack = matrices
                 )
             }
         }

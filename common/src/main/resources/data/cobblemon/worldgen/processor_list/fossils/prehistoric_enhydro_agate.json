@@ -17,7 +17,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:suspicious_gravel"
+                        "id": "minecraft:suspicious_gravel"
                     }
                 },
                 {
@@ -30,7 +30,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:cave_air"
+                        "id": "minecraft:cave_air"
                     }
                 },
                 {
@@ -43,7 +43,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "cobblemon:water_stone_ore"
+                        "id": "cobblemon:water_stone_ore"
                     }
                 },
                 {
@@ -56,7 +56,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:mossy_cobblestone"
+                        "id": "minecraft:mossy_cobblestone"
                     }
                 }
             ]
@@ -79,7 +79,7 @@
                             "predicate_type": "minecraft:always_true"
                         },
                         "output_state": {
-                            "Name": "minecraft:suspicious_gravel"
+                            "id": "minecraft:suspicious_gravel"
                         }
                     }
                 ]
@@ -105,7 +105,7 @@
                             "predicate_type": "minecraft:always_true"
                         },
                         "output_state": {
-                            "Name": "minecraft:suspicious_gravel"
+                            "id": "minecraft:suspicious_gravel"
                         }
                     }
                 ]

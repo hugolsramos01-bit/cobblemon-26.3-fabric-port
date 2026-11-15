@@ -11,14 +11,17 @@ package com.cobblemon.mod.common.client.render.models.blockbench
 import com.cobblemon.mod.common.client.render.models.blockbench.repository.RenderContext
 import com.cobblemon.mod.common.entity.PosableEntity
 import net.minecraft.client.renderer.texture.OverlayTexture
-import net.minecraft.client.renderer.RenderType
 import com.mojang.blaze3d.vertex.VertexConsumer
-import net.minecraft.client.renderer.entity.LivingEntityRenderer
 import com.mojang.blaze3d.vertex.PoseStack
 import net.minecraft.client.model.EntityModel
+import net.minecraft.client.model.geom.ModelPart
+import net.minecraft.client.renderer.entity.state.LivingEntityRenderState
+import net.minecraft.client.renderer.rendertype.RenderType
+import net.minecraft.client.renderer.rendertype.RenderTypes
+import net.minecraft.resources.Identifier
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.LivingEntity
-import net.minecraft.resources.ResourceLocation
+import java.util.function.Function
 
 /**
  * A wrapping around a [PosableModel] that presents as an [EntityModel]. This is used to continue using
@@ -29,21 +32,24 @@ import net.minecraft.resources.ResourceLocation
  * @since January 5th, 2024
  */
 abstract class PosableEntityModel<T : Entity>(
-    renderTypeFunc: (ResourceLocation) -> RenderType = RenderType::entityCutout
-) : EntityModel<T>(renderTypeFunc) {
+    renderType: (Identifier) -> RenderType = RenderTypes::entityCutout
+) : EntityModel<LivingEntityRenderState>(
+    ModelPart(emptyList(), emptyMap()),
+    Function { texture -> renderType(texture) }
+) {
     val context: RenderContext = RenderContext().also {
         it.put(RenderContext.RENDER_STATE, RenderContext.RenderState.WORLD)
     }
     lateinit var posableModel: PosableModel
 
-    override fun renderToBuffer(
+    fun renderPosable(
+        entity: Entity?,
         stack: PoseStack,
         buffer: VertexConsumer,
         packedLight: Int,
         packedOverlay: Int,
         color: Int
     ) {
-        val entity = context.request(RenderContext.ENTITY)
         val overlay = getOverlayTexture(entity) ?: packedOverlay
         if (entity is LivingEntity) {
             // We're using the living entity renderer, ergo we need to apply a Y offset of 24 model units (1.5 blocks) for reasons only God can tell us.
@@ -66,19 +72,29 @@ abstract class PosableEntityModel<T : Entity>(
         }
     }
 
-    // Called by LivingEntityRenderer's render method before calling model.render (which is this.render in this case)
-    override fun setupAnim(
-        entity: T,
-        limbSwing: Float,
-        limbSwingAmount: Float,
-        ageInTicks: Float,
-        headYaw: Float,
-        headPitch: Float
-    ) {
+    override fun setupAnim(state: LivingEntityRenderState) {
+        val entity = context.request(RenderContext.ENTITY) ?: return
         setupEntityTypeContext(entity)
         if (entity is PosableEntity) {
-            val ticks = getTicksForAnimation(entity, limbSwing, limbSwingAmount, ageInTicks, headYaw, headPitch)
-            posableModel.applyAnimations(entity, entity.delegate as PosableState, limbSwing, limbSwingAmount, ticks, headYaw, headPitch)
+            @Suppress("UNCHECKED_CAST")
+            val typedEntity = entity as T
+            val ticks = getTicksForAnimation(
+                typedEntity,
+                state.walkAnimationPos,
+                state.walkAnimationSpeed,
+                state.ageInTicks,
+                state.yRot,
+                state.xRot
+            )
+            posableModel.applyAnimations(
+                entity,
+                entity.delegate as PosableState,
+                state.walkAnimationPos,
+                state.walkAnimationSpeed,
+                ticks,
+                state.yRot,
+                state.xRot
+            )
         }
     }
 

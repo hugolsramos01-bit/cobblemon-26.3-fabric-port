@@ -8,6 +8,10 @@
 
 package com.cobblemon.mod.common.api.habitats
 
+import com.cobblemon.mod.common.util.readList
+
+import com.cobblemon.mod.common.util.writeCollection
+
 import com.cobblemon.mod.common.Cobblemon
 import com.cobblemon.mod.common.api.spawning.detail.PokemonSpawnDetail
 import com.cobblemon.mod.common.api.spawning.position.SpawnablePosition
@@ -18,7 +22,7 @@ import net.minecraft.nbt.CompoundTag
 import net.minecraft.nbt.ListTag
 import net.minecraft.nbt.Tag
 import net.minecraft.network.RegistryFriendlyByteBuf
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 
 /**
  * A pool of [HabitatSpawn]s. This is filled with [HabitatSpawn]s. The pool is responsible for converting
@@ -30,7 +34,7 @@ import net.minecraft.resources.ResourceLocation
 class HabitatPool {
     companion object {
         fun default() = HabitatPool().apply {
-            id = ResourceLocation("cobblemon", "custom__default_pool")
+            id = Identifier.fromNamespaceAndPath("cobblemon", "custom__default_pool")
             name = "Custom"
         }
 
@@ -49,13 +53,13 @@ class HabitatPool {
         }
 
         fun readPoolFromNBT(nbt: CompoundTag): HabitatPool {
-            val poolId = nbt.getString(DataKeys.HABITAT_POOL_ID).asIdentifierDefaultingNamespace()
+            val poolId = nbt.getString(DataKeys.HABITAT_POOL_ID).orElse("").asIdentifierDefaultingNamespace()
             if (nbt.contains(DataKeys.HABITAT_POOL_NAME)) {
                 // It's one that was stored on the block
                 val pool = HabitatPool()
                 pool.id = poolId
-                pool.name = nbt.getString(DataKeys.HABITAT_POOL_NAME)
-                val spawnsListNBT = nbt.getList(DataKeys.HABITAT_POOL_SPAWNS, Tag.TAG_COMPOUND.toInt())
+                pool.name = nbt.getString(DataKeys.HABITAT_POOL_NAME).orElse("")
+                val spawnsListNBT = nbt.getList(DataKeys.HABITAT_POOL_SPAWNS).orElse(ListTag())
                 val spawns = mutableListOf<HabitatSpawn>()
                 spawnsListNBT.forEach { spawnTag ->
                     try {
@@ -74,7 +78,7 @@ class HabitatPool {
         }
     }
 
-    lateinit var id: ResourceLocation
+    lateinit var id: Identifier
     var name: String = ""
     var spawns: List<HabitatSpawn> = listOf()
 
@@ -103,13 +107,13 @@ class HabitatPool {
     }
 
     fun encode(buffer: RegistryFriendlyByteBuf) {
-        buffer.writeResourceLocation(id)
+        buffer.writeIdentifier(id)
         buffer.writeUtf(name)
         buffer.writeCollection(spawns) { _, it -> it.encode(buffer) }
     }
 
     fun decode(buffer: RegistryFriendlyByteBuf) {
-        id = buffer.readResourceLocation()
+        id = buffer.readIdentifier()
         name = buffer.readUtf()
         spawns = buffer.readList { HabitatSpawn().apply { decode(buffer) } }
     }

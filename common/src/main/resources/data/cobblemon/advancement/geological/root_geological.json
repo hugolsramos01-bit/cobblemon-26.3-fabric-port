@@ -67,7 +67,11 @@
   },
   "requirements": [
     [
-      "core", "fossils", "tumblestones", "evolution_stones", "type_gems"
+      "core",
+      "fossils",
+      "tumblestones",
+      "evolution_stones",
+      "type_gems"
     ]
   ]
 }

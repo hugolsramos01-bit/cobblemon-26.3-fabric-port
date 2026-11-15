@@ -23,10 +23,10 @@
       }
     }
   },
-	"requirements": [
-		[
-			"win"
-		]
-	],
+  "requirements": [
+    [
+      "win"
+    ]
+  ],
   "sends_telemetry_event": false
 }

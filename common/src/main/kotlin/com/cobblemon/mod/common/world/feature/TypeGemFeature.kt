@@ -16,15 +16,18 @@ import net.minecraft.core.Direction
 import net.minecraft.tags.BlockTags
 import net.minecraft.world.level.WorldGenLevel
 import net.minecraft.world.level.block.Block.UPDATE_ALL
+import com.mojang.serialization.MapCodec
+import net.minecraft.util.RandomSource
+import net.minecraft.world.level.chunk.ChunkGenerator
+import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.levelgen.feature.Feature
-import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext
-import net.minecraft.world.level.levelgen.feature.configurations.BlockStateConfiguration
 
-class TypeGemFeature : Feature<BlockStateConfiguration>(BlockStateConfiguration.CODEC) {
-    override fun place(context: FeaturePlaceContext<BlockStateConfiguration?>): Boolean {
-        val worldGenLevel = context.level()
-        val random = context.random()
-        val origin = context.origin()
+class TypeGemFeature(val state: BlockState) : Feature {
+    companion object {
+        val CODEC: MapCodec<TypeGemFeature> = BlockState.CODEC.fieldOf("state").xmap(::TypeGemFeature, { it.state })
+    }
+    override fun codec() = CODEC
+    override fun place(worldGenLevel: WorldGenLevel, chunkGenerator: ChunkGenerator, random: RandomSource, origin: BlockPos): Boolean {
 
         val originBlock = worldGenLevel.getBlockState(origin)
         if (!originBlock.`is`(BlockTags.DEEPSLATE_ORE_REPLACEABLES)) {
@@ -61,7 +64,7 @@ class TypeGemFeature : Feature<BlockStateConfiguration>(BlockStateConfiguration.
         val airBlocks = mutableListOf<BlockPos>()
 
         for (direction: Direction in Direction.entries) {
-            val pos = origin.offset(direction.normal)
+            val pos = origin.relative(direction)
             val blockState = worldGenLevel.getBlockState(pos)
             if (blockState.isAir) {
                 airBlocks.add(pos)

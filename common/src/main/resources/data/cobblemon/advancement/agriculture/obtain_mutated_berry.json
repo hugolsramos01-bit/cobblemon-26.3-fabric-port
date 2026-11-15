@@ -9,7 +9,7 @@
     "description": {
       "translate": "advancements.cobblemon.obtain_mutated_berry.description"
     },
-	"frame": "goal"
+    "frame": "goal"
   },
   "parent": "cobblemon:agriculture/obtain_berry",
   "criteria": {

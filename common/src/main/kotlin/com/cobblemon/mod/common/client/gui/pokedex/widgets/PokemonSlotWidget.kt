@@ -20,7 +20,7 @@ import com.cobblemon.mod.common.pokemon.RenderablePokemon
 import com.cobblemon.mod.common.pokemon.Species
 import com.cobblemon.mod.common.util.cobblemonResource
 import com.cobblemon.mod.common.util.math.fromEulerXYZDegrees
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import org.joml.Quaternionf
 import org.joml.Vector3f
 
@@ -33,7 +33,7 @@ abstract class PokemonSlotWidget {
         private val unimplementedIcon = cobblemonResource("textures/gui/pokedex/pokedex_slot_unimplemented.png")
 
         fun render(
-            context: GuiGraphics,
+            context: GuiGraphicsExtractor,
             x: Int,
             y: Int,
             isHovered: Boolean,
@@ -50,7 +50,7 @@ abstract class PokemonSlotWidget {
             val matrices = context.pose()
 
             blitk(
-                matrixStack = matrices,
+                context = context,
                 texture = slotResource,
                 x = x,
                 y = y,
@@ -60,7 +60,7 @@ abstract class PokemonSlotWidget {
 
             if (isHovered) {
                 blitk(
-                    matrixStack = matrices,
+                    context = context,
                     texture = slotHighlight,
                     x = x,
                     y = y,
@@ -79,27 +79,27 @@ abstract class PokemonSlotWidget {
                     y + SCROLL_SLOT_SIZE - 2,
                 )
 
-                matrices.pushPose()
-                matrices.translate(x + SCROLL_SLOT_SIZE / 2.0, y + 1.0, 0.0)
-                matrices.scale(2.5F, 2.5F, 1F)
+                matrices.pushMatrix()
+                matrices.translate((x + SCROLL_SLOT_SIZE / 2.0).toFloat(), y + 1F)
+                matrices.scale(2.5F, 2.5F)
 
                 val state = FloatingState()
                 state.currentAspects = renderablePokemon.aspects
 
                 drawProfilePokemon(
                     renderablePokemon = renderablePokemon,
-                    matrixStack = matrices,
+                    context = context,
                     rotation = Quaternionf().fromEulerXYZDegrees(Vector3f(13F, 35F, 0F)),
                     state = state,
                     partialTicks = 0F,
                     scale = 4.5F
                 )
 
-                matrices.popPose()
+                matrices.popMatrix()
                 context.disableScissor()
             } else {
                 blitk(
-                    matrixStack = matrices,
+                    context = context,
                     texture = unknownIcon,
                     x = x + 8.5,
                     y = y + 9,
@@ -109,7 +109,7 @@ abstract class PokemonSlotWidget {
 
                 if (!species.implemented) {
                     blitk(
-                        matrixStack = matrices,
+                        context = context,
                         texture = unimplementedIcon,
                         x = (x + 14) / SCALE,
                         y = (y + 15.5) / SCALE,
@@ -121,8 +121,7 @@ abstract class PokemonSlotWidget {
             }
 
             // Ensure elements are not hidden behind Pokémon render
-            matrices.pushPose()
-            matrices.translate(0.0, 0.0, 100.0)
+            context.nextStratum()
 
             drawScaledText(
                 context = context,
@@ -135,7 +134,7 @@ abstract class PokemonSlotWidget {
 
             if (discoveryLevel == PokedexEntryProgress.OWNED) {
                 blitk(
-                    matrixStack = matrices,
+                    context = context,
                     texture = caughtIcon,
                     x = (x + 18) / SCALE,
                     y = (y + 1.5) / SCALE,
@@ -145,7 +144,6 @@ abstract class PokemonSlotWidget {
                 )
             }
 
-            matrices.popPose()
         }
     }
 }

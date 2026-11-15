@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:spell_tag"
+        "recipes": "cobblemon:spell_tag"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

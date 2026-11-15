@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:green_dye_from_verdroot"
+        "recipes": "cobblemon:green_dye_from_verdroot"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

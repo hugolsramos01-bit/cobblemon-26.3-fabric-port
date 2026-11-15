@@ -13,13 +13,13 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:cake_with_moomoo_milk"
+        "recipes": "cobblemon:cake_with_moomoo_milk"
       },
       "trigger": "minecraft:recipe_unlocked"
     },
     "has_original_recipe": {
       "conditions": {
-        "recipe": "minecraft:cake"
+        "recipes": "minecraft:cake"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -28,7 +28,7 @@
     [
       "has_the_recipe",
       "has_egg",
-	  "has_original_recipe"
+      "has_original_recipe"
     ]
   ],
   "rewards": {

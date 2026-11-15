@@ -9,20 +9,23 @@
 package com.cobblemon.mod.common.advancement.predicate
 
 import com.cobblemon.mod.common.platform.PlatformRegistry
-import com.mojang.serialization.MapCodec
-import net.minecraft.advancements.critereon.EntitySubPredicate
+import com.mojang.serialization.Codec
+import net.minecraft.advancements.predicates.entity.EntitySubPredicate
 import net.minecraft.core.Registry
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.core.registries.Registries
 import net.minecraft.resources.ResourceKey
 
-object CobblemonEntitySubPredicates : PlatformRegistry<Registry<MapCodec<out EntitySubPredicate>>, ResourceKey<Registry<MapCodec<out EntitySubPredicate>>>, MapCodec<out EntitySubPredicate>>() {
+object CobblemonEntitySubPredicates : PlatformRegistry<Registry<Codec<out EntitySubPredicate>>, ResourceKey<Registry<Codec<out EntitySubPredicate>>>, Codec<out EntitySubPredicate>>() {
 
     @JvmStatic
-    val POKE_POBBER = this.create("poke_bobber", FishingBobberPredicate.CODEC)
+    val POKE_POBBER = this.create("type_specific/poke_bobber", FishingBobberPredicate.CODEC)
 
-    override val registry: Registry<MapCodec<out EntitySubPredicate>> = BuiltInRegistries.ENTITY_SUB_PREDICATE_TYPE
+    @JvmStatic
+    val ENTITY_TYPE = this.create("type_specific/entity_type", CobblemonEntityTypePredicate.CODEC)
 
-    override val resourceKey: ResourceKey<Registry<MapCodec<out EntitySubPredicate>>> = Registries.ENTITY_SUB_PREDICATE_TYPE
+    override val registry: Registry<Codec<out EntitySubPredicate>> = BuiltInRegistries.ENTITY_SUB_PREDICATE_TYPE
+
+    override val resourceKey: ResourceKey<Registry<Codec<out EntitySubPredicate>>> = Registries.ENTITY_SUB_PREDICATE_TYPE
 
 }

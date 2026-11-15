@@ -18,6 +18,8 @@ import net.minecraft.core.HolderLookup
 import net.minecraft.core.NonNullList
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.nbt.CompoundTag
+import net.minecraft.world.level.storage.ValueOutput
+import net.minecraft.world.level.storage.ValueInput
 import net.minecraft.world.ContainerHelper
 import net.minecraft.world.WorldlyContainer
 import net.minecraft.world.entity.player.Player
@@ -31,14 +33,14 @@ class RestorationTankBlockEntity(
 ) : FossilMultiblockEntity(pos, state, multiblockBuilder, CobblemonBlockEntities.RESTORATION_TANK) {
     val inv = RestorationTankInventory(this)
 
-    override fun saveAdditional(nbt: CompoundTag, registryLookup: HolderLookup.Provider) {
-        super.saveAdditional(nbt, registryLookup)
-        ContainerHelper.saveAllItems(nbt, inv.items, registryLookup)
+    override fun saveAdditional(nbt: ValueOutput) {
+        super.saveAdditional(nbt)
+        ContainerHelper.saveAllItems(nbt, inv.items)
     }
 
-    override fun loadAdditional(nbt: CompoundTag, registryLookup: HolderLookup.Provider) {
-        super.loadAdditional(nbt, registryLookup)
-        ContainerHelper.loadAllItems(nbt, inv.items, registryLookup)
+    override fun loadAdditional(nbt: ValueInput) {
+        super.loadAdditional(nbt)
+        ContainerHelper.loadAllItems(nbt, inv.items)
     }
 
     class RestorationTankInventory(val tankEntity: RestorationTankBlockEntity) : WorldlyContainer {
@@ -88,7 +90,7 @@ class RestorationTankBlockEntity(
                 val returnIdentifier = NaturalMaterials.getReturnItem((stack))
                 if (returnIdentifier != null) {
                     // Store the return item
-                    val returnItem = BuiltInRegistries.ITEM.get(returnIdentifier)
+                    val returnItem = BuiltInRegistries.ITEM.getValue(returnIdentifier)
                     storeReturnItem(returnItem, stack.count)
                 }
             }
@@ -133,7 +135,7 @@ class RestorationTankBlockEntity(
                         // See if there's room
                         for (i in items.indices) {
                             if (items[i] == ItemStack.EMPTY || (items[i].count < items[i].maxStackSize
-                                        && items[i].item == BuiltInRegistries.ITEM.get(returnItem))
+                                        && items[i].item == BuiltInRegistries.ITEM.getValue(returnItem))
                             ) {
                                 return true
                             }

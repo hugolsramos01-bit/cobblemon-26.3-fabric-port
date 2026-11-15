@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:loaded_dice"
+        "recipes": "cobblemon:loaded_dice"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

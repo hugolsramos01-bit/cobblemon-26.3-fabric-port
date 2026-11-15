@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:campfire_pot/love_sweet"
+        "recipes": "cobblemon:campfire_pot/love_sweet"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

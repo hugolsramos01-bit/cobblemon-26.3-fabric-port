@@ -31,12 +31,16 @@ import com.cobblemon.mod.common.pokemon.activestate.ShoulderedState
 import com.cobblemon.mod.common.trade.TradeManager
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
+import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.nbt.StringTag
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 import net.minecraft.server.level.ServerPlayer
+import net.minecraft.network.protocol.game.ClientboundSoundPacket
+import net.minecraft.sounds.SoundEvent
 import net.minecraft.sounds.SoundEvents
 import net.minecraft.sounds.SoundSource
 import net.minecraft.util.Mth
+import net.minecraft.util.Prediction
 import net.minecraft.world.InteractionHand
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.LivingEntity
@@ -56,6 +60,22 @@ import kotlin.math.cos
 import kotlin.math.min
 import kotlin.math.sin
 
+fun Player.playNotifySound(sound: SoundEvent, source: SoundSource, volume: Float, pitch: Float) {
+    if (this is ServerPlayer) {
+        connection.send(
+            ClientboundSoundPacket(
+                BuiltInRegistries.SOUND_EVENT.wrapAsHolder(sound),
+                source,
+                x,
+                y,
+                z,
+                volume,
+                pitch,
+                random.nextLong()
+            )
+        )
+    }
+}
 // Stuff like getting their party
 fun ServerPlayer.party() = Cobblemon.storage.getParty(this)
 fun ServerPlayer.pc() = Cobblemon.storage.getPC(this)
@@ -75,7 +95,7 @@ fun ServerPlayer.openDialogue(activeDialogue: ActiveDialogue) {
     DialogueManager.startDialogue(activeDialogue)
 }
 fun ServerPlayer.extraData(key: String) = Cobblemon.playerDataManager.getGenericData(this).extraData[key]
-fun ServerPlayer.hasKeyItem(key: ResourceLocation) = Cobblemon.playerDataManager.getGenericData(this).keyItems.contains(key)
+fun ServerPlayer.hasKeyItem(key: Identifier) = Cobblemon.playerDataManager.getGenericData(this).keyItems.contains(key)
 fun UUID.getPlayer() = server()?.playerList?.getPlayer(this)
 
 fun ServerPlayer.requestWallpapers() {
@@ -93,7 +113,7 @@ fun ServerPlayer.onLogout(handler: () -> Unit) {
  * @return If the attempt to heal was successful.
  */
 fun ServerPlayer.didSleep(): Boolean {
-    if (sleepTimer != 100 || level().dayTime.toInt() % 24000 != 0 || this.isInBattle()) {
+    if (sleepTimer != 100 || level().getOverworldClockTime() % 24000L != 0L || this.isInBattle()) {
         return false
     }
     party().didSleep()
@@ -327,14 +347,14 @@ fun ServerPlayer.raycast(maxDistance: Float, fluidHandling: ClipContext.Fluid?):
     val f = xRot
     val g = yRot
     val vec3d = eyePosition
-    val h = Mth.cos(-g * 0.017453292f - 3.1415927f)
-    val i = Mth.sin(-g * 0.017453292f - 3.1415927f)
-    val j = -Mth.cos(-f * 0.017453292f)
-    val k = Mth.sin(-f * 0.017453292f)
+    val h = Mth.cos((-g * 0.017453292f - 3.1415927f).toDouble())
+    val i = Mth.sin((-g * 0.017453292f - 3.1415927f).toDouble())
+    val j = -Mth.cos((-f * 0.017453292f).toDouble())
+    val k = Mth.sin((-f * 0.017453292f).toDouble())
     val l = i * j
     val n = h * j
     val vec3d2 = vec3d.add(l.toDouble() * maxDistance, k.toDouble() * maxDistance, n.toDouble() * maxDistance)
-    return level().clip(ClipContext(vec3d, vec3d2, ClipContext.Block.OUTLINE, fluidHandling, this))
+    return level().clip(ClipContext(vec3d, vec3d2, ClipContext.Block.OUTLINE, fluidHandling ?: ClipContext.Fluid.NONE, this))
 }
 
 fun ServerPlayer.raycastSafeSendout(pokemon: Pokemon, maxDistance: Double, dropHeight: Double, fluidHandling: ClipContext.Fluid?): Vec3? {
@@ -342,14 +362,14 @@ fun ServerPlayer.raycastSafeSendout(pokemon: Pokemon, maxDistance: Double, dropH
     val f = xRot
     val g = yRot
     val vec3d = eyePosition
-    val h = Mth.cos(-g * 0.017453292f - 3.1415927f)
-    val i = Mth.sin(-g * 0.017453292f - 3.1415927f)
-    val j = -Mth.cos(-f * 0.017453292f)
-    val k = Mth.sin(-f * 0.017453292f)
+    val h = Mth.cos((-g * 0.017453292f - 3.1415927f).toDouble())
+    val i = Mth.sin((-g * 0.017453292f - 3.1415927f).toDouble())
+    val j = -Mth.cos((-f * 0.017453292f).toDouble())
+    val k = Mth.sin((-f * 0.017453292f).toDouble())
     val l = i * j
     val n = h * j
     val vec3d2 = vec3d.add(l.toDouble() * maxDistance, k.toDouble() * maxDistance, n.toDouble() * maxDistance)
-    val result = level().clip(ClipContext(vec3d, vec3d2, ClipContext.Block.OUTLINE, fluidHandling, this))
+    val result = level().clip(ClipContext(vec3d, vec3d2, ClipContext.Block.OUTLINE, fluidHandling ?: ClipContext.Fluid.NONE, this))
 
 
     if (level().getBlockState(result.blockPos).isAir) {
@@ -383,7 +403,7 @@ fun ServerPlayer.raycastSafeSendout(pokemon: Pokemon, maxDistance: Double, dropH
         }
 
         // If a valid block was found below the player's aim, return the location directly above it
-        return fallLoc?.blockPos?.above()?.center
+        return fallLoc?.blockPos?.above()?.let(Vec3::atCenterOf)
     } else if (result.direction != Direction.UP) {
         // If the player targets the side or bottom of a block, try to find a valid spot in front of / below that block
         val offset: Double = if (result.direction == Direction.DOWN) {
@@ -416,7 +436,7 @@ fun ServerPlayer.raycastSafeSendout(pokemon: Pokemon, maxDistance: Double, dropH
     return null
 }
 
-fun Inventory.usableItems() = offhand + items
+fun Inventory.usableItems() = listOf(getItem(Inventory.SLOT_OFFHAND)) + getNonEquipmentItems()
 
 /**
  * Utility function meant to emulate the behavior seen across Minecraft when attempting to give items directly to player but there's not enough room for the entire stack.
@@ -436,7 +456,7 @@ fun Player.giveOrDropItemStack(stack: ItemStack, playSound: Boolean = true) {
         }
         this.containerMenu.broadcastChanges()
     } else {
-        this.drop(stack, false)?.let { itemEntity ->
+        this.drop(stack, false, Prediction.SERVER_ONLY)?.let { itemEntity ->
             itemEntity.setNoPickUpDelay()
             itemEntity.setTarget(this.uuid)
         }
@@ -484,11 +504,12 @@ fun Player.isUsingPokedex() = isUsingItem &&
 
 fun ServerPlayer.updateShoulderNbt(pokemon: Pokemon) {
     // Use copies because player doesn't expose a forceful update of shoulder data
-    val nbt = if ((pokemon.state as ShoulderedState).isLeftShoulder) shoulderEntityLeft.copy() else shoulderEntityRight.copy()
+    val isLeft = (pokemon.state as ShoulderedState).isLeftShoulder
+    val nbt = shoulderEntityData(isLeft).copy()
     nbt.putUUID(DataKeys.SHOULDER_UUID, uuid)
     nbt.putString(DataKeys.SHOULDER_SPECIES, pokemon.species.resourceIdentifier.toString())
     nbt.putString(DataKeys.SHOULDER_FORM, pokemon.form.name)
     nbt.put(DataKeys.SHOULDER_ASPECTS, pokemon.aspects.map(StringTag::valueOf).toNbtList())
     nbt.putFloat(DataKeys.SHOULDER_SCALE_MODIFIER, pokemon.effectiveScale)
-    if ((pokemon.state as ShoulderedState).isLeftShoulder) shoulderEntityLeft = nbt else shoulderEntityRight = nbt
+    setShoulderEntityData(isLeft, nbt)
 }

@@ -16,15 +16,15 @@ import com.cobblemon.mod.common.net.messages.server.behaviour.SetEntityBehaviour
 import com.cobblemon.mod.common.util.cobblemonResource
 import com.cobblemon.mod.common.util.lang
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.screens.Screen
 import net.minecraft.network.chat.Component
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 import net.minecraft.world.entity.LivingEntity
 
 class BehaviourEditorScreen(
     val entity: LivingEntity,
-    val appliedBehaviours: MutableSet<ResourceLocation>,
+    val appliedBehaviours: MutableSet<Identifier>,
 ) : Screen(Component.literal("Behaviour Editor")) {
     companion object {
         const val BASE_WIDTH = 360
@@ -40,7 +40,6 @@ class BehaviourEditorScreen(
 
     override fun init() {
         super.init()
-        minecraft = Minecraft.getInstance()
         x = (minecraft!!.window.guiScaledWidth / 2) - BASE_WIDTH / 2
         y = (minecraft!!.window.guiScaledHeight / 2) - BASE_HEIGHT / 2
 
@@ -80,15 +79,15 @@ class BehaviourEditorScreen(
         )
     }
 
-    override fun renderBlurredBackground(delta: Float) {}
+    override fun extractBlurredBackground(graphics: GuiGraphicsExtractor) {}
 
-    override fun renderMenuBackground(context: GuiGraphics) {}
+    override fun extractMenuBackground(context: GuiGraphicsExtractor) {}
 
     override fun isPauseScreen() = false
 
-    override fun render(context: GuiGraphics, mouseX: Int, mouseY: Int, delta: Float) {
+    override fun extractRenderState(context: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, delta: Float) {
         blitk(
-            matrixStack = context.pose(),
+            context = context,
             texture = baseResource,
             x = x,
             y = y,
@@ -124,16 +123,16 @@ class BehaviourEditorScreen(
             shadow = true
         )
 
-        super.render(context, mouseX, mouseY, delta)
+        super.extractRenderState(context, mouseX, mouseY, delta)
     }
 
-    fun add(resourceLocation: ResourceLocation, alignButtonRight: Boolean) {
+    fun add(resourceLocation: Identifier, alignButtonRight: Boolean) {
         appliedBehaviours.add(resourceLocation)
         unadded.removeEntry(resourceLocation)
         added.addEntry(resourceLocation, !alignButtonRight)
     }
 
-    fun remove(resourceLocation: ResourceLocation, alignButtonRight: Boolean) {
+    fun remove(resourceLocation: Identifier, alignButtonRight: Boolean) {
         appliedBehaviours.remove(resourceLocation)
         added.removeEntry(resourceLocation)
         unadded.addEntry(resourceLocation, !alignButtonRight)

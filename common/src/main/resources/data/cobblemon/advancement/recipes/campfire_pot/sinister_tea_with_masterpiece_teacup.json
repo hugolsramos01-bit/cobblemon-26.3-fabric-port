@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:campfire_pot/sinister_tea_with_masterpiece_teacup"
+        "recipes": "cobblemon:campfire_pot/sinister_tea_with_masterpiece_teacup"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

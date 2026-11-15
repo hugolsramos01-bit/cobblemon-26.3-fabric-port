@@ -8,22 +8,12 @@
 
 package com.cobblemon.mod.common.client.render.atlas
 
-import com.cobblemon.mod.common.util.cobblemonResource
 import net.minecraft.client.Minecraft
-import net.minecraft.client.resources.TextureAtlasHolder
+import net.minecraft.data.AtlasIds
+import net.minecraft.client.renderer.texture.TextureAtlas
 
 object CobblemonAtlases {
-    val atlases = mutableSetOf<TextureAtlasHolder>()
-
-    val BERRY_SPRITE_ATLAS = register("textures/atlas/berries.png", "berries")
-    fun register(atlasId: String, sourcePath: String): TextureAtlasHolder {
-        val atlas = CobblemonAtlas(
-            Minecraft.getInstance().textureManager,
-            cobblemonResource(atlasId),
-            cobblemonResource(sourcePath)
-        )
-        atlases.add(atlas)
-        return atlas
-    }
+    // 26.3 exposes a fixed set of atlases; mod textures are stitched into the block atlas.
+    val BERRY_SPRITE_ATLAS: TextureAtlas = Minecraft.getInstance().atlasManager.getAtlasOrThrow(AtlasIds.BLOCKS)
 
 }

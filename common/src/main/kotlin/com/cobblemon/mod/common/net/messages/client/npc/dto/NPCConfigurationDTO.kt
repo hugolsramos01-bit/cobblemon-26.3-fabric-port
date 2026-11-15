@@ -8,6 +8,14 @@
 
 package com.cobblemon.mod.common.net.messages.client.npc.dto
 
+import com.cobblemon.mod.common.util.writeMap
+
+import com.cobblemon.mod.common.util.readMap
+
+import com.cobblemon.mod.common.util.readList
+
+import com.cobblemon.mod.common.util.writeCollection
+
 import com.cobblemon.mod.common.Cobblemon
 import com.cobblemon.mod.common.api.net.Decodable
 import com.cobblemon.mod.common.api.net.Encodable
@@ -28,18 +36,18 @@ import io.netty.buffer.ByteBuf
 import java.util.UUID
 import net.minecraft.network.RegistryFriendlyByteBuf
 import net.minecraft.network.chat.MutableComponent
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 
 class NPCConfigurationDTO : Encodable, Decodable {
     var npcUUID: UUID = UUID.randomUUID()
     var npcName: MutableComponent = "".text()
-    var npcClass: ResourceLocation = cobblemonResource("default")
-    var resourceIdentifier: ResourceLocation = npcClass
+    var npcClass: Identifier = cobblemonResource("default")
+    var resourceIdentifier: Identifier = npcClass
     var battle: NPCBattleConfiguration? = null
     var interactionInherited: Boolean = false
     var interaction: NPCInteractConfiguration? = null
     var aspects: MutableSet<String> = mutableSetOf()
-    var behaviours: MutableSet<ResourceLocation> = mutableSetOf()
+    var behaviours: MutableSet<Identifier> = mutableSetOf()
     var registeredVariables: MutableList<MoLangConfigVariable> = mutableListOf()
     var variables: MutableMap<String, String> = mutableMapOf()
 
@@ -89,7 +97,8 @@ class NPCConfigurationDTO : Encodable, Decodable {
         interactionInherited = buffer.readBoolean()
         interaction = buffer.readNullable {
             val type = buffer.readString()
-            val configType = NPCInteractConfiguration.types[type] ?: return@readNullable null
+            val configType = NPCInteractConfiguration.types[type]
+                ?: throw IllegalArgumentException("Unknown NPC interaction configuration type '$type'")
             configType.clazz.getConstructor().newInstance().also { it.decode(buffer) }
         }
         aspects = buffer.readList { buffer.readString() }.toMutableSet()

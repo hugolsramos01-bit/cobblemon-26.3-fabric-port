@@ -21,11 +21,12 @@ import com.cobblemon.mod.common.config.constraint.IntConstraint
 import com.cobblemon.mod.common.util.lang
 import net.minecraft.ChatFormatting
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.components.EditBox
 import net.minecraft.client.gui.components.EditBox.DEFAULT_TEXT_COLOR
 import net.minecraft.client.gui.components.Tooltip
 import net.minecraft.network.chat.Component
+import net.minecraft.network.chat.TextColor
 import kotlin.reflect.KMutableProperty1
 import kotlin.reflect.jvm.javaField
 
@@ -33,14 +34,34 @@ abstract class CobblemonConfigEditBoxVariable(
     parent: CobblemonConfigVariableList,
     config: KMutableProperty1<out CobblemonConfig, *>,
 ) : CobblemonConfigVariable(parent, config) {
-    val editBox = EditBox(
+    protected open fun isAllowedInput(value: String): Boolean = true
+
+    val editBox = object : EditBox(
         Minecraft.getInstance().font,
         parent.x,
         parent.y,
         WIDGET_WIDTH,
         SLOT_HEIGHT,
         labelLang,
-    ).also {
+    ) {
+        override fun insertText(input: String) {
+            val currentValue = getValue()
+            val selected = getHighlighted()
+            val cursor = getCursorPosition().coerceIn(0, currentValue.length)
+            val beforeCursorStart = cursor - selected.length
+            val selectedStart = if (selected.isNotEmpty() && beforeCursorStart >= 0 &&
+                currentValue.regionMatches(beforeCursorStart, selected, 0, selected.length)) {
+                beforeCursorStart
+            } else {
+                cursor
+            }
+            val selectedEnd = (selectedStart + selected.length).coerceAtMost(currentValue.length)
+            val resultingValue = currentValue.substring(0, selectedStart) + input + currentValue.substring(selectedEnd)
+            if (!isAllowedInput(resultingValue)) return
+
+            super.insertText(input)
+        }
+    }.also {
         it.height = WIDGET_HEIGHT
         it.setMaxLength(250)
 
@@ -55,23 +76,12 @@ abstract class CobblemonConfigEditBoxVariable(
         editBox.value = getConfigValueAsString()
     }
 
-    override fun render(
-        context: GuiGraphics,
-        index: Int,
-        top: Int,
-        left: Int,
-        width: Int,
-        height: Int,
-        mouseX: Int,
-        mouseY: Int,
-        hovering: Boolean,
-        partialTick: Float
-    ) {
-        super.render(context, index, top, left, width, height, mouseX, mouseY, hovering, partialTick)
+    override fun extractContent(context: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, hovering: Boolean, partialTick: Float) {
+        super.extractContent(context, mouseX, mouseY, hovering, partialTick)
 
         editBox.x = resetButton.x - editBox.width - PADDING
-        editBox.y = getY(top) + WIDGET_Y_OFFSET
-        editBox.render(context, mouseX, mouseY, partialTick)
+        editBox.y = getY(this.y) + WIDGET_Y_OFFSET
+        editBox.extractRenderState(context, mouseX, mouseY, partialTick)
     }
 }
 
@@ -97,8 +107,9 @@ class CobblemonConfigIntVariable(
 
     override fun getConfigValueAsString(): String = (config.getter.call(parent.parent.clonedConfig) as Int?).toString()
 
+    override fun isAllowedInput(value: String): Boolean = value.toIntOrNull() != null || value.isBlank() || value == "-"
+
     init {
-        editBox.setFilter { value -> value.toIntOrNull() != null || value.isBlank() || value == "-" }
         editBox.setResponder { value ->
             if (value.isBlank()) {
                 return@setResponder
@@ -115,7 +126,7 @@ class CobblemonConfigIntVariable(
                 } else {
                     val errorLang = lang("config.ui.error.int_constraint", intConstraintAnnotation.min, intConstraintAnnotation.max).red()
                     tooltip = Tooltip.create(tooltipLang.plainCopy().add(Component.literal("\n")).add(errorLang))
-                    ChatFormatting.RED.color?.let { editBox.setTextColor(it) }
+                    TextColor.fromLegacyFormat(ChatFormatting.RED)?.value?.let { editBox.setTextColor(it) }
                 }
             }
         }
@@ -128,8 +139,9 @@ class CobblemonConfigFloatVariable(
 ) : CobblemonConfigEditBoxVariable(parent, config) {
     override fun getConfigValueAsString(): String = (config.getter.call(parent.parent.clonedConfig) as Float?).toString()
 
+    override fun isAllowedInput(value: String): Boolean = value.toFloatOrNull() != null || value.isBlank() || value == "." || value == "-"
+
     init {
-        editBox.setFilter { value -> value.toFloatOrNull() != null || value.isBlank() || value == "." || value == "-" }
         editBox.setResponder { value ->
             if (value.toFloatOrNull() != null) {
                 setConfigValue(value.toFloat(), false)
@@ -144,8 +156,9 @@ class CobblemonConfigDoubleVariable(
 ) : CobblemonConfigEditBoxVariable(parent, config) {
     override fun getConfigValueAsString(): String = (config.getter.call(parent.parent.clonedConfig) as Double?).toString()
 
+    override fun isAllowedInput(value: String): Boolean = value.toDoubleOrNull() != null || value.isBlank() || value == "." || value == "-"
+
     init {
-        editBox.setFilter { value -> value.toDoubleOrNull() != null || value.isBlank() || value == "." || value == "-" }
         editBox.setResponder { value ->
             if (value.toDoubleOrNull() != null) {
                 setConfigValue(value.toDouble(), false)

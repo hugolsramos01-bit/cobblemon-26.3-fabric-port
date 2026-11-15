@@ -27,7 +27,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:sport_ball"
+        "recipes": "cobblemon:sport_ball"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -37,7 +37,7 @@
       "has_red_apricorn",
       "has_the_recipe"
     ],
-	[
+    [
       "has_white_apricorn",
       "has_the_recipe"
     ]

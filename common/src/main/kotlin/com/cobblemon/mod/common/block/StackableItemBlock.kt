@@ -8,6 +8,9 @@
 
 package com.cobblemon.mod.common.block
 
+import net.minecraft.util.RandomSource
+import net.minecraft.world.level.ScheduledTickAccess
+import net.minecraft.world.level.LevelReader
 import com.cobblemon.mod.common.util.rotateShape
 import com.mojang.serialization.MapCodec
 import com.mojang.serialization.codecs.RecordCodecBuilder
@@ -60,10 +63,6 @@ class StackableItemBlock(settings: Properties, val type: StackableItemBlockType)
         val MAX_AMOUNT: Int = 4
         val AMOUNT: IntegerProperty = IntegerProperty.create("amount", 1, MAX_AMOUNT)
 
-        val CODEC: MapCodec<StackableItemBlock> = RecordCodecBuilder.mapCodec { it.group(
-            propertiesCodec(),
-            StackableItemBlockType.CODEC.fieldOf("type").forGetter(StackableItemBlock::type)
-        ).apply(it, ::StackableItemBlock) }
 
         val northShapeMap: Map<StackableItemBlockType, List<VoxelShape>>
             get() = mapOf(
@@ -161,20 +160,19 @@ class StackableItemBlock(settings: Properties, val type: StackableItemBlockType)
             .setValue(WATERLOGGED, false))
     }
 
-    override fun codec(): MapCodec<StackableItemBlock> = CODEC
 
     override fun createBlockStateDefinition(builder: StateDefinition.Builder<Block, BlockState>) {
         builder.add(HORIZONTAL_FACING, AMOUNT, WATERLOGGED)
     }
 
-    override fun getFluidState(blockState: BlockState): FluidState? = if (blockState.getValue(WATERLOGGED)) Fluids.WATER.getSource(false) else super.getFluidState(blockState)
+    override fun getFluidState(blockState: BlockState): FluidState = if (blockState.getValue(WATERLOGGED)) Fluids.WATER.getSource(false) else super.getFluidState(blockState)
 
-    override fun updateShape(state: BlockState, direction: Direction, neighborState: BlockState, world: LevelAccessor, pos: BlockPos, neighborPos: BlockPos): BlockState {
+    override fun updateShape(state: BlockState, world: LevelReader, tickAccess: ScheduledTickAccess, pos: BlockPos, direction: Direction, neighborPos: BlockPos, neighborState: BlockState, random: RandomSource): BlockState {
         if (state.getValue(WATERLOGGED)) {
-            world.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(world))
+            tickAccess.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(world))
         }
         return if (state.getValue(HORIZONTAL_FACING).opposite == direction && !state.canSurvive(world, pos)) Blocks.AIR.defaultBlockState()
-        else super.updateShape(state, direction, neighborState, world, pos, neighborPos)
+        else super.updateShape(state, world, tickAccess, pos, direction, neighborPos, neighborState, random)
     }
 
     override fun getCollisionShape(state: BlockState, level: BlockGetter, pos: BlockPos, context: CollisionContext): VoxelShape {

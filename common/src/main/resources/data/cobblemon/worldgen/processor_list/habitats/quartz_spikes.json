@@ -13,7 +13,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:air"
+                        "id": "minecraft:air"
                     }
                 },
                 {
@@ -26,7 +26,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:netherrack"
+                        "id": "minecraft:netherrack"
                     }
                 }
             ]
@@ -45,7 +45,7 @@
                             "predicate_type": "minecraft:always_true"
                         },
                         "output_state": {
-                            "Name": "minecraft:nether_quartz_ore"
+                            "id": "minecraft:nether_quartz_ore"
                         }
                     }
                 ]

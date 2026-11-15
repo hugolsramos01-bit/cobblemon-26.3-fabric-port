@@ -22,6 +22,10 @@ import com.cobblemon.mod.common.api.storage.player.client.ClientPokedexManager
 import com.cobblemon.mod.common.api.storage.player.client.ClientTMMoveManager
 import com.cobblemon.mod.common.api.tags.CobblemonItemTags
 import com.cobblemon.mod.common.block.entity.TintBlockEntity
+import com.cobblemon.mod.common.block.entity.DisplayCaseBlockEntity
+import com.cobblemon.mod.common.block.entity.LecternBlockEntity
+import com.cobblemon.mod.common.block.entity.PokeSnackBlockEntity
+import com.cobblemon.mod.common.block.entity.RestorationTankBlockEntity
 import com.cobblemon.mod.common.block.sign.CobblemonSignBlock
 import com.cobblemon.mod.common.client.battle.ClientBattle
 import com.cobblemon.mod.common.client.gui.PartyOverlay
@@ -47,6 +51,7 @@ import com.cobblemon.mod.common.client.render.item.CobblemonBuiltinItemRendererR
 import com.cobblemon.mod.common.client.render.item.PokemonItemRenderer
 import com.cobblemon.mod.common.client.render.layer.PlayerRecallBallRenderer
 import com.cobblemon.mod.common.client.render.layer.PokemonOnShoulderRenderer
+import com.cobblemon.mod.common.mixin.invoker.LivingEntityRendererInvoker
 import com.cobblemon.mod.common.client.render.models.blockbench.bedrock.animation.BedrockAnimationRepository
 import com.cobblemon.mod.common.client.render.models.blockbench.repository.BerryModelRepository
 import com.cobblemon.mod.common.client.render.models.blockbench.repository.MiscModelRepository
@@ -74,22 +79,23 @@ import com.cobblemon.mod.common.platform.events.PlatformEvents
 import com.cobblemon.mod.common.pokedex.scanner.PokedexUsageContext
 import com.cobblemon.mod.common.util.isLookingAt
 import net.minecraft.client.Minecraft
-import net.minecraft.client.color.block.BlockColor
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.DeltaTracker
+import net.minecraft.client.color.block.BlockTintSource
+import net.minecraft.client.renderer.block.BlockAndTintGetter
+import net.minecraft.core.BlockPos
+import net.minecraft.world.level.block.state.BlockState
+import net.minecraft.util.ARGB
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.screens.MenuScreens
 import net.minecraft.client.gui.screens.Screen
-import net.minecraft.client.model.BoatModel
-import net.minecraft.client.model.ChestBoatModel
-import net.minecraft.client.model.PlayerModel
-import net.minecraft.client.renderer.RenderType
+import net.minecraft.client.model.`object`.boat.BoatModel
+import net.minecraft.client.player.AbstractClientPlayer
 import net.minecraft.client.renderer.blockentity.HangingSignRenderer
-import net.minecraft.client.renderer.blockentity.SignRenderer
-import net.minecraft.client.renderer.entity.EntityRenderer
-import net.minecraft.client.renderer.entity.LivingEntityRenderer
-import net.minecraft.client.resources.PlayerSkin
+import net.minecraft.client.renderer.blockentity.StandingSignRenderer
+import net.minecraft.client.renderer.entity.player.AvatarRenderer
+import net.minecraft.world.entity.player.PlayerModelType
 import net.minecraft.server.packs.resources.ResourceManager
 import net.minecraft.world.InteractionHand
-import net.minecraft.world.entity.player.Player
 import net.minecraft.world.phys.AABB
 
 object CobblemonClient {
@@ -143,9 +149,9 @@ object CobblemonClient {
         PlatformEvents.CLIENT_PLAYER_LOGOUT.subscribe { onLogout() }
 
         this.registerBlockEntityRenderers()
-        registerBlockRenderTypes()
         registerColors()
         registerFlywheelRenderers()
+        createBoatModelLayers()
         this.registerEntityRenderers()
         this.registerItemColors()
         Berries.observable.subscribe {
@@ -160,14 +166,14 @@ object CobblemonClient {
         PlatformEvents.CLIENT_ITEM_TOOLTIP.subscribe { event ->
             val stack = event.stack
             val lines = event.lines
-            TooltipManager.generateTooltips(stack, lines, Screen.hasShiftDown())
+            TooltipManager.generateTooltips(stack, lines, Minecraft.getInstance().hasShiftDown())
         }
 
         PlatformEvents.CLIENT_ENTITY_UNLOAD.subscribe { event -> EntitySoundTracker.clear(event.entity.id) }
         PlatformEvents.CLIENT_TICK_POST.subscribe { event ->
             val player = event.client.player
             if (player != null) {
-                val selectedItem = player.inventory.getItem(player.inventory.selected)
+                val selectedItem = player.inventory.getItem(player.inventory.selectedSlot)
                 if (pokedexUsageContext.scanningGuiOpen &&
                     !(selectedItem.`is`(CobblemonItemTags.POKEDEX)) &&
                     !(player.offhandItem.`is`(CobblemonItemTags.POKEDEX) &&
@@ -218,330 +224,37 @@ object CobblemonClient {
     }
 
     fun registerColors() {
-        this.implementation.registerBlockColors(BlockColor { _, view, blockPos, _ ->
-            blockPos?.let { pos ->
-                view?.getBlockEntity(pos)?.let { blockEntity ->
-                    if (blockEntity is TintBlockEntity) return@BlockColor blockEntity.getTint()
-                }
+        this.implementation.registerBlockColors(object : BlockTintSource {
+            override fun color(state: BlockState): Int = -1
+            override fun colorInWorld(state: BlockState, view: BlockAndTintGetter, blockPos: BlockPos): Int {
+                val blockEntity = view.getBlockEntity(blockPos)
+                return ARGB.opaque(if (blockEntity is TintBlockEntity) blockEntity.getTint() else 0xFFFFFF)
             }
-            return@BlockColor 0xFFFFFF
         }, CobblemonBlocks.POKE_SNACK,
             CobblemonBlocks.POKE_CAKE,
             CobblemonBlocks.TM_MACHINE
         )
     }
 
-    private fun registerBlockRenderTypes() {
 
-        this.implementation.registerBlockRenderType(
-            RenderType.cutoutMipped(),
-            CobblemonBlocks.APRICORN_LEAVES,
-            CobblemonBlocks.SACCHARINE_LEAVES,
-            CobblemonBlocks.POKE_CAKE
-        )
 
-        this.implementation.registerBlockRenderType(
-            RenderType.translucent(),
-            CobblemonBlocks.UPGRADE,
-            CobblemonBlocks.DUBIOUS_DISC
-        )
-
-        this.implementation.registerBlockRenderType(
-            RenderType.cutout(),
-            CobblemonBlocks.GILDED_CHEST,
-            CobblemonBlocks.FOSSIL_ANALYZER,
-            CobblemonBlocks.APRICORN_DOOR,
-            CobblemonBlocks.APRICORN_TRAPDOOR,
-            CobblemonBlocks.APRICORN_SIGN,
-            CobblemonBlocks.APRICORN_WALL_SIGN,
-            CobblemonBlocks.APRICORN_HANGING_SIGN,
-            CobblemonBlocks.APRICORN_WALL_HANGING_SIGN,
-            CobblemonBlocks.BLACK_APRICORN_SAPLING,
-            CobblemonBlocks.BLUE_APRICORN_SAPLING,
-            CobblemonBlocks.GREEN_APRICORN_SAPLING,
-            CobblemonBlocks.PINK_APRICORN_SAPLING,
-            CobblemonBlocks.RED_APRICORN_SAPLING,
-            CobblemonBlocks.WHITE_APRICORN_SAPLING,
-            CobblemonBlocks.YELLOW_APRICORN_SAPLING,
-            CobblemonBlocks.POTTED_BLACK_APRICORN_SAPLING,
-            CobblemonBlocks.POTTED_BLUE_APRICORN_SAPLING,
-            CobblemonBlocks.POTTED_GREEN_APRICORN_SAPLING,
-            CobblemonBlocks.POTTED_PINK_APRICORN_SAPLING,
-            CobblemonBlocks.POTTED_RED_APRICORN_SAPLING,
-            CobblemonBlocks.POTTED_WHITE_APRICORN_SAPLING,
-            CobblemonBlocks.POTTED_YELLOW_APRICORN_SAPLING,
-            CobblemonBlocks.BLACK_APRICORN,
-            CobblemonBlocks.BLUE_APRICORN,
-            CobblemonBlocks.GREEN_APRICORN,
-            CobblemonBlocks.PINK_APRICORN,
-            CobblemonBlocks.RED_APRICORN,
-            CobblemonBlocks.WHITE_APRICORN,
-            CobblemonBlocks.YELLOW_APRICORN,
-            CobblemonBlocks.HEALING_MACHINE,
-            CobblemonBlocks.MEDICINAL_LEEK,
-            CobblemonBlocks.HEALING_MACHINE,
-            CobblemonBlocks.MONITOR,
-            CobblemonBlocks.RED_MINT,
-            CobblemonBlocks.BLUE_MINT,
-            CobblemonBlocks.CYAN_MINT,
-            CobblemonBlocks.PINK_MINT,
-            CobblemonBlocks.GREEN_MINT,
-            CobblemonBlocks.WHITE_MINT,
-            CobblemonBlocks.PASTURE,
-            CobblemonBlocks.ENERGY_ROOT,
-            CobblemonBlocks.BIG_ROOT,
-            CobblemonBlocks.REVIVAL_HERB,
-            CobblemonBlocks.VIVICHOKE_SEEDS,
-            CobblemonBlocks.HEARTY_GRAINS,
-            CobblemonBlocks.PEP_UP_FLOWER,
-            CobblemonBlocks.POTTED_PEP_UP_FLOWER,
-            CobblemonBlocks.REVIVAL_HERB,
-            *CobblemonBlocks.berries().values.toTypedArray(),
-            CobblemonBlocks.GALARICA_NUT_BUSH,
-            CobblemonBlocks.RESTORATION_TANK,
-            CobblemonBlocks.SMALL_BUDDING_TUMBLESTONE,
-            CobblemonBlocks.MEDIUM_BUDDING_TUMBLESTONE,
-            CobblemonBlocks.LARGE_BUDDING_TUMBLESTONE,
-            CobblemonBlocks.TUMBLESTONE_CLUSTER,
-            CobblemonBlocks.SMALL_BUDDING_BLACK_TUMBLESTONE,
-            CobblemonBlocks.MEDIUM_BUDDING_BLACK_TUMBLESTONE,
-            CobblemonBlocks.LARGE_BUDDING_BLACK_TUMBLESTONE,
-            CobblemonBlocks.BLACK_TUMBLESTONE_CLUSTER,
-            CobblemonBlocks.TYPE_GEM_CLUSTER_NORMAL,
-            CobblemonBlocks.TYPE_GEM_CLUSTER_FIRE,
-            CobblemonBlocks.TYPE_GEM_CLUSTER_WATER,
-            CobblemonBlocks.TYPE_GEM_CLUSTER_ELECTRIC,
-            CobblemonBlocks.TYPE_GEM_CLUSTER_GRASS,
-            CobblemonBlocks.TYPE_GEM_CLUSTER_ICE,
-            CobblemonBlocks.TYPE_GEM_CLUSTER_FIGHTING,
-            CobblemonBlocks.TYPE_GEM_CLUSTER_POISON,
-            CobblemonBlocks.TYPE_GEM_CLUSTER_GROUND,
-            CobblemonBlocks.TYPE_GEM_CLUSTER_FLYING,
-            CobblemonBlocks.TYPE_GEM_CLUSTER_PSYCHIC,
-            CobblemonBlocks.TYPE_GEM_CLUSTER_BUG,
-            CobblemonBlocks.TYPE_GEM_CLUSTER_ROCK,
-            CobblemonBlocks.TYPE_GEM_CLUSTER_GHOST,
-            CobblemonBlocks.TYPE_GEM_CLUSTER_DRAGON,
-            CobblemonBlocks.TYPE_GEM_CLUSTER_DARK,
-            CobblemonBlocks.TYPE_GEM_CLUSTER_STEEL,
-            CobblemonBlocks.TYPE_GEM_CLUSTER_FAIRY,
-            CobblemonBlocks.SMALL_BUDDING_SKY_TUMBLESTONE,
-            CobblemonBlocks.MEDIUM_BUDDING_SKY_TUMBLESTONE,
-            CobblemonBlocks.LARGE_BUDDING_SKY_TUMBLESTONE,
-            CobblemonBlocks.SKY_TUMBLESTONE_CLUSTER,
-            CobblemonBlocks.GIMMIGHOUL_CHEST,
-            CobblemonBlocks.DISPLAY_CASE,
-            CobblemonBlocks.SACCHARINE_DOOR,
-            CobblemonBlocks.SACCHARINE_TRAPDOOR,
-            CobblemonBlocks.SACCHARINE_SIGN,
-            CobblemonBlocks.SACCHARINE_WALL_SIGN,
-            CobblemonBlocks.SACCHARINE_HANGING_SIGN,
-            CobblemonBlocks.SACCHARINE_WALL_HANGING_SIGN,
-            CobblemonBlocks.SACCHARINE_SAPLING,
-            CobblemonBlocks.POTTED_SACCHARINE_SAPLING,
-            CobblemonBlocks.POKE_SNACK,
-            CobblemonBlocks.LECTERN,
-            CobblemonBlocks.CAMPFIRE,
-            CobblemonBlocks.SOUL_CAMPFIRE,
-            CobblemonBlocks.BLACK_CAMPFIRE_POT,
-            CobblemonBlocks.BLUE_CAMPFIRE_POT,
-            CobblemonBlocks.GREEN_CAMPFIRE_POT,
-            CobblemonBlocks.PINK_CAMPFIRE_POT,
-            CobblemonBlocks.RED_CAMPFIRE_POT,
-            CobblemonBlocks.WHITE_CAMPFIRE_POT,
-            CobblemonBlocks.YELLOW_CAMPFIRE_POT,
-            CobblemonBlocks.WHITE_PLAQUE,
-            CobblemonBlocks.LIGHT_GRAY_PLAQUE,
-            CobblemonBlocks.GRAY_PLAQUE,
-            CobblemonBlocks.BLACK_PLAQUE,
-            CobblemonBlocks.BROWN_PLAQUE,
-            CobblemonBlocks.RED_PLAQUE,
-            CobblemonBlocks.ORANGE_PLAQUE,
-            CobblemonBlocks.YELLOW_PLAQUE,
-            CobblemonBlocks.LIME_PLAQUE,
-            CobblemonBlocks.GREEN_PLAQUE,
-            CobblemonBlocks.CYAN_PLAQUE,
-            CobblemonBlocks.LIGHT_BLUE_PLAQUE,
-            CobblemonBlocks.BLUE_PLAQUE,
-            CobblemonBlocks.PURPLE_PLAQUE,
-            CobblemonBlocks.MAGENTA_PLAQUE,
-            CobblemonBlocks.PINK_PLAQUE,
-            CobblemonBlocks.BLUNDER_POLICY,
-            CobblemonBlocks.WEAKNESS_POLICY,
-            CobblemonBlocks.POTION,
-            CobblemonBlocks.SUPER_POTION,
-            CobblemonBlocks.HYPER_POTION,
-            CobblemonBlocks.MAX_POTION,
-            CobblemonBlocks.FULL_RESTORE,
-            CobblemonBlocks.ANTIDOTE,
-            CobblemonBlocks.AWAKENING,
-            CobblemonBlocks.BURN_HEAL,
-            CobblemonBlocks.ICE_HEAL,
-            CobblemonBlocks.PARALYZE_HEAL,
-            CobblemonBlocks.FULL_HEAL,
-            CobblemonBlocks.ETHER,
-            CobblemonBlocks.MAX_ETHER,
-            CobblemonBlocks.ELIXIR,
-            CobblemonBlocks.MAX_ELIXIR,
-            CobblemonBlocks.DIRE_HIT,
-            CobblemonBlocks.GUARD_SPEC,
-            CobblemonBlocks.X_ACCURACY,
-            CobblemonBlocks.X_ATTACK,
-            CobblemonBlocks.X_DEFENSE,
-            CobblemonBlocks.X_SP_ATK,
-            CobblemonBlocks.X_SP_DEF,
-            CobblemonBlocks.X_SPEED,
-            CobblemonBlocks.TM_MACHINE,   
-
-            CobblemonBlocks.GALARICA_CUFF,
-            CobblemonBlocks.GALARICA_WREATH,
-            CobblemonBlocks.CHIPPED_POT,
-            CobblemonBlocks.CRACKED_POT,
-            CobblemonBlocks.UNREMARKABLE_TEACUP,
-            CobblemonBlocks.MASTERPIECE_TEACUP,
-            CobblemonBlocks.LUMINOUS_MOSS,
-            CobblemonBlocks.ICY_ROCK,
-            CobblemonBlocks.HEAT_ROCK,
-            CobblemonBlocks.SMOOTH_ROCK,
-            CobblemonBlocks.DAMP_ROCK,
-            CobblemonBlocks.DESTINY_KNOT,
-            CobblemonBlocks.METRONOME,
-            CobblemonBlocks.KINGS_ROCK,
-            CobblemonBlocks.FLAME_ORB,
-            CobblemonBlocks.LIFE_ORB,
-            CobblemonBlocks.TOXIC_ORB,
-            CobblemonBlocks.LIGHT_BALL,
-            CobblemonBlocks.SMOKE_BALL,
-            CobblemonBlocks.NEVER_MELT_ICE,
-            CobblemonBlocks.WIDE_LENS,
-            CobblemonBlocks.ZOOM_LENS,
-            CobblemonBlocks.SCOPE_LENS,
-            CobblemonBlocks.MOOMOO_MILK,
-            CobblemonBlocks.MEDICINAL_BREW,
-            CobblemonBlocks.TERRAIN_EXTENDER,
-            
-            CobblemonBlocks.RED_MINT_LEAF_LITTER,
-            CobblemonBlocks.POTTED_RED_MINT,
-            CobblemonBlocks.BLUE_MINT_LEAF_LITTER,
-            CobblemonBlocks.POTTED_BLUE_MINT,
-            CobblemonBlocks.CYAN_MINT_LEAF_LITTER,
-            CobblemonBlocks.POTTED_CYAN_MINT,
-            CobblemonBlocks.PINK_MINT_LEAF_LITTER,
-            CobblemonBlocks.POTTED_PINK_MINT,
-            CobblemonBlocks.GREEN_MINT_LEAF_LITTER,
-            CobblemonBlocks.POTTED_GREEN_MINT,
-            CobblemonBlocks.WHITE_MINT_LEAF_LITTER,
-            CobblemonBlocks.POTTED_WHITE_MINT,
-
-            CobblemonBlocks.LOBAILA,
-            CobblemonBlocks.POMOHANA,
-            CobblemonBlocks.PAUVILLEA,
-            CobblemonBlocks.WISTENSU,
-            CobblemonBlocks.WISTENSU_VINE,
-            CobblemonBlocks.ELECTRIC_SEED,
-            CobblemonBlocks.VOLTACONIA,
-            CobblemonBlocks.GRASSY_SEED,
-            CobblemonBlocks.VERDROOT,
-            CobblemonBlocks.MISTY_SEED,
-            CobblemonBlocks.MISTLEAF,
-            CobblemonBlocks.PSYCHIC_SEED,
-            CobblemonBlocks.LUCIBELL,
-
-            CobblemonBlocks.POTTED_AGUAV_BERRY,
-            CobblemonBlocks.POTTED_APICOT_BERRY,
-            CobblemonBlocks.POTTED_ASPEAR_BERRY,
-            CobblemonBlocks.POTTED_BABIRI_BERRY,
-            CobblemonBlocks.POTTED_BELUE_BERRY,
-            CobblemonBlocks.POTTED_BLUK_BERRY,
-            CobblemonBlocks.POTTED_CHARTI_BERRY,
-            CobblemonBlocks.POTTED_CHERI_BERRY,
-            CobblemonBlocks.POTTED_CHESTO_BERRY,
-            CobblemonBlocks.POTTED_CHILAN_BERRY,
-            CobblemonBlocks.POTTED_CHOPLE_BERRY,
-            CobblemonBlocks.POTTED_COBA_BERRY,
-            CobblemonBlocks.POTTED_COLBUR_BERRY,
-            CobblemonBlocks.POTTED_CORNN_BERRY,
-            CobblemonBlocks.POTTED_CUSTAP_BERRY,
-            CobblemonBlocks.POTTED_DURIN_BERRY,
-            CobblemonBlocks.POTTED_EGGANT_BERRY,
-            CobblemonBlocks.POTTED_ENIGMA_BERRY,
-            CobblemonBlocks.POTTED_FIGY_BERRY,
-            CobblemonBlocks.POTTED_GANLON_BERRY,
-            CobblemonBlocks.POTTED_GREPA_BERRY,
-            CobblemonBlocks.POTTED_HABAN_BERRY,
-            CobblemonBlocks.POTTED_HONDEW_BERRY,
-            CobblemonBlocks.POTTED_HOPO_BERRY,
-            CobblemonBlocks.POTTED_IAPAPA_BERRY,
-            CobblemonBlocks.POTTED_JABOCA_BERRY,
-            CobblemonBlocks.POTTED_KASIB_BERRY,
-            CobblemonBlocks.POTTED_KEBIA_BERRY,
-            CobblemonBlocks.POTTED_KEE_BERRY,
-            CobblemonBlocks.POTTED_KELPSY_BERRY,
-            CobblemonBlocks.POTTED_LANSAT_BERRY,
-            CobblemonBlocks.POTTED_LEPPA_BERRY,
-            CobblemonBlocks.POTTED_LIECHI_BERRY,
-            CobblemonBlocks.POTTED_LUM_BERRY,
-            CobblemonBlocks.POTTED_MAGOST_BERRY,
-            CobblemonBlocks.POTTED_MAGO_BERRY,
-            CobblemonBlocks.POTTED_MARANGA_BERRY,
-            CobblemonBlocks.POTTED_MICLE_BERRY,
-            CobblemonBlocks.POTTED_NANAB_BERRY,
-            CobblemonBlocks.POTTED_NOMEL_BERRY,
-            CobblemonBlocks.POTTED_OCCA_BERRY,
-            CobblemonBlocks.POTTED_ORAN_BERRY,
-            CobblemonBlocks.POTTED_PAMTRE_BERRY,
-            CobblemonBlocks.POTTED_PASSHO_BERRY,
-            CobblemonBlocks.POTTED_PAYAPA_BERRY,
-            CobblemonBlocks.POTTED_PECHA_BERRY,
-            CobblemonBlocks.POTTED_PERSIM_BERRY,
-            CobblemonBlocks.POTTED_PETAYA_BERRY,
-            CobblemonBlocks.POTTED_PINAP_BERRY,
-            CobblemonBlocks.POTTED_POMEG_BERRY,
-            CobblemonBlocks.POTTED_QUALOT_BERRY,
-            CobblemonBlocks.POTTED_RABUTA_BERRY,
-            CobblemonBlocks.POTTED_RAWST_BERRY,
-            CobblemonBlocks.POTTED_RAZZ_BERRY,
-            CobblemonBlocks.POTTED_RINDO_BERRY,
-            CobblemonBlocks.POTTED_ROSELI_BERRY,
-            CobblemonBlocks.POTTED_ROWAP_BERRY,
-            CobblemonBlocks.POTTED_SALAC_BERRY,
-            CobblemonBlocks.POTTED_SHUCA_BERRY,
-            CobblemonBlocks.POTTED_SITRUS_BERRY,
-            CobblemonBlocks.POTTED_SPELON_BERRY,
-            CobblemonBlocks.POTTED_STARF_BERRY,
-            CobblemonBlocks.POTTED_TAMATO_BERRY,
-            CobblemonBlocks.POTTED_TANGA_BERRY,
-            CobblemonBlocks.POTTED_TOUGA_BERRY,
-            CobblemonBlocks.POTTED_WACAN_BERRY,
-            CobblemonBlocks.POTTED_WATMEL_BERRY,
-            CobblemonBlocks.POTTED_WEPEAR_BERRY,
-            CobblemonBlocks.POTTED_WIKI_BERRY,
-            CobblemonBlocks.POTTED_YACHE_BERRY
-        )
-
-        this.createBoatModelLayers()
-    }
-
-    fun beforeChatRender(context: GuiGraphics, partialDeltaTicks: Float) {
-        val partialDeltaTicks = Minecraft.getInstance().timer // Checking that this even works
-//        ClientTaskTracker.update(partialDeltaTicks / 20f)
+    fun beforeChatRender(context: GuiGraphicsExtractor, tickCounter: DeltaTracker) {
+        val partialDeltaTicks = tickCounter.realtimeDeltaTicks
         if (battle == null) {
-            overlay.render(context, partialDeltaTicks)
+            overlay.render(context, tickCounter)
         } else {
-            battleOverlay.render(context, partialDeltaTicks)
+            battleOverlay.render(context, tickCounter)
         }
-        rideControlsOverlay.render(context, partialDeltaTicks)
+        rideControlsOverlay.render(context, tickCounter)
     }
 
-    @Suppress("UNCHECKED_CAST")
-    fun onAddLayer(skinMap: Map<PlayerSkin.Model, EntityRenderer<out Player>>?) {
-        var renderer: LivingEntityRenderer<Player, PlayerModel<Player>>? =
-            skinMap?.get(PlayerSkin.Model.WIDE) as LivingEntityRenderer<Player, PlayerModel<Player>>
-        renderer?.addLayer(PokemonOnShoulderRenderer(renderer))
-        renderer?.addLayer(PlayerRecallBallRenderer(renderer))
-        renderer = skinMap[PlayerSkin.Model.SLIM] as LivingEntityRenderer<Player, PlayerModel<Player>>?
-        renderer?.addLayer(PokemonOnShoulderRenderer(renderer))
-        renderer?.addLayer(PlayerRecallBallRenderer(renderer))
+    fun onAddLayer(skinMap: Map<PlayerModelType, AvatarRenderer<AbstractClientPlayer>>?) {
+        for (modelType in arrayOf(PlayerModelType.WIDE, PlayerModelType.SLIM)) {
+            val renderer = skinMap?.get(modelType) ?: continue
+            val invoker = renderer as LivingEntityRendererInvoker
+            invoker.`cobblemon$addLayer`(PokemonOnShoulderRenderer(renderer))
+            invoker.`cobblemon$addLayer`(PlayerRecallBallRenderer(renderer))
+        }
     }
 
     private fun registerMenuScreens() {
@@ -555,22 +268,29 @@ object CobblemonClient {
             ::HealingMachineRenderer
         )
         this.implementation.registerBlockEntityRenderer(CobblemonBlockEntities.BERRY, ::BerryBlockRenderer)
-        this.implementation.registerBlockEntityRenderer(CobblemonBlockEntities.SIGN, ::SignRenderer)
+        this.implementation.registerBlockEntityRenderer(CobblemonBlockEntities.SIGN, ::StandingSignRenderer)
         this.implementation.registerBlockEntityRenderer(CobblemonBlockEntities.HANGING_SIGN, ::HangingSignRenderer)
         this.implementation.registerBlockEntityRenderer(
             CobblemonBlockEntities.FOSSIL_ANALYZER,
             ::FossilAnalyzerRenderer
         )
-        this.implementation.registerBlockEntityRenderer(
-            CobblemonBlockEntities.RESTORATION_TANK,
-            ::RestorationTankRenderer
-        )
+        this.implementation.registerBlockEntityRenderer<RestorationTankBlockEntity, RestorationTankRenderState>(
+            CobblemonBlockEntities.RESTORATION_TANK
+        ) { context -> RestorationTankRenderer(context) }
         this.implementation.registerBlockEntityRenderer(CobblemonBlockEntities.HABITAT_BLOCK, ::HabitatBlockRenderer)
         this.implementation.registerBlockEntityRenderer(CobblemonBlockEntities.GILDED_CHEST, ::GildedChestBlockRenderer)
-        this.implementation.registerBlockEntityRenderer(CobblemonBlockEntities.DISPLAY_CASE, ::DisplayCaseRenderer)
-        this.implementation.registerBlockEntityRenderer(CobblemonBlockEntities.LECTERN, ::LecternBlockEntityRenderer)
+        this.implementation.registerBlockEntityRenderer<DisplayCaseBlockEntity, DisplayCaseRenderState>(
+            CobblemonBlockEntities.DISPLAY_CASE
+        ) { context -> DisplayCaseRenderer(context) }
+        this.implementation.registerBlockEntityRenderer<LecternBlockEntity, CobblemonLecternRenderState>(
+            CobblemonBlockEntities.LECTERN,
+            ::LecternBlockEntityRenderer
+        )
         this.implementation.registerBlockEntityRenderer(CobblemonBlockEntities.CAMPFIRE, ::CampfireBlockEntityRenderer)
-        this.implementation.registerBlockEntityRenderer(CobblemonBlockEntities.POKE_SNACK, ::PokeSnackBlockEntityRenderer)
+        this.implementation.registerBlockEntityRenderer<PokeSnackBlockEntity, PokeSnackRenderState>(
+            CobblemonBlockEntities.POKE_SNACK,
+            ::PokeSnackBlockEntityRenderer
+        )
         this.implementation.registerBlockEntityRenderer(CobblemonBlockEntities.DISC_SHELF, ::DiscShelfBlockEntityRenderer)
     }
 
@@ -584,8 +304,6 @@ object CobblemonClient {
         LOGGER.info("Registering Boat with Chest renderer")
         this.implementation.registerEntityRenderer(CobblemonEntities.CHEST_BOAT) { ctx -> CobblemonBoatRenderer(ctx, true) }
         LOGGER.info("Registering Generic Bedrock renderer")
-        this.implementation.registerEntityRenderer(CobblemonEntities.GENERIC_BEDROCK_ENTITY, ::GenericBedrockRenderer)
-        LOGGER.info("Registering Generic Bedrock Entity renderer")
         this.implementation.registerEntityRenderer(CobblemonEntities.GENERIC_BEDROCK_ENTITY, ::GenericBedrockRenderer)
         LOGGER.info("Registering PokeRod Bobber renderer")
         this.implementation.registerEntityRenderer(CobblemonEntities.POKE_BOBBER) { ctx -> PokeBobberEntityRenderer(ctx) }
@@ -627,11 +345,11 @@ object CobblemonClient {
         CobblemonBoatType.entries.forEach { type ->
             this.implementation.registerLayer(
                 CobblemonBoatRenderer.createBoatModelLayer(type, false),
-                BoatModel::createBodyModel
+                BoatModel::createBoatModel
             )
             this.implementation.registerLayer(
                 CobblemonBoatRenderer.createBoatModelLayer(type, true),
-                ChestBoatModel::createBodyModel
+                BoatModel::createChestBoatModel
             )
         }
     }

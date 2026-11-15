@@ -19,7 +19,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:water"
+                        "id": "minecraft:water"
                     }
                 },
                 {
@@ -32,7 +32,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:air"
+                        "id": "minecraft:air"
                     }
                 },
                 {
@@ -45,7 +45,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:air"
+                        "id": "minecraft:air"
                     }
                 },
                 {
@@ -58,7 +58,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:grass_block"
+                        "id": "minecraft:grass_block"
                     }
                 },
                 {
@@ -71,7 +71,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:moss_block"
+                        "id": "minecraft:moss_block"
                     }
                 },
                 {
@@ -84,7 +84,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:sand"
+                        "id": "minecraft:sand"
                     }
                 },
                 {
@@ -97,7 +97,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:sugar_cane"
+                        "id": "minecraft:sugar_cane"
                     }
                 },
                 {
@@ -110,7 +110,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:air"
+                        "id": "minecraft:air"
                     }
                 },
                 {
@@ -123,7 +123,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:grass_block"
+                        "id": "minecraft:grass_block"
                     }
                 },
                 {
@@ -136,7 +136,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:sand"
+                        "id": "minecraft:sand"
                     }
                 },
                 {
@@ -149,7 +149,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:sand"
+                        "id": "minecraft:sand"
                     }
                 }
             ]
@@ -168,7 +168,7 @@
                             "predicate_type": "minecraft:always_true"
                         },
                         "output_state": {
-                            "Name": "minecraft:acacia_log"
+                            "id": "minecraft:acacia_log"
                         }
                     }
                 ]

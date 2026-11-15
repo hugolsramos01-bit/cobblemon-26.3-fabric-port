@@ -17,6 +17,7 @@ import com.cobblemon.mod.common.client.keybind.keybinds.RidingFreelookBinding;
 import com.cobblemon.mod.common.duck.RidePassenger;
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity;
 import com.cobblemon.mod.common.pokedex.scanner.PokedexUsageContext;
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.Blaze3D;
@@ -27,7 +28,7 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.util.SmoothDouble;
 import net.minecraft.world.phys.Vec3;
-import org.objectweb.asm.Opcodes;
+import org.joml.Vector2i;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -42,7 +43,6 @@ import static net.minecraft.util.Mth.lerp;
 
 @Mixin(MouseHandler.class)
 public abstract class MouseHandlerMixin {
-    @Shadow private double accumulatedScrollY;
     @Shadow @Final private Minecraft minecraft;
 
     @Unique SmoothDouble xMouseSmoother = new SmoothDouble();
@@ -66,46 +66,43 @@ public abstract class MouseHandlerMixin {
     @Shadow protected abstract void turnPlayer(double movementTime);
 
     @Unique private double cobblemon$timeDelta;
+    @Unique private boolean cobblemon$partyScrollConsumed;
 
-    @Inject(
+    @Inject(method = "onScroll", at = @At("HEAD"))
+    private void cobblemon$resetPartyScroll(long window, double horizontal, double vertical, CallbackInfo ci) {
+        this.cobblemon$partyScrollConsumed = false;
+    }
+
+    @ModifyExpressionValue(
             method = "onScroll",
-            at = @At(
-                    value = "FIELD",
-                    target="Lnet/minecraft/client/MouseHandler;accumulatedScrollY:D",
-                    opcode = Opcodes.PUTFIELD,
-                    ordinal = 2,
-                    shift = At.Shift.BEFORE
-            ),
-            cancellable = true
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/ScrollWheelHandler;onMouseScroll(DD)Lorg/joml/Vector2i;")
     )
-    public void cobblemon$scrollParty(long window, double horizontal, double vertical, CallbackInfo ci) {
-        if (PartySendBinding.INSTANCE.getWasDown()) {
-            int i = (int) accumulatedScrollY;
-            if (i > 0) {
-                accumulatedScrollY -= i;
-                CobblemonClient.INSTANCE.getStorage().shiftSelected(false);
-                ci.cancel();
-                PartySendBinding.INSTANCE.actioned();
-                PartyTutorialToasts.INSTANCE.onHoldKeyScrollSwitchedSlot();
-            } else if (i < 0) {
-                accumulatedScrollY -= i;
-                CobblemonClient.INSTANCE.getStorage().shiftSelected(true);
-                ci.cancel();
-                PartySendBinding.INSTANCE.actioned();
-                PartyTutorialToasts.INSTANCE.onHoldKeyScrollSwitchedSlot();
-            }
+    private Vector2i cobblemon$scrollParty(Vector2i scroll) {
+        if (!PartySendBinding.INSTANCE.getWasDown()) return scroll;
+
+        int amount = scroll.y;
+        if (amount == 0) return scroll;
+
+        for (int step = 0; step < Math.abs(amount); step++) {
+            CobblemonClient.INSTANCE.getStorage().shiftSelected(amount < 0);
         }
+        PartySendBinding.INSTANCE.actioned();
+        PartyTutorialToasts.INSTANCE.onHoldKeyScrollSwitchedSlot();
+        this.cobblemon$partyScrollConsumed = true;
+        return new Vector2i(scroll.x, 0);
     }
 
     @Inject(
         method = "onScroll",
         at = @At(
             value = "INVOKE",
-            target = "Lnet/minecraft/world/entity/player/Inventory;swapPaint(D)V"
+            target = "Lnet/minecraft/world/entity/player/Inventory;setSelectedSlot(I)V"
         ),
         cancellable = true
     )
     public void cobblemon$doPokedexZoom(long window, double horizontal, double vertical, CallbackInfo ci) {
+        if (this.cobblemon$partyScrollConsumed) return;
+
         PokedexUsageContext usageContext = CobblemonClient.INSTANCE.getPokedexUsageContext();
         if (usageContext.getScanningGuiOpen()) {
             usageContext.adjustZoom(vertical);
@@ -136,7 +133,7 @@ public abstract class MouseHandlerMixin {
             var spyglassSensitivity = Math.pow(defaultSensitivity, 3);
             var lookSensitivity = spyglassSensitivity * 8.0;
             var sensitivity = lerp(usageContext.getFovMultiplier(), spyglassSensitivity, lookSensitivity);
-            var yRotationFlip = this.minecraft.options.invertYMouse().get() ? -1 : 1;
+            var yRotationFlip = this.minecraft.options.invertMouseY().get() ? -1 : 1;
             player.turn(this.accumulatedDX * sensitivity, (this.accumulatedDY * sensitivity * yRotationFlip));
             returnValue = false;
         }

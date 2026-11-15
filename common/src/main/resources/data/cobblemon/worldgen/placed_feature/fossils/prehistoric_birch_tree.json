@@ -18,7 +18,7 @@
             "predicate": {
                 "type": "minecraft:would_survive",
                 "state": {
-                    "Name": "minecraft:birch_sapling"
+                    "id": "minecraft:birch_sapling"
                 }
             }
         },
@@ -26,14 +26,16 @@
             "type": "minecraft:biome"
         },
         {
-            "type": "minecraft:random_offset",
-            "y_spread": -16,
-            "xz_spread": 0
+            "type": "minecraft:offset",
+            "y": -16,
+            "x": 0,
+            "z": 0
         },
         {
-            "type": "minecraft:random_offset",
-            "y_spread": -4,
-            "xz_spread": 0
+            "type": "minecraft:offset",
+            "y": -4,
+            "x": 0,
+            "z": 0
         }
         
     ]

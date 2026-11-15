@@ -3,7 +3,7 @@
   "criteria": {
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:campfire_pot/candied_berry"
+        "recipes": "cobblemon:campfire_pot/candied_berry"
       },
       "trigger": "minecraft:recipe_unlocked"
     },

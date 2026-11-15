@@ -89,7 +89,9 @@ class JumpOutOfWaterTask : Behavior<PokemonEntity>(
     
     private fun isWater(entity: PokemonEntity, pos: BlockPos, offsetX: Int, offsetZ: Int, multiplier: Int): Boolean {
         val blockPos = pos.offset(offsetX * multiplier, 0, offsetZ * multiplier)
-        return entity.level().getFluidState(blockPos).`is`(FluidTags.WATER) && !entity.level().getBlockState(blockPos).blocksMotion()
+        val state = entity.level().getBlockState(blockPos)
+        return entity.level().getFluidState(blockPos).`is`(FluidTags.WATER) &&
+            !state.isCollisionShapeFullBlock(entity.level(), blockPos)
     }
 
     private fun isAirAbove(entity: PokemonEntity, pos: BlockPos, offsetX: Int, offsetZ: Int, multiplier: Int): Boolean {

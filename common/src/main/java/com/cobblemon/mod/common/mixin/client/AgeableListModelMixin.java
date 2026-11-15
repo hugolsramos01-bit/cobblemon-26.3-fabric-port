@@ -11,7 +11,6 @@ package com.cobblemon.mod.common.mixin.client;
 import com.cobblemon.mod.common.client.render.player.MountedPlayerRenderer;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.minecraft.client.model.AgeableListModel;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.Model;
 import org.spongepowered.asm.mixin.Mixin;
@@ -27,7 +26,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  * @author Hiroku
  * @since May 16, 2025
  */
-@Mixin(AgeableListModel.class)
+@Mixin(Model.class)
 public class AgeableListModelMixin {
     @Inject(method = "renderToBuffer", at = @At("HEAD"))
     private void cobblemon$renderToBuffer(

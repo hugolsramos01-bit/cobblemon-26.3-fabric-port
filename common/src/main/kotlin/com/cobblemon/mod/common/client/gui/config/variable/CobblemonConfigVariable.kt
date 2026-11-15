@@ -20,7 +20,7 @@ import com.cobblemon.mod.common.config.CobblemonConfig
 import com.cobblemon.mod.common.config.CobblemonConfigField
 import com.cobblemon.mod.common.util.lang
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.components.Button
 import net.minecraft.client.gui.components.Tooltip
 import net.minecraft.network.chat.MutableComponent
@@ -77,20 +77,15 @@ abstract class CobblemonConfigVariable(
         return normalizedLabel.contains(text, ignoreCase = true)
     }
 
-    override fun render(
-        context: GuiGraphics,
-        index: Int,
-        top: Int,
-        left: Int,
-        width: Int,
-        height: Int,
+    override fun extractContent(
+        context: GuiGraphicsExtractor,
         mouseX: Int,
         mouseY: Int,
         hovering: Boolean,
         partialTick: Float
     ) {
-        val x = getX(left)
-        val y = getY(top)
+        val x = getX(this.x)
+        val y = getY(this.y)
 
         drawScrollingText(
             context,
@@ -105,6 +100,6 @@ abstract class CobblemonConfigVariable(
 
         resetButton.x = x + SLOT_WIDTH - RESET_SLOT_WIDTH
         resetButton.y = y + WIDGET_Y_OFFSET
-        resetButton.render(context, mouseX, mouseY, partialTick)
+        resetButton.extractRenderState(context, mouseX, mouseY, partialTick)
     }
 }

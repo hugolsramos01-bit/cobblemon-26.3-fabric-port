@@ -17,7 +17,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:suspicious_gravel"
+                        "id": "minecraft:suspicious_gravel"
                     }
                 }
             ]
@@ -40,7 +40,7 @@
                             "predicate_type": "minecraft:always_true"
                         },
                         "output_state": {
-                            "Name": "minecraft:suspicious_gravel"
+                            "id": "minecraft:suspicious_gravel"
                         }
                     }
                 ]

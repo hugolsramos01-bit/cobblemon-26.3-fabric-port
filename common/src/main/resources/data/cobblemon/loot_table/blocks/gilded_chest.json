@@ -8,9 +8,9 @@
         {
           "type": "minecraft:item",
           "name": "cobblemon:gilded_chest",
-          "functions": [
+          "modifier": [
             {
-              "function": "minecraft:copy_components",
+              "type": "minecraft:copy_components",
               "source": "block_entity",
               "include": [
                 "minecraft:custom_name"
@@ -19,11 +19,9 @@
           ]
         }
       ],
-      "conditions": [
-        {
-          "condition": "minecraft:survives_explosion"
-        }
-      ]
+      "condition": {
+        "type": "minecraft:survives_explosion"
+      }
     }
   ],
   "random_sequence": "cobblemon:blocks/gilded_chest"

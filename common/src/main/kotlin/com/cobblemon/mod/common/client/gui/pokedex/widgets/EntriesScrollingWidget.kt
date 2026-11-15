@@ -30,7 +30,7 @@ import com.cobblemon.mod.common.pokemon.Gender
 import com.cobblemon.mod.common.pokemon.RenderablePokemon
 import com.cobblemon.mod.common.util.cobblemonResource
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.resources.sounds.SimpleSoundInstance
 import net.minecraft.network.chat.Component
 import net.minecraft.util.Mth
@@ -63,12 +63,12 @@ class EntriesScrollingWidget(val pX: Int, val pY: Int, val setPokedexEntry: (Pok
         return super.addEntry(entry)
     }
 
-    override fun getScrollbarPosition(): Int {
+    override fun scrollBarX(): Int {
         return pX + width - SCROLL_BAR_WIDTH
     }
 
-    override fun renderScrollbar(context: GuiGraphics, mouseX: Int, mouseY: Int, delta: Float) {
-        val xLeft = this.scrollbarPosition
+    override fun renderScrollbar(context: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, delta: Float) {
+        val xLeft = this.scrollBarX()
         val yMargin = 3
         val yStart = y + yMargin
 
@@ -76,13 +76,13 @@ class EntriesScrollingWidget(val pX: Int, val pY: Int, val setPokedexEntry: (Pok
 
         var yBottom = ((barHeight * barHeight).toFloat() / this.maxPosition.toFloat()).toInt()
         yBottom = Mth.clamp(yBottom, 32, barHeight - 8)
-        var yTop = scrollAmount.toInt() * (barHeight - yBottom) / this.maxScroll + yStart
+        var yTop = scrollAmount.toInt() * (barHeight - yBottom) / this.getMaxScroll() + yStart
         if (yTop < yStart) yTop = yStart
 
         // Scroll Track
         blitk(
             texture = scrollbarTrack,
-            matrixStack = context.pose(),
+            context = context,
             x = xLeft,
             y = yStart,
             width = SCROLL_BAR_WIDTH,
@@ -92,7 +92,7 @@ class EntriesScrollingWidget(val pX: Int, val pY: Int, val setPokedexEntry: (Pok
         // Scroll Slide
         blitk(
             texture = scrollbarSlide,
-            matrixStack = context.pose(),
+            context = context,
             x = xLeft,
             y = yTop,
             width = SCROLL_BAR_WIDTH,
@@ -101,7 +101,7 @@ class EntriesScrollingWidget(val pX: Int, val pY: Int, val setPokedexEntry: (Pok
     }
 
     override fun renderItem(
-        context: GuiGraphics,
+        context: GuiGraphicsExtractor,
         mouseX: Int,
         mouseY: Int,
         delta: Float,
@@ -112,8 +112,8 @@ class EntriesScrollingWidget(val pX: Int, val pY: Int, val setPokedexEntry: (Pok
         entryHeight: Int
     ) {
         val entry =  this.getEntry(index)
-        entry.x = x
-        entry.y = y
+        entry.rowX = x
+        entry.rowY = y
         entry.render(
             context, index, y, x, entryWidth, entryHeight, mouseX, mouseY,
             focused == entry, delta
@@ -133,11 +133,11 @@ class EntriesScrollingWidget(val pX: Int, val pY: Int, val setPokedexEntry: (Pok
             it.environment.query.addFunction("get_pokedex") { CobblemonClient.clientPokedexData.struct }
         }
 
-        var x: Int = 0
-        var y: Int = 0
+        var rowX: Int = 0
+        var rowY: Int = 0
 
         override fun render(
-            context: GuiGraphics,
+            context: GuiGraphicsExtractor,
             index: Int,
             y: Int,
             x: Int,
@@ -187,7 +187,11 @@ class EntriesScrollingWidget(val pX: Int, val pY: Int, val setPokedexEntry: (Pok
             }
         }
 
-        override fun mouseClicked(mouseX: Double, mouseY: Double, button: Int): Boolean {
+        override fun mouseClicked(event: net.minecraft.client.input.MouseButtonEvent, doubleClick: Boolean): Boolean {
+    val mouseX = event.x()
+    val mouseY = event.y()
+    val button = event.button()
+
             val hoverIndex = getHoveredSlotIndex(mouseX.toInt(), mouseY.toInt())
             if (hoverIndex > -1 && hoverIndex < dexDataList.size) {
                 setPokedexEntry.invoke(dexDataList[hoverIndex])
@@ -199,8 +203,8 @@ class EntriesScrollingWidget(val pX: Int, val pY: Int, val setPokedexEntry: (Pok
 
         private fun getHoveredSlotIndex(mouseX: Int, mouseY: Int): Int {
             dexDataList.forEachIndexed { index, _ ->
-                val startPosX = x + ((SCROLL_SLOT_SPACING + SCROLL_SLOT_SIZE) * index)
-                val startPosY = y + SCROLL_SLOT_SPACING + 1
+                val startPosX = rowX + ((SCROLL_SLOT_SPACING + SCROLL_SLOT_SIZE) * index)
+                val startPosY = rowY + SCROLL_SLOT_SPACING + 1
 
                 if (mouseX in startPosX..(startPosX + SCROLL_SLOT_SIZE)
                     && mouseY in startPosY..(startPosY + SCROLL_SLOT_SIZE)) {

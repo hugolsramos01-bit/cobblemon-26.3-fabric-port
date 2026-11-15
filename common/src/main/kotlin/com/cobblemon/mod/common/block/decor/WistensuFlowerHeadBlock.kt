@@ -9,6 +9,8 @@
 package com.cobblemon.mod.common.block.decor
 
 
+import net.minecraft.world.level.ScheduledTickAccess
+import net.minecraft.world.level.block.BonemealSource
 import com.cobblemon.mod.common.CobblemonBlocks
 import com.mojang.serialization.MapCodec
 import com.mojang.serialization.codecs.RecordCodecBuilder
@@ -28,14 +30,10 @@ import net.minecraft.world.phys.shapes.VoxelShape
 import kotlin.math.min
 
 //TODO: Root/connection shit
-class WistensuFlowerHeadBlock(properties: Properties?) : GrowingPlantHeadBlock(properties, Direction.DOWN, SHAPE, false, 0.1), WistensuFlowerBlock {
+class WistensuFlowerHeadBlock(properties: Properties) : GrowingPlantHeadBlock(properties, Direction.DOWN, SHAPE, false, 0.1), WistensuFlowerBlock {
     companion object {
-        val CODEC: MapCodec<WistensuFlowerHeadBlock> = RecordCodecBuilder.mapCodec {
-            it.group(propertiesCodec()).apply(it, ::WistensuFlowerHeadBlock)
-        }
         val SHAPE: VoxelShape = box(1.0, 2.0, 1.0, 15.0, 16.0, 15.0)
     }
-    override fun codec(): MapCodec<WistensuFlowerHeadBlock> = CODEC
 
     override fun getBlocksToGrowWhenBonemealed(random: RandomSource): Int {
         var d = 1.0
@@ -60,15 +58,8 @@ class WistensuFlowerHeadBlock(properties: Properties?) : GrowingPlantHeadBlock(p
         additionalBlockStateDefinition(builder)
     }
 
-    override fun updateShape(
-        state: BlockState,
-        direction: Direction,
-        neighborState: BlockState,
-        level: LevelAccessor,
-        pos: BlockPos,
-        neighborPos: BlockPos
-    ): BlockState {
-        val updateState = wisternUpdateShape(state, direction, neighborState, level, pos, neighborPos, this)
+    override fun updateShape(state: BlockState, level: LevelReader, tickAccess: ScheduledTickAccess, pos: BlockPos, direction: Direction, neighborPos: BlockPos, neighborState: BlockState, random: RandomSource): BlockState {
+        val updateState = wisternUpdateShape(state, direction, neighborState, level, tickAccess, pos, neighborPos, this)
         if (updateState != null) return updateState
 
         if (direction == Direction.DOWN &&
@@ -93,7 +84,7 @@ class WistensuFlowerHeadBlock(properties: Properties?) : GrowingPlantHeadBlock(p
         return copyStateValues(body, head)
     }
 
-    override fun performBonemeal(level: ServerLevel, random: RandomSource, pos: BlockPos, state: BlockState) {
+    override fun performBonemeal(level: ServerLevel, random: RandomSource, pos: BlockPos, state: BlockState, source: BonemealSource) {
         var blockPos = pos.relative(growthDirection)
         var i = min(state.getValue(AGE), MAX_AGE)
         val j = getBlocksToGrowWhenBonemealed(random)

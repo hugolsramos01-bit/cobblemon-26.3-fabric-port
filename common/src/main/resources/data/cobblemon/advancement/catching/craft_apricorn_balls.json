@@ -17,80 +17,108 @@
       "conditions": {
         "items": [
           {
-            "items": ["cobblemon:heavy_ball"]
+            "items": [
+              "cobblemon:heavy_ball"
+            ]
           }
         ]
       }
     },
-	"lure_ball": {
+    "lure_ball": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
-            "items": ["cobblemon:lure_ball"]
+            "items": [
+              "cobblemon:lure_ball"
+            ]
           }
         ]
       }
     },
-	"friend_ball": {
+    "friend_ball": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
-            "items": ["cobblemon:friend_ball"]
+            "items": [
+              "cobblemon:friend_ball"
+            ]
           }
         ]
       }
     },
-	"love_ball": {
+    "love_ball": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
-            "items": ["cobblemon:love_ball"]
+            "items": [
+              "cobblemon:love_ball"
+            ]
           }
         ]
       }
     },
-	"level_ball": {
+    "level_ball": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
-            "items": ["cobblemon:level_ball"]
+            "items": [
+              "cobblemon:level_ball"
+            ]
           }
         ]
       }
     },
-	"fast_ball": {
+    "fast_ball": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
-            "items": ["cobblemon:fast_ball"]
+            "items": [
+              "cobblemon:fast_ball"
+            ]
           }
         ]
       }
     },
-	"moon_ball": {
+    "moon_ball": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
-            "items": ["cobblemon:moon_ball"]
+            "items": [
+              "cobblemon:moon_ball"
+            ]
           }
         ]
       }
     }
   },
   "requirements": [
-    ["heavy_ball"],
-    ["lure_ball"],
-	["friend_ball"],
-	["love_ball"],
-	["level_ball"],
-	["fast_ball"],
-	["moon_ball"]
+    [
+      "heavy_ball"
+    ],
+    [
+      "lure_ball"
+    ],
+    [
+      "friend_ball"
+    ],
+    [
+      "love_ball"
+    ],
+    [
+      "level_ball"
+    ],
+    [
+      "fast_ball"
+    ],
+    [
+      "moon_ball"
+    ]
   ],
   "sends_telemetry_event": false
 }

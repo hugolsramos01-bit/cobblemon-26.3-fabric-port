@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:ring_target"
+        "recipes": "cobblemon:ring_target"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

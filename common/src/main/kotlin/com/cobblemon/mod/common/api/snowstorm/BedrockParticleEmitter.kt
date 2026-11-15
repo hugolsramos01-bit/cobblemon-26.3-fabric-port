@@ -8,6 +8,10 @@
 
 package com.cobblemon.mod.common.api.snowstorm
 
+import com.cobblemon.mod.common.util.readList
+
+import com.cobblemon.mod.common.util.writeCollection
+
 import com.bedrockk.molang.Expression
 import com.bedrockk.molang.MoLang
 import com.bedrockk.molang.ast.NumberExpression
@@ -54,17 +58,17 @@ class BedrockParticleEmitter(
                 LoopingTravelDistanceEventTrigger.CODEC.listOf().fieldOf("loopingTravelDistanceEvents").forGetter { it.loopingTravelDistanceEvents }
             ).apply(instance) { startExpressions, updateExpressions, rate, shape, lifetime, space, eventTimeline, creationEvents, expirationEvents, travelDistanceEvents, loopingTravelDistanceEvents ->
                 BedrockParticleEmitter(
-                    startExpressions = startExpressions,
-                    updateExpressions = updateExpressions,
+                    startExpressions = startExpressions.toMutableList(),
+                    updateExpressions = updateExpressions.toMutableList(),
                     shape = shape,
                     rate = rate,
                     lifetime = lifetime,
                     space = space,
                     eventTimeline = eventTimeline,
-                    creationEvents = creationEvents,
-                    expirationEvents = expirationEvents,
+                    creationEvents = creationEvents.toMutableList(),
+                    expirationEvents = expirationEvents.toMutableList(),
                     travelDistanceEvents = travelDistanceEvents,
-                    loopingTravelDistanceEvents = loopingTravelDistanceEvents
+                    loopingTravelDistanceEvents = loopingTravelDistanceEvents.toMutableList()
                 )
             }
         }
@@ -84,15 +88,15 @@ class BedrockParticleEmitter(
     }
 
     fun readFromBuffer(buffer: RegistryFriendlyByteBuf) {
-        startExpressions = buffer.readList { MoLang.createParser(buffer.readString()).parseExpression() }
-        updateExpressions = buffer.readList { MoLang.createParser(buffer.readString()).parseExpression() }
+        startExpressions = buffer.readList { MoLang.createParser(buffer.readString()).parseExpression() }.toMutableList()
+        updateExpressions = buffer.readList { MoLang.createParser(buffer.readString()).parseExpression() }.toMutableList()
         rate = ParticleEmitterRate.readFromBuffer(buffer)
         shape = ParticleEmitterShape.readFromBuffer(buffer)
         lifetime = ParticleEmitterLifetime.readFromBuffer(buffer)
         eventTimeline.decode(buffer)
-        creationEvents = buffer.readList { SimpleEventTrigger("").also { it.decode(buffer) } }
-        expirationEvents = buffer.readList { SimpleEventTrigger("").also { it.decode(buffer) } }
+        creationEvents = buffer.readList { SimpleEventTrigger("").also { it.decode(buffer) } }.toMutableList()
+        expirationEvents = buffer.readList { SimpleEventTrigger("").also { it.decode(buffer) } }.toMutableList()
         travelDistanceEvents.decode(buffer)
-        loopingTravelDistanceEvents = buffer.readList { LoopingTravelDistanceEventTrigger(0.0, mutableListOf()).also { it.decode(buffer) } }
+        loopingTravelDistanceEvents = buffer.readList { LoopingTravelDistanceEventTrigger(0.0, mutableListOf()).also { it.decode(buffer) } }.toMutableList()
     }
 }

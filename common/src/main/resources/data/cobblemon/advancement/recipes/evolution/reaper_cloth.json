@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:reaper_cloth"
+        "recipes": "cobblemon:reaper_cloth"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

@@ -11,17 +11,19 @@ package com.cobblemon.mod.common.item
 import com.cobblemon.mod.common.CobblemonSounds
 import net.minecraft.sounds.SoundSource
 import net.minecraft.world.entity.player.Player
-import net.minecraft.world.item.ItemNameBlockItem
+import net.minecraft.world.item.BlockItem
 import net.minecraft.world.item.SignApplicator
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.Block
 import net.minecraft.world.level.block.entity.SignBlockEntity
 import net.minecraft.world.level.block.entity.SignText
+import net.minecraft.world.level.block.entity.SignTextSlot
+import net.minecraft.world.item.ItemStack
 
-class GlowItem(block: Block, settings: Properties) : ItemNameBlockItem(block, settings), SignApplicator {
+class GlowItem(block: Block, settings: Properties) : BlockItem(block, settings.useItemDescriptionPrefix()), SignApplicator {
 
-    override fun tryApplyToSign(level: Level, sign: SignBlockEntity, isFront: Boolean, player: Player?): Boolean {
-        if (sign.updateText({ signText: SignText? -> signText!!.setHasGlowingText(true) }, isFront)) {
+    override fun tryApplyToSign(level: Level, sign: SignBlockEntity, slot: SignTextSlot, stack: ItemStack, player: Player): Boolean {
+        if (sign.updateText({ signText: SignText? -> signText!!.withGlowingText(true) }, slot)) {
             level.playSound(
                 null as Player?,
                 sign.blockPos,

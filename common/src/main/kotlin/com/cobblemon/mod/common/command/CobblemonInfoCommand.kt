@@ -31,7 +31,7 @@ object CobblemonInfoCommand {
 
     fun register(dispatcher: CommandDispatcher<CommandSourceStack>) {
         dispatcher.register(Commands.literal("cobblemon")
-            .then(LiteralArgumentBuilder.literal<CommandSourceStack?>("info")
+            .then(LiteralArgumentBuilder.literal<CommandSourceStack>("info")
                 .executes { ctx ->
                     val message = Component.empty().append(
                         Component.literal("Cobblemon Build Details").withStyle { it.withColor(this.YELLOW) })
@@ -56,8 +56,8 @@ object CobblemonInfoCommand {
                         .append(Component.literal(CobblemonBuildDetails.smallCommitHash()).withStyle {
                             val link = "https://gitlab.com/cable-mc/cobblemon/-/commit/${CobblemonBuildDetails.GIT_COMMIT}"
 
-                            it.withHoverEvent(HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(link)))
-                                .withClickEvent(ClickEvent(ClickEvent.Action.OPEN_URL, link))
+                            it.withHoverEvent(HoverEvent.ShowText(Component.literal(link)))
+                                .withClickEvent(ClickEvent.OpenUrl(java.net.URI.create(link)))
                         })
 
                     message.append(this.NEW_LINE)

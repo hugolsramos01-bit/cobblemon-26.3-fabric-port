@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:galarica_wreath"
+        "recipes": "cobblemon:galarica_wreath"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

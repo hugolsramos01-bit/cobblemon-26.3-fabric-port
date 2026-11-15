@@ -11,14 +11,15 @@ package com.cobblemon.mod.common.mixin.client;
 import com.cobblemon.mod.common.OrientationControllable;
 import com.cobblemon.mod.common.client.render.player.MountedPlayerRenderer;
 import com.cobblemon.mod.common.client.render.player.RecallArmAnimationTracker;
-import com.cobblemon.mod.common.duck.RidePassenger;
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.client.renderer.entity.state.AvatarRenderState;
+import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -28,6 +29,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(HumanoidModel.class)
 public class HumanoidModelMixin {
+    private boolean cobblemon$handlingRideAnimation;
+
     @Shadow @Final
     public ModelPart head;
     @Shadow @Final
@@ -43,30 +46,34 @@ public class HumanoidModelMixin {
     @Shadow @Final
     public ModelPart body;
 
-    @Inject(method = "setupAnim*", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/model/geom/ModelPart;copyFrom(Lnet/minecraft/client/model/geom/ModelPart;)V", shift = At.Shift.BEFORE))
+    @Inject(method = "setupAnim(Lnet/minecraft/client/renderer/entity/state/HumanoidRenderState;)V", at = @At("TAIL"))
     public void cobblemon$animateRiders(
-        LivingEntity entity,
-        float limbSwing,
-        float limbSwingAmount,
-        float ageInTicks,
-        float netHeadYaw,
-        float headPitch,
+        HumanoidRenderState renderState,
         CallbackInfo ci
     ) {
+        if (cobblemon$handlingRideAnimation) return;
+
         MountedPlayerRenderer.shouldApplyRootAnimation = false;
 
-        if (MountedPlayerRenderer.relevantPartsByName.size() <= 1) {
-            MountedPlayerRenderer.relevantPartsByName.put("arm_left", leftArm);
-            MountedPlayerRenderer.relevantPartsByName.put("arm_right", rightArm);
-            MountedPlayerRenderer.relevantPartsByName.put("leg_left", leftLeg);
-            MountedPlayerRenderer.relevantPartsByName.put("leg_right", rightLeg);
-            MountedPlayerRenderer.relevantPartsByName.put("head", head);
-            MountedPlayerRenderer.relevantPartsByName.put("hat", hat);
-            MountedPlayerRenderer.relevantPartsByName.put("torso", body);
-        }
+        if (!(renderState instanceof AvatarRenderState avatarState)) return;
 
-        Entity vehicle = entity.getVehicle();
-        if (vehicle instanceof PokemonEntity pokemonEntity && entity instanceof OrientationControllable) {
+        Minecraft minecraft = Minecraft.getInstance();
+        if (minecraft.level == null) return;
+        Entity entity = minecraft.level.getEntity(avatarState.id);
+        if (!(entity instanceof AbstractClientPlayer player)) return;
+
+        Entity vehicle = player.getVehicle();
+        if (vehicle instanceof PokemonEntity pokemonEntity && player instanceof OrientationControllable) {
+            if (MountedPlayerRenderer.relevantPartsByName.size() <= 1) {
+                MountedPlayerRenderer.relevantPartsByName.put("arm_left", leftArm);
+                MountedPlayerRenderer.relevantPartsByName.put("arm_right", rightArm);
+                MountedPlayerRenderer.relevantPartsByName.put("leg_left", leftLeg);
+                MountedPlayerRenderer.relevantPartsByName.put("leg_right", rightLeg);
+                MountedPlayerRenderer.relevantPartsByName.put("head", head);
+                MountedPlayerRenderer.relevantPartsByName.put("hat", hat);
+                MountedPlayerRenderer.relevantPartsByName.put("torso", body);
+            }
+
             var shouldRotatePlayerHead = pokemonEntity.ifRidingAvailableSupply(false, (behaviour, settings, state) ->
                     behaviour.shouldRotateRiderHead(settings, state, pokemonEntity)
             );
@@ -84,25 +91,43 @@ public class HumanoidModelMixin {
 //            }
 
             if (!shouldRotatePlayerHead) {
-                netHeadYaw = 0f;
-                headPitch = 0f;
+                renderState.yRot = 0f;
+                renderState.xRot = 0f;
                 if (this.head != null) {
                     this.head.yRot = 0f;
                     this.head.xRot = 0f;
                 }
             }
 
-            if (!(entity instanceof AbstractClientPlayer player)) return;
-
             MountedPlayerRenderer.shouldApplyRootAnimation = true;
-            MountedPlayerRenderer.INSTANCE.animate((HumanoidModel<AbstractClientPlayer>)(Object)this, pokemonEntity, player, netHeadYaw, headPitch, ageInTicks, limbSwing, limbSwingAmount);
+            cobblemon$handlingRideAnimation = true;
+            try {
+                MountedPlayerRenderer.INSTANCE.animate(
+                    (HumanoidModel<?>)(Object)this,
+                    pokemonEntity,
+                    player,
+                    renderState.yRot,
+                    renderState.xRot,
+                    renderState.ageInTicks,
+                    renderState.walkAnimationPos,
+                    renderState.walkAnimationSpeed
+                );
+            } finally {
+                cobblemon$handlingRideAnimation = false;
+            }
         }
     }
 
-    @Inject(method = "setupAnim*", at = @At("TAIL"))
-    public void cobblemon$poseRecallArm(LivingEntity entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, CallbackInfo ci) {
-        if (!(entity instanceof AbstractClientPlayer) || entity.getVehicle() instanceof PokemonEntity) return;
-        float raise = RecallArmAnimationTracker.INSTANCE.raiseFactor(entity.getUUID());
+    @Inject(method = "setupAnim(Lnet/minecraft/client/renderer/entity/state/HumanoidRenderState;)V", at = @At("TAIL"))
+    public void cobblemon$poseRecallArm(HumanoidRenderState renderState, CallbackInfo ci) {
+        if (cobblemon$handlingRideAnimation || !(renderState instanceof AvatarRenderState avatarState)) return;
+
+        Minecraft minecraft = Minecraft.getInstance();
+        if (minecraft.level == null) return;
+        Entity entity = minecraft.level.getEntity(avatarState.id);
+        if (!(entity instanceof AbstractClientPlayer player) || player.getVehicle() instanceof PokemonEntity) return;
+
+        float raise = RecallArmAnimationTracker.INSTANCE.raiseFactor(player.getUUID());
         if (raise <= 0f) return;
         this.rightArm.xRot = Mth.lerp(raise, this.rightArm.xRot, (float) (-Math.PI / 2.0));
         this.rightArm.yRot = Mth.lerp(raise, this.rightArm.yRot, 0f);

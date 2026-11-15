@@ -7,24 +7,12 @@
         "PIP"
     ],
     "key": {
-        "G": {
-            "tag": "c:gunpowders"
-        },
-        "E": {
-            "item": "minecraft:fermented_spider_eye"
-        },
-        "I": {
-            "item": "minecraft:ink_sac"
-        },
-        "F": {
-            "tag": "c:feathers"
-        },
-        "P": {
-            "item": "minecraft:paper"
-        },
-        "S": {
-            "item": "minecraft:glow_ink_sac"
-        }
+        "G": "#c:gunpowders",
+        "E": "minecraft:fermented_spider_eye",
+        "I": "minecraft:ink_sac",
+        "F": "#c:feathers",
+        "P": "minecraft:paper",
+        "S": "minecraft:glow_ink_sac"
     },
     "result": {
         "id": "cobblemon:weakness_policy"

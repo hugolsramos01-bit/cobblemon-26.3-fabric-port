@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:restoration_tank"
+        "recipes": "cobblemon:restoration_tank"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

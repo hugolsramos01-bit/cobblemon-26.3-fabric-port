@@ -23,7 +23,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipe": "cobblemon:relic_coin_pouch"
+        "recipes": "cobblemon:relic_coin_from_pouch"
       }
     }
   },

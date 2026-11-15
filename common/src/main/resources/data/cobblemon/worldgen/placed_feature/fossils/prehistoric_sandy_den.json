@@ -18,7 +18,7 @@
             "predicate": {
                 "type": "minecraft:would_survive",
                 "state": {
-                    "Name": "minecraft:cactus"
+                    "id": "minecraft:cactus"
                 }
             }
         },
@@ -26,9 +26,10 @@
             "type": "minecraft:biome"
         },
         {
-            "type": "minecraft:random_offset",
-            "y_spread": -5,
-            "xz_spread": 0
+            "type": "minecraft:offset",
+            "y": -5,
+            "x": 0,
+            "z": 0
         }
     ]
 }

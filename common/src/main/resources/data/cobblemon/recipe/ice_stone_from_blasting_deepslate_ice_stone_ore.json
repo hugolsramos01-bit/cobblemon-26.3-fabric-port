@@ -2,9 +2,7 @@
     "type": "minecraft:blasting",
     "category": "misc",
     "group": "ice_stone",
-    "ingredient": {
-        "item": "cobblemon:deepslate_ice_stone_ore"
-    },
+    "ingredient": "cobblemon:deepslate_ice_stone_ore",
     "result": {
         "id": "cobblemon:ice_stone"
     },

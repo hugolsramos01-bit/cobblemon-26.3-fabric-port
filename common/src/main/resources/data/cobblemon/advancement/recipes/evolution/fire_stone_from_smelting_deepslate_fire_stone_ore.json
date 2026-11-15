@@ -21,7 +21,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipe": "cobblemon:fire_stone_from_smelting_deepslate_fire_stone_ore"
+        "recipes": "cobblemon:fire_stone_from_smelting_deepslate_fire_stone_ore"
       }
     }
   },

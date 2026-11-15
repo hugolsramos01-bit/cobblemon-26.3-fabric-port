@@ -7,7 +7,7 @@ plugins {
     id("java")
     id("java-library")
     id("maven-publish")
-    id("dev.architectury.loom")
+    id("dev.architectury.loom-no-remap")
 }
 
 java {
@@ -42,8 +42,8 @@ publishing {
 
     publications {
         create<MavenPublication>(project.name) {
-            artifact(tasks.remapJar)
-            artifact(tasks.remapSourcesJar)
+            artifact(tasks.jar)
+            artifact(tasks.named("sourcesJar"))
 
             @Suppress("UnstableApiUsage")
             loom.disableDeprecatedPomGeneration(this)

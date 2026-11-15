@@ -15,7 +15,7 @@ import com.cobblemon.mod.common.client.gui.CobblemonRenderable
 import com.cobblemon.mod.common.client.render.drawScaledText
 import com.cobblemon.mod.common.util.cobblemonResource
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.components.ObjectSelectionList
 import net.minecraft.util.FormattedCharSequence
 
@@ -26,7 +26,7 @@ import net.minecraft.util.FormattedCharSequence
  * @since June 24th, 2022
  */
 class BattleMessagePane(
-    messageQueue: ClientBattleMessageQueue
+    private val messageQueue: ClientBattleMessageQueue
 ): ObjectSelectionList<BattleMessagePane.BattleMessageLine>(
     Minecraft.getInstance(),
     FRAME_WIDTH, // width
@@ -36,6 +36,11 @@ class BattleMessagePane(
 ), CobblemonRenderable {
     var opacity = 1F
     private var scrolling = false
+    private val messageListener: (FormattedCharSequence) -> Unit = {
+        val fullyScrolledDown = maxScrollAmount() - scrollAmount() < 10
+        addEntry(BattleMessageLine(this, it))
+        if (fullyScrolledDown) setScrollAmount(maxScrollAmount().toDouble())
+    }
 
     val appropriateX: Int
         get() = minecraft.window.guiScaledWidth - (FRAME_WIDTH + 12)
@@ -46,19 +51,16 @@ class BattleMessagePane(
         correctSize()
         //setRenderBackground(false)
 
-        messageQueue.subscribe {
-            val fullyScrolledDown = maxScroll - scrollAmount < 10
-            addEntry(BattleMessageLine(this, it))
-            if (fullyScrolledDown) {
-                scrollAmount = maxScroll.toDouble()
-            }
-        }
+        messageQueue.subscribe(messageListener)
+    }
+
+    fun dispose() {
+        messageQueue.listeners.remove(messageListener)
     }
 
     private fun correctSize() {
         val textBoxHeight = if (expanded) TEXT_BOX_HEIGHT * 2 else TEXT_BOX_HEIGHT
-        setRectangle(TEXT_BOX_WIDTH, textBoxHeight, appropriateY + 6, appropriateY + 6)
-        this.x = appropriateX
+        setRectangle(TEXT_BOX_WIDTH, textBoxHeight, appropriateX, appropriateY + 6)
     }
 
     companion object {
@@ -85,42 +87,42 @@ class BattleMessagePane(
         return super.getRowLeft() + 4
     }
 
-    override fun renderSelection(guiGraphics: GuiGraphics, top: Int, width: Int, height: Int, outerColor: Int, innerColor: Int) {
+    override fun extractSelection(guiGraphics: GuiGraphicsExtractor, entry: BattleMessageLine, color: Int) {
         blitk(
-            matrixStack = guiGraphics.pose(),
+            context = guiGraphics,
             texture = battleMessageHighlight,
             x = x + 6,
-            y = top - 2,
+            y = entry.y - 2,
             height = 10,
             width = 1,
             alpha = opacity
         )
 
         blitk(
-            matrixStack = guiGraphics.pose(),
+            context = guiGraphics,
             texture = battleMessageHighlight,
             x = x + 6,
-            y = top - 2,
+            y = entry.y - 2,
             height = 1,
             width = LINE_WIDTH,
             alpha = opacity
         )
 
         blitk(
-            matrixStack = guiGraphics.pose(),
+            context = guiGraphics,
             texture = battleMessageHighlight,
             x = x + 6,
-            y = top + 7,
+            y = entry.y + 7,
             height = 1,
             width = LINE_WIDTH,
             alpha = opacity
         )
 
         blitk(
-            matrixStack = guiGraphics.pose(),
+            context = guiGraphics,
             texture = battleMessageHighlight,
             x = x + 6 + LINE_WIDTH - 1,
-            y = top - 2,
+            y = entry.y - 2,
             height = 10,
             width = 1,
             alpha = opacity
@@ -131,14 +133,14 @@ class BattleMessagePane(
         return LINE_WIDTH
     }
 
-    override fun getScrollbarPosition(): Int {
+    override fun scrollBarX(): Int {
         return this.x + 154
     }
 
-    override fun renderWidget(context: GuiGraphics, mouseX: Int, mouseY: Int, partialTicks: Float) {
+    override fun extractWidgetRenderState(context: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, partialTicks: Float) {
         correctSize()
         blitk(
-            matrixStack = context.pose(),
+            context = context,
             texture = if (expanded) battleMessagePaneFrameExpandedResource else battleMessagePaneFrameResource,
             x = this.x,
             y = appropriateY,
@@ -154,11 +156,15 @@ class BattleMessagePane(
             this.x + 5 + width,
             appropriateY + 6 + textBoxHeight
         )
-        super.renderWidget(context, mouseX, mouseY, partialTicks)
+        super.extractWidgetRenderState(context, mouseX, mouseY, partialTicks)
         context.disableScissor()
     }
 
-    override fun mouseClicked(mouseX: Double, mouseY: Double, button: Int): Boolean {
+    override fun mouseClicked(event: net.minecraft.client.input.MouseButtonEvent, doubleClick: Boolean): Boolean {
+    val mouseX = event.x()
+    val mouseY = event.y()
+    val button = event.button()
+
         val toggleOffsetY = if (expanded) 92 else 46
         if (mouseX > (this.x + 160) && mouseX < (this.x + 160 + EXPAND_TOGGLE_SIZE) && mouseY > (appropriateY + toggleOffsetY) && mouseY < (appropriateY + toggleOffsetY + EXPAND_TOGGLE_SIZE)) {
             expanded = !expanded
@@ -170,48 +176,50 @@ class BattleMessagePane(
             isDragging = true
         }
 
-        return super.mouseClicked(mouseX, mouseY, button)
+        return super.mouseClicked(event, doubleClick)
     }
 
-    override fun mouseDragged(mouseX: Double, mouseY: Double, button: Int, deltaX: Double, deltaY: Double): Boolean {
+    override fun isMouseOver(mouseX: Double, mouseY: Double): Boolean {
+        val toggleY = appropriateY + if (expanded) 92 else 46
+        val overToggle = mouseX > x + 160 && mouseX < x + 160 + EXPAND_TOGGLE_SIZE
+                && mouseY > toggleY && mouseY < toggleY + EXPAND_TOGGLE_SIZE
+        val overScrollBar = mouseX >= scrollBarX() && mouseX < scrollBarX() + 3
+                && mouseY >= y && mouseY < bottom
+        return super.isMouseOver(mouseX, mouseY) || overToggle || overScrollBar
+    }
+
+    override fun mouseDragged(event: net.minecraft.client.input.MouseButtonEvent, deltaX: Double, deltaY: Double): Boolean {
+    val mouseX = event.x()
+    val mouseY = event.y()
+    val button = event.button()
+
         if (scrolling) {
             if (mouseY < this.y) {
-                scrollAmount = 0.0
+                setScrollAmount(0.0)
             } else if (mouseY > bottom) {
-                scrollAmount = maxScroll.toDouble()
+                setScrollAmount(maxScrollAmount().toDouble())
             } else {
-                scrollAmount += deltaY
+                setScrollAmount(scrollAmount() + deltaY)
             }
         }
-        return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY)
+        return super.mouseDragged(event, deltaX, deltaY)
     }
 
     private fun updateScrollingState(mouseX: Double, mouseY: Double) {
-        scrolling = mouseX >= this.scrollbarPosition.toDouble()
-                && mouseX < (this.scrollbarPosition + 3).toDouble()
+        scrolling = mouseX >= this.scrollBarX().toDouble()
+                && mouseX < (this.scrollBarX() + 3).toDouble()
                 && mouseY >= this.y
                 && mouseY < bottom
     }
 
     class BattleMessageLine(val pane: BattleMessagePane, val line: FormattedCharSequence) : Entry<BattleMessageLine>() {
         override fun getNarration() = "".text()
-        override fun render(
-            context: GuiGraphics,
-            index: Int,
-            rowTop: Int,
-            rowLeft: Int,
-            rowWidth: Int,
-            rowHeight: Int,
-            mouseX: Int,
-            mouseY: Int,
-            isHovered: Boolean,
-            partialTicks: Float
-        ) {
+        override fun extractContent(context: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, isHovered: Boolean, partialTicks: Float) {
             drawScaledText(
                 context,
                 line,
-                rowLeft,
-                rowTop - 2,
+                x,
+                y - 2,
                 opacity = pane.opacity
             )
         }

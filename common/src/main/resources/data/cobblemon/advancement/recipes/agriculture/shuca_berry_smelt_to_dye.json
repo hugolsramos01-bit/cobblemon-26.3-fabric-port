@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:shuca_berry_smelt_to_dye"
+        "recipes": "cobblemon:shuca_berry_smelt_to_dye"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

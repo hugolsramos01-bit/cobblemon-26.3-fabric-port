@@ -21,7 +21,8 @@ import com.cobblemon.mod.common.config.starter.RenderableStarterCategory
 import com.cobblemon.mod.common.util.cobblemonResource
 import com.cobblemon.mod.common.util.math.fromEulerXYZDegrees
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
+import net.minecraft.client.input.MouseButtonEvent
 import net.minecraft.client.resources.sounds.SimpleSoundInstance
 import org.joml.Quaternionf
 import org.joml.Vector3f
@@ -76,7 +77,7 @@ class CategoryList(
     inner class Category(private val category: RenderableStarterCategory, height: Int) : Entry(height) {
 
         override fun render(
-            guiGraphics: GuiGraphics,
+            guiGraphics: GuiGraphicsExtractor,
             index: Int,
             x: Int,
             y: Int,
@@ -89,7 +90,7 @@ class CategoryList(
             val matrices = guiGraphics.pose()
             //Header
             blitk(
-                matrixStack = matrices,
+                context = guiGraphics,
                 texture = headerResource,
                 x = x + MARGIN,
                 y = y,
@@ -111,7 +112,7 @@ class CategoryList(
             //Container
             var stackHeight = HEADER_HEIGHT
             blitk(
-                matrixStack = matrices,
+                context = guiGraphics,
                 texture = edgeResource,
                 x = x + MARGIN,
                 y = y + stackHeight,
@@ -123,7 +124,7 @@ class CategoryList(
             val containerInnerHeight = CONTAINER_BUTTON_SIZE * rows + BUTTON_SEPERATION * (rows + 1)
 
             blitk(
-                matrixStack = matrices,
+                context = guiGraphics,
                 texture = containerResource,
                 x = x + MARGIN,
                 y = y + stackHeight,
@@ -133,7 +134,7 @@ class CategoryList(
             stackHeight += containerInnerHeight
 
             blitk(
-                matrixStack = matrices,
+                context = guiGraphics,
                 texture = edgeResource,
                 x = x + MARGIN,
                 y = y + stackHeight,
@@ -144,7 +145,7 @@ class CategoryList(
 
             //Footer
             blitk(
-                matrixStack = matrices,
+                context = guiGraphics,
                 texture = footerResource,
                 x = x + MARGIN,
                 y = y + stackHeight,
@@ -164,7 +165,7 @@ class CategoryList(
                 val hovered = getEntryAtPosition(mouseX, mouseY) == this && mouseX in startX..(startX + CONTAINER_BUTTON_SIZE) && mouseY in startY..(startY + CONTAINER_BUTTON_SIZE)
 
                 blitk(
-                    matrixStack = matrices,
+                    context = guiGraphics,
                     texture = if (active) buttonActiveResource else buttonResource,
                     x = startX,
                     y = startY,
@@ -176,7 +177,7 @@ class CategoryList(
 
                 if (index == category.pokemon.size) {
                     blitk(
-                        matrixStack = matrices,
+                        context = guiGraphics,
                         texture = unknownResource,
                         x = (startX + 4.5F) / 0.04f,
                         y = (startY + 3.5F) / 0.04f,
@@ -185,26 +186,31 @@ class CategoryList(
                         scale = 0.04f
                     )
                 } else {
-                    matrices.pushPose()
-                    matrices.translate(startX + (CONTAINER_BUTTON_SIZE / 2.0), startY.toDouble() - 6, 0.0)
-                    matrices.scale(3.5F, 3.5F, 1F)
+                    matrices.pushMatrix()
+                    try {
+                        matrices.translate((startX + CONTAINER_BUTTON_SIZE / 2.0).toFloat(), startY.toFloat() - 6F)
+                        matrices.scale(3.5F, 3.5F)
 
-                    val state = FloatingState()
-                    state.currentAspects = category.pokemon[index].aspects
-                    drawProfilePokemon(
-                        species = category.pokemon[index].species.resourceIdentifier,
-                        matrixStack = matrices,
-                        rotation = Quaternionf().fromEulerXYZDegrees(Vector3f(13F, 35F, 0F)),
-                        state = state,
-                        scale = 4.5F,
-                        partialTicks = 0F
-                    )
-                    matrices.popPose()
+                        val state = FloatingState()
+                        state.currentAspects = category.pokemon[index].aspects
+                        drawProfilePokemon(
+                            species = category.pokemon[index].species.resourceIdentifier,
+                            context = guiGraphics,
+                            rotation = Quaternionf().fromEulerXYZDegrees(Vector3f(13F, 35F, 0F)),
+                            state = state,
+                            scale = 4.5F,
+                            partialTicks = 0F
+                        )
+                    } finally {
+                        matrices.popMatrix()
+                    }
                 }
             }
         }
 
-        override fun mouseClicked(mouseX: Double, mouseY: Double, button: Int): Boolean {
+        override fun mouseClicked(event: MouseButtonEvent, doubleClick: Boolean): Boolean {
+            val mouseX = event.x()
+            val mouseY = event.y()
             val entryY = getRowTop(this)
             val hoveredButton = getButtonHovered(x, entryY, mouseX, mouseY)
             if (hoveredButton != -1) {

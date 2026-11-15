@@ -24,6 +24,7 @@ import net.minecraft.core.particles.ParticleType
 import net.minecraft.network.RegistryFriendlyByteBuf
 import net.minecraft.network.codec.StreamCodec
 import net.minecraft.world.phys.Vec3
+import net.minecraft.util.RandomSource
 
 class SnowstormParticleType : ParticleType<SnowstormParticleOptions>(true) {
     companion object {
@@ -54,7 +55,8 @@ class SnowstormParticleType : ParticleType<SnowstormParticleOptions>(true) {
             z: Double,
             velocityX: Double,
             velocityY: Double,
-            velocityZ: Double
+            velocityZ: Double,
+            random: RandomSource
         ): Particle {
             //Particles with local position move with their emitter
             val isLocal = parameters.effect.space.localPosition
@@ -89,6 +91,6 @@ class SnowstormParticleType : ParticleType<SnowstormParticleOptions>(true) {
     override fun codec() = CODEC
 
     override fun streamCodec(): StreamCodec<in RegistryFriendlyByteBuf, SnowstormParticleOptions> {
-        TODO("Not yet implemented")
+        return PACKET_CODEC
     }
 }

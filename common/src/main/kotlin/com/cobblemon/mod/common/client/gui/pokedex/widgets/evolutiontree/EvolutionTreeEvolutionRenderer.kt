@@ -33,7 +33,7 @@ data class RenderEvolutionData(
 
 internal fun resolveRequirementData(requirement: Requirement): RenderRequirementData? {
     val icon = requirement.pokedexIcon?.let {
-        Minecraft.getInstance()?.player?.level()?.itemRegistry?.get(it)
+        Minecraft.getInstance().player?.level()?.itemRegistry?.get(it)?.orElse(null)?.value()
     }
 
     val tooltip = requirement.pokedexTooltip?.let {
@@ -69,10 +69,10 @@ fun renderDummyEvolution(evolution: Evolution): RenderEvolutionData? {
 }
 
 fun renderItemInteractionEvolution(itemInteractionEvolution: ItemInteractionEvolution): RenderEvolutionData? {
-    val item = itemInteractionEvolution.requiredContext.items.get().first().value()
+    val item = itemInteractionEvolution.requiredContext.items.get().firstOrNull()?.value() ?: return null
     val icons = mutableListOf(item)
     val tooltips =
-        mutableListOf(lang("ui.pokedex.evolution.item_interact.tooltip", item.description.plainCopy().green()))
+        mutableListOf(lang("ui.pokedex.evolution.item_interact.tooltip", item.defaultInstance.hoverName.plainCopy().green()))
 
     val requirementsDataList = itemInteractionEvolution.requirements.mapNotNull { requirement ->
         resolveRequirementData(requirement)

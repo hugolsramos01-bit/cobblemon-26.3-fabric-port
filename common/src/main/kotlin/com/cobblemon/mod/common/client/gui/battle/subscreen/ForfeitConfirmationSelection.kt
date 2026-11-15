@@ -21,7 +21,7 @@ import com.cobblemon.mod.common.client.render.drawScaledText
 import com.cobblemon.mod.common.util.battleLang
 import com.cobblemon.mod.common.util.cobblemonResource
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 
 class ForfeitConfirmationSelection(
     battleGUI: BattleGUI,
@@ -29,8 +29,8 @@ class ForfeitConfirmationSelection(
 ) : BattleActionSelection(
     battleGUI,
     request,
-    x = 0,
-    y = 0,
+    x = (Minecraft.getInstance().window.guiScaledWidth / 2) - (WIDTH / 2),
+    y = (Minecraft.getInstance().window.guiScaledHeight / 2) - (HEIGHT / 2),
     width = WIDTH,
     height = HEIGHT,
     battleLang("ui.forfeit_confirmation")
@@ -74,14 +74,14 @@ class ForfeitConfirmationSelection(
         return false
     }
 
-    override fun renderWidget(context: GuiGraphics, mouseX: Int, mouseY: Int, delta: Float) {
+    override fun extractWidgetRenderState(context: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, delta: Float) {
         if (opacity <= 0.05F) return
 
         val xPos = (Minecraft.getInstance().window.guiScaledWidth / 2) - (WIDTH / 2)
         val yPos = (Minecraft.getInstance().window.guiScaledHeight / 2) - (HEIGHT / 2)
 
         blitk(
-            matrixStack = context.pose(),
+            context = context,
             texture = backgroundResource,
             x = xPos,
             y = yPos,
@@ -100,7 +100,7 @@ class ForfeitConfirmationSelection(
             shadow = true
         )
 
-        acceptButton.render(context, mouseX, mouseY, delta)
-        declineButton.render(context, mouseX, mouseY, delta)
+        acceptButton.extractRenderState(context, mouseX, mouseY, delta)
+        declineButton.extractRenderState(context, mouseX, mouseY, delta)
     }
 }

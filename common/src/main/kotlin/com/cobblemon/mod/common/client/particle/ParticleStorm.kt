@@ -279,9 +279,9 @@ class ParticleStorm(
                     emitterSpaceMatrix.matrix.getScale(Vector3f())
                 }
                 // If any value is zero we get NaNs, so default to a large enough value to be safe
-                scale.x.coerceAtLeast(0.01f)
-                scale.y.coerceAtLeast(0.01f)
-                scale.z.coerceAtLeast(0.01f)
+                scale.x = scale.x.coerceAtLeast(0.01f)
+                scale.y = scale.y.coerceAtLeast(0.01f)
+                scale.z = scale.z.coerceAtLeast(0.01f)
 
                 emitterSpaceMatrix.matrix.identity()
                     .translate(translation)

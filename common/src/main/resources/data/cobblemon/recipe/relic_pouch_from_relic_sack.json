@@ -3,9 +3,7 @@
     "category": "misc",
     "group": "relic_pouch",
     "key": {
-        "#": {
-            "item": "cobblemon:relic_coin_sack"
-        }
+        "#": "cobblemon:relic_coin_sack"
     },
     "pattern": [
         "#"

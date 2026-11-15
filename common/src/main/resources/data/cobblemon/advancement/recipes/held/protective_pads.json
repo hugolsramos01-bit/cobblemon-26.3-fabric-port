@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:protective_pads"
+        "recipes": "cobblemon:protective_pads"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

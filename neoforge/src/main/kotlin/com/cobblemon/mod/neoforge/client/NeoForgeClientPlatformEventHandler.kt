@@ -19,7 +19,7 @@ import net.neoforged.api.distmarker.Dist
 import net.neoforged.api.distmarker.OnlyIn
 import net.neoforged.bus.api.SubscribeEvent
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent
-import net.neoforged.neoforge.client.event.RenderLevelStageEvent
+import net.neoforged.neoforge.client.event.SubmitCustomGeometryEvent
 import net.neoforged.neoforge.common.NeoForge
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent
 import net.neoforged.neoforge.event.entity.EntityLeaveLevelEvent
@@ -71,21 +71,19 @@ object NeoForgeClientPlatformEventHandler {
     }
 
     @SubscribeEvent
-    fun onRenderLevelStageEvent(event: RenderLevelStageEvent) {
-        val stage = when (event.stage) {
-            RenderLevelStageEvent.Stage.AFTER_PARTICLES -> RenderEvent.Stage.TRANSLUCENT
-            else -> return
-        }
-
+    fun onSubmitCustomGeometry(event: SubmitCustomGeometryEvent) {
+        val levelState = event.levelRenderState
+        val cameraState = levelState.cameraRenderState
         PlatformEvents.RENDER.post(
             RenderEvent(
-                stage = stage,
-                levelRenderer = event.levelRenderer,
+                stage = RenderEvent.Stage.TRANSLUCENT,
+                levelRenderer = Minecraft.getInstance().levelRenderer,
                 poseStack = event.poseStack,
-                modelViewMatrix = event.modelViewMatrix,
-                projectionMatrix = event.projectionMatrix,
-                tickCounter = event.partialTick,
-                camera = event.camera
+                modelViewMatrix = cameraState.viewRotationMatrix,
+                projectionMatrix = levelState.projectionMatrix,
+                tickCounter = Minecraft.getInstance().deltaTracker,
+                cameraState = cameraState,
+                submitNodeCollector = event.submitNodeCollector
             )
         )
     }

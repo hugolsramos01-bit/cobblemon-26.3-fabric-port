@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:power_bracer"
+        "recipes": "cobblemon:power_bracer"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

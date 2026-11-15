@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:saccharine_planks"
+        "recipes": "cobblemon:saccharine_planks"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

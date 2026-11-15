@@ -21,7 +21,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipe": "cobblemon:fighting_gem_block"
+        "recipes": "cobblemon:fighting_gem_block"
       }
     }
   },

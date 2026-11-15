@@ -13,7 +13,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:magma_block"
+                        "id": "minecraft:magma_block"
                     }
                 },
                 {
@@ -26,7 +26,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:sand"
+                        "id": "minecraft:sand"
                     }
                 },
                 {
@@ -39,7 +39,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:water"
+                        "id": "minecraft:water"
                     }
                 },
                 {
@@ -52,8 +52,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "cobblemon:relic_coin_pouch",
-                        "Properties": {
+                        "id": "cobblemon:relic_coin_pouch",
+                        "properties": {
                             "facing": "north",
                             "natural": "true",
                             "waterlogged": "true"
@@ -70,8 +70,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "cobblemon:relic_coin_pouch",
-                        "Properties": {
+                        "id": "cobblemon:relic_coin_pouch",
+                        "properties": {
                             "facing": "south",
                             "natural": "true",
                             "waterlogged": "true"
@@ -88,8 +88,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "cobblemon:relic_coin_pouch",
-                        "Properties": {
+                        "id": "cobblemon:relic_coin_pouch",
+                        "properties": {
                             "facing": "east",
                             "natural": "true",
                             "waterlogged": "true"
@@ -106,8 +106,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "cobblemon:relic_coin_pouch",
-                        "Properties": {
+                        "id": "cobblemon:relic_coin_pouch",
+                        "properties": {
                             "facing": "west",
                             "natural": "true",
                             "waterlogged": "true"
@@ -129,7 +129,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:water"
+                        "id": "minecraft:water"
                     }
                 }
             ]

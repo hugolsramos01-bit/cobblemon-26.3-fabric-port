@@ -27,7 +27,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:damp_rock"
+        "recipes": "cobblemon:damp_rock"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

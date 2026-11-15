@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:wide_lens"
+        "recipes": "cobblemon:wide_lens"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

@@ -21,7 +21,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipe": "cobblemon:dusk_stone_from_smelting_deepslate_dusk_stone_ore"
+        "recipes": "cobblemon:dusk_stone_from_smelting_deepslate_dusk_stone_ore"
       }
     }
   },

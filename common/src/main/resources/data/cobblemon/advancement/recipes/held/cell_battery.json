@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:cell_battery"
+        "recipes": "cobblemon:cell_battery"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

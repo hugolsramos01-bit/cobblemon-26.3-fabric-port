@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:zoom_lens"
+        "recipes": "cobblemon:zoom_lens"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

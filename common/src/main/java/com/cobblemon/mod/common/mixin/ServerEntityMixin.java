@@ -21,7 +21,6 @@ import com.cobblemon.mod.common.net.messages.client.orientation.ClientboundUpdat
 import com.cobblemon.mod.common.net.messages.client.pokemon.update.ClientboundUpdateRidingStatePacket;
 import com.cobblemon.mod.common.net.messages.client.pokemon.update.evolution.ClientboundSeatAssignmentPacket;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
-import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.server.level.ChunkMap;
 import net.minecraft.server.level.ServerEntity;
@@ -42,14 +41,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.List;
 import java.util.LinkedHashMap;
 import java.util.Set;
-import java.util.function.Consumer;
 
 @Mixin(ServerEntity.class)
 public abstract class ServerEntityMixin {
 
-    @Shadow
-    @Final
-    private Consumer<Packet<?>> broadcast;
     @Shadow
     @Final
     private Entity entity;

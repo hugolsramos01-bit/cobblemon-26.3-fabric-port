@@ -14,6 +14,7 @@ import net.minecraft.util.StringRepresentable
 import net.minecraft.world.item.context.BlockPlaceContext
 import net.minecraft.world.level.BlockGetter
 import net.minecraft.world.level.Level
+import net.minecraft.world.level.redstone.Orientation
 import net.minecraft.world.level.block.Block
 import net.minecraft.world.level.block.HorizontalDirectionalBlock
 import net.minecraft.world.level.block.Rotation
@@ -103,7 +104,7 @@ class DamagedMonitorBlock(settings: Properties) : Block(settings) {
         level: Level,
         pos: BlockPos,
         block: Block,
-        fromPos: BlockPos,
+        orientation: Orientation?,
         isMoving: Boolean
     ){
         val powered = level.hasNeighborSignal(pos)

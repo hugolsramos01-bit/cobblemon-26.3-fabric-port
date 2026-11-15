@@ -21,7 +21,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipe": "cobblemon:tumblestone_brick_stairs_from_polished_tumblestone_in_stonecutter"
+        "recipes": "cobblemon:tumblestone_brick_stairs_from_polished_tumblestone_in_stonecutter"
       }
     }
   },

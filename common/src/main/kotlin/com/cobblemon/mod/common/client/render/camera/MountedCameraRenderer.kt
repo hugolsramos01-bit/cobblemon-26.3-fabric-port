@@ -54,21 +54,35 @@ object MountedCameraRenderer {
         vehicle: Entity,
         thirdPersonReverse: Boolean,
         eyeHeight: Double,
-        eyeHeightOld: Double
+        eyeHeightOld: Double,
+        cameraAnchor: Vec3
     ): Vec3? {
         if (vehicle !is PokemonEntity) {
             return null
         }
         val delegate = vehicle.delegate as? PokemonClientDelegate ?: return null
 
+        val partialTick = instance.getCameraEntityPartialTicks(Minecraft.getInstance().deltaTracker)
+        // Keep the animated seat locators in sync with the rendered Pokemon, even when the
+        // third-person camera itself is anchored to the passenger like vanilla/Pixelmon.
+        MountedPokemonAnimationRenderController.setup(vehicle, partialTick)
+
+        if (Minecraft.getInstance().options.cameraType != CameraType.FIRST_PERSON) {
+            // The old third-person path used the Pokemon's animated seat locator as its pivot.
+            // That makes the camera frame the mount (especially while the mount is pitching)
+            // instead of the rider. Camera.alignWithEntity supplies the passenger's vanilla
+            // eye position here, so retain it as the pivot and let vanilla handle zoom/clipping.
+            val playerRotater = driver as? RidePassenger ?: return null
+            playerRotater.`cobblemon$setRideEyePos`(cameraAnchor)
+            return cameraAnchor
+        }
+
         val entityPos = Vec3(
-            Mth.lerp(instance.partialTickTime.toDouble(), vehicle.xOld, vehicle.x),
-            Mth.lerp(instance.partialTickTime.toDouble(), vehicle.yOld, vehicle.y),
-            Mth.lerp(instance.partialTickTime.toDouble(), vehicle.zOld, vehicle.z)
+            Mth.lerp(partialTick.toDouble(), vehicle.xOld, vehicle.x),
+            Mth.lerp(partialTick.toDouble(), vehicle.yOld, vehicle.y),
+            Mth.lerp(partialTick.toDouble(), vehicle.zOld, vehicle.z)
         )
 
-        // Sets up the pokemon's locators so when the camera and pokemon are calculated for rendering they use the same partialTickTime.
-        MountedPokemonAnimationRenderController.setup(vehicle, instance.partialTickTime)
         val rollable = vehicle as OrientationControllable
         val vehicleController = rollable.getOrientationController()
 
@@ -79,7 +93,7 @@ object MountedCameraRenderer {
         val locator = delegate.locatorStates[locatorName] ?: return null
 
         // Get additional offset from poser and add to the eyeHeight offset
-        val currEyeHeight: Double = Mth.lerp(instance.partialTickTime.toDouble(), eyeHeight, eyeHeightOld)
+        val currEyeHeight: Double = Mth.lerp(instance.getCameraEntityPartialTicks(Minecraft.getInstance().deltaTracker).toDouble(), eyeHeight, eyeHeightOld)
         var offset = Vec3(0.0, currEyeHeight - (driver.bbHeight / 2), 0.0)
         var eyeOffset = Vec3(0.0, currEyeHeight - (driver.bbHeight / 2), 0.0)
 
@@ -98,9 +112,9 @@ object MountedCameraRenderer {
         )
 
         val rotation =
-            if (vehicleController.isActive()) vehicleController.getRenderOrientation(instance.partialTickTime)
+            if (vehicleController.isActive()) vehicleController.getRenderOrientation(instance.getCameraEntityPartialTicks(Minecraft.getInstance().deltaTracker))
             else Quaternionf()
-                .rotateY((Math.PI.toFloat() - Mth.lerp(instance.partialTickTime, vehicle.yRotO, vehicle.yRot).toRadians()))
+                .rotateY((Math.PI.toFloat() - Mth.lerp(instance.getCameraEntityPartialTicks(Minecraft.getInstance().deltaTracker), vehicle.yRotO, vehicle.yRot).toRadians()))
 
         offset = rotation.transform(Vector3d(offset.x, offset.y, offset.z)).let { Vec3(it.x, it.y, it.z) }
         eyeOffset = rotation.transform(Vector3d(eyeOffset.x, eyeOffset.y, eyeOffset.z)).let { Vec3(it.x, it.y, it.z) }
@@ -126,10 +140,10 @@ object MountedCameraRenderer {
         } */
 
         val offsetDistance = offset.length()
-        val offsetDirection = offset.scale(1 / offsetDistance)
+        val offsetDirection = if (offsetDistance > 1.0E-6) offset.scale(1 / offsetDistance) else Vec3.ZERO
 
         val eyeOffsetDistance = eyeOffset.length()
-        val eyeOffsetDirection = eyeOffset.scale(1 / eyeOffsetDistance)
+        val eyeOffsetDirection = if (eyeOffsetDistance > 1.0E-6) eyeOffset.scale(1 / eyeOffsetDistance) else Vec3.ZERO
 
         // Use getMaxZoom to calculate clipping
         val maxZoom: Double = getMaxZoom(offsetDistance, offsetDirection, pos, instance)
@@ -190,7 +204,7 @@ object MountedCameraRenderer {
         var newRotation = if (isDriving) {
              vehicleController.orientation!!.normal(Matrix3f()).getNormalizedRotation(Quaternionf())
         } else {
-            vehicleController.getRenderOrientation(instance.partialTickTime)
+            vehicleController.getRenderOrientation(instance.getCameraEntityPartialTicks(Minecraft.getInstance().deltaTracker))
         }
 
         // Unroll the current rotation if no roll is requested and not currently freelooking
@@ -211,7 +225,7 @@ object MountedCameraRenderer {
             val pitchDeg = vehicleController.pitch
             // ConsiderPitch to be already 90 if within the deadzone around it.
             val cutoffPitch = min(1.0, (Mth.abs(pitchDeg) / (90.0f - pitchDeadzoneDeg))) * 90.0f * sign(pitchDeg)
-            val lerpRateMod = Mth.cos(Math.toRadians(cutoffPitch).toFloat())
+            val lerpRateMod = Mth.cos(Math.toRadians(cutoffPitch.toDouble()))
 
             // Apply smoothing from the cameras current yaw to the yaw of the velocity
             // vector of the ride
@@ -242,13 +256,6 @@ object MountedCameraRenderer {
 
         }
 
-        var rotationOffset = 0
-        if (Minecraft.getInstance().options.cameraType.isMirrored) {
-            newRotation.rotateY(Math.toRadians(180.0).toFloat())
-            rotationOffset = 180
-        }
-
-
         // Get the drivers local look angle in relation to the ride and apply it.
         if (vehicleController.active) {
             val vehicleMatrix = Matrix3f().set(newRotation)
@@ -263,11 +270,14 @@ object MountedCameraRenderer {
             ).normal(Matrix3f()).getNormalizedRotation(Quaternionf())
         }
         val eulerAngs = newRotation.getEulerAnglesYXZ(Vector3f())
-        setCameraRotations(newRotation, instance, cameraDuck)
-
-        // Set the drivers rotations to match
-        driver.xRot = -eulerAngs.x() * Mth.RAD_TO_DEG + rotationOffset
+        // The passenger follows the ride and freelook, independent of which side
+        // of the passenger the camera is viewing. Mirroring belongs to the camera.
+        driver.xRot = -eulerAngs.x() * Mth.RAD_TO_DEG
         driver.yRot = 180.0f - (eulerAngs.y() * Mth.RAD_TO_DEG)
+        if (Minecraft.getInstance().options.cameraType.isMirrored) {
+            newRotation.rotateY(Math.PI.toFloat())
+        }
+        setCameraRotations(newRotation, instance, cameraDuck)
     }
 
     private fun applyTransitionRotation(
@@ -299,7 +309,7 @@ object MountedCameraRenderer {
                 resetDriverRotations(instance, entity)
                 return false
             }
-            returnTimer += instance.partialTickTime * (1.0f / 20.0f)
+            returnTimer += instance.getCameraEntityPartialTicks(Minecraft.getInstance().deltaTracker) * (1.0f / 20.0f)
             return true
         } else {
             returnTimer = 1f
@@ -356,6 +366,7 @@ object MountedCameraRenderer {
 
     private fun getMaxZoom(maxZoom: Double, directionVector: Vec3, positionVector: Vec3, instance: Camera): Double {
         var maxZoom = maxZoom
+        val cameraEntity = instance.entity() ?: return maxZoom
         for (i in 0 .. 7) {
             val g = ((i and 1) * 2 - 1).toFloat()
             val h = ((i shr 1 and 1) * 2 - 1).toFloat()
@@ -369,7 +380,7 @@ object MountedCameraRenderer {
                     vec32,
                     ClipContext.Block.VISUAL,
                     ClipContext.Fluid.NONE,
-                    instance.entity
+                    cameraEntity
                 )
             )
             if (hitResult.type != HitResult.Type.MISS) {

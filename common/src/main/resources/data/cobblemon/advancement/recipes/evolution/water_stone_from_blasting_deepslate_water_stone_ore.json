@@ -21,7 +21,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipe": "cobblemon:water_stone_from_blasting_deepslate_water_stone_ore"
+        "recipes": "cobblemon:water_stone_from_blasting_deepslate_water_stone_ore"
       }
     }
   },

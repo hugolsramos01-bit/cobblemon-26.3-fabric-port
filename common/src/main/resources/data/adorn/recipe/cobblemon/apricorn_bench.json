@@ -6,9 +6,7 @@
     "S S"
   ],
   "key": {
-    "S": {
-      "item": "cobblemon:apricorn_slab"
-    }
+    "S": "cobblemon:apricorn_slab"
   },
   "result": {
     "id": "adorn:cobblemon/apricorn_bench",

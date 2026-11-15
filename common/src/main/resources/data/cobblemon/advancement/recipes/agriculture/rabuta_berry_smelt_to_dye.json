@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:rabuta_berry_smelt_to_dye"
+        "recipes": "cobblemon:rabuta_berry_smelt_to_dye"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

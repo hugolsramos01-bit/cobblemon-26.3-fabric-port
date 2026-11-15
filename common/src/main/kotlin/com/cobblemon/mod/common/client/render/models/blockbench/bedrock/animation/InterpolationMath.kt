@@ -26,7 +26,6 @@ fun catmullromLerp(frameA: BedrockAnimationKeyFrame?, frameB: BedrockAnimationKe
         catmullromLerp(frameA, frameB, frameC, frameD, Z_AXIS, time, runtime)
     )
 }
-
 /**
  * Gets the interpolation alpha for a value between two points
  *
@@ -41,43 +40,35 @@ fun linearLerpAlpha(before: Double, after: Double, value: Double): Double {
  * Frame A to D should be in order based on time. Frame A should be the keyframe before frame B, which should be the keyframe before C, and so on.
  */
 fun catmullromLerp(frameA: BedrockAnimationKeyFrame?, frameB: BedrockAnimationKeyFrame, frameC: BedrockAnimationKeyFrame, frameD: BedrockAnimationKeyFrame?, axis: Int, time: Double, runtime: MoLangRuntime) : Double {
-    val vectors = mutableListOf<Vector2d>()
     val frameAData = frameA?.post?.resolve(time, runtime)
     val frameBData = frameB.post.resolve(time, runtime)
     val frameCData = frameC.pre.resolve(time, runtime)
     val frameDData = frameD?.pre?.resolve(time, runtime)
-    if (frameAData != null) vectors.add(Vector2d(frameA.time, frameAData.get(axis)))
-    vectors.add(Vector2d(frameB.time, frameBData.get(axis)))
-    vectors.add(Vector2d(frameC.time, frameCData.get(axis)))
-    if (frameDData != null) vectors.add(Vector2d(frameD.time, frameDData.get(axis)))
-    val alpha = ((linearLerpAlpha(frameB.time, frameC.time, time)) + if (frameA != null) 1 else 0) / (vectors.size - 1)
-    return getPointOnSpline(vectors, alpha).b
+    val count = 2 + (if (frameAData != null) 1 else 0) + (if (frameDData != null) 1 else 0)
+    val alpha = (linearLerpAlpha(frameB.time, frameC.time, time) + if (frameA != null) 1 else 0) / (count - 1)
+    val p = (count - 1) * alpha
+    val index = floor(p).toInt()
+    val weight = p - index
+    fun valueAt(i: Int): Double {
+        if (i < 0 || i >= count) throw IndexOutOfBoundsException("Spline point index: $i")
+        val offset = if (frameAData != null) 1 else 0
+        return when {
+            frameAData != null && i == 0 -> frameAData.get(axis)
+            i == offset -> frameBData.get(axis)
+            i == offset + 1 -> frameCData.get(axis)
+            else -> checkNotNull(frameDData).get(axis)
+        }
+    }
+    val p0 = if (index == 0) index else index - 1
+    val p2 = if (index > count - 2) count - 1 else index + 1
+    val p3 = if (index > count - 3) count - 1 else index + 2
+    return catmullrom(weight, valueAt(p0), valueAt(index), valueAt(p2), valueAt(p3))
 }
 
 fun Vec3.get(axis: Int) = when (axis) {
     0 -> x
     1 -> y
     else -> z
-}
-
-private fun getPointOnSpline(points: List<Vector2d>, time: Double): Vector2d {
-    val p = (points.size - 1) * time
-    val intPoint = floor(p).toInt()
-    val weight = p - intPoint
-
-    val p0Index = if (intPoint == 0) intPoint else intPoint - 1
-    val p2Index = if (intPoint > points.size - 2) points.size - 1 else intPoint + 1
-    val p3Index = if (intPoint > points.size - 3) points.size - 1 else intPoint + 2
-
-    val p0 = points[p0Index]
-    val p1 = points[intPoint]
-    val p2 = points[p2Index]
-    val p3 = points[p3Index]
-
-    return Vector2d(
-        a = catmullrom(weight, p0.a, p1.a, p2.a, p3.a),
-        b = catmullrom(weight, p0.b, p1.b, p2.b, p3.b)
-    )
 }
 
 private fun catmullrom(t: Double, p0: Double, p1: Double, p2: Double, p3: Double): Double {
@@ -87,5 +78,3 @@ private fun catmullrom(t: Double, p0: Double, p1: Double, p2: Double, p3: Double
     val t3 = t * t2
     return (2 * p1 - 2 * p2 + v0 + v1) * t3 + (-3 * p1 + 3 * p2 - 2 * v0 - v1) * t2 + v0 * t + p1
 }
-
-private data class Vector2d(val a: Double, val b: Double)

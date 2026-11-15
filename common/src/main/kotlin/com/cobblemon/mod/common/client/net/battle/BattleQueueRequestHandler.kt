@@ -10,6 +10,7 @@ package com.cobblemon.mod.common.client.net.battle
 
 import com.cobblemon.mod.common.api.net.ClientNetworkPacketHandler
 import com.cobblemon.mod.common.client.CobblemonClient
+import com.cobblemon.mod.common.client.gui.battle.BattleGUI
 import com.cobblemon.mod.common.client.battle.SingleActionRequest
 import com.cobblemon.mod.common.net.messages.client.battle.BattleQueueRequestPacket
 import net.minecraft.client.Minecraft
@@ -18,6 +19,9 @@ object BattleQueueRequestHandler : ClientNetworkPacketHandler<BattleQueueRequest
     override fun handle(packet: BattleQueueRequestPacket, client: Minecraft) {
         val battle = CobblemonClient.battle ?: return
         val actor = battle.side1.actors.find { it.uuid == Minecraft.getInstance().player?.uuid } ?: return
+        // A replacement request (including a rejected choice) invalidates the
+        // selection's old SingleActionRequest, even if that menu is still open.
+        (client.gui.screen() as? BattleGUI)?.removeInvalidBattleActionSelection()
         CobblemonClient.battle?.pendingActionRequests = SingleActionRequest.composeFrom(actor, packet.request)
     }
 }

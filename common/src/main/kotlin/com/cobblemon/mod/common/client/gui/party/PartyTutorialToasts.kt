@@ -22,9 +22,9 @@ import com.cobblemon.mod.common.util.lang
 import com.mojang.blaze3d.platform.InputConstants
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.components.toasts.Toast
-import net.minecraft.client.gui.components.toasts.AdvancementToast
 import net.minecraft.network.chat.Component
 import net.minecraft.util.Mth
+import net.minecraft.util.RandomSource
 
 object PartyTutorialToasts {
 
@@ -34,17 +34,17 @@ object PartyTutorialToasts {
     val downKey = DownShiftPartyBinding.boundKey()
 
     val upDisplay =
-        if (upKey.type == InputConstants.Type.KEYSYM && upKey.value == InputConstants.KEY_UP)
+        if (upKey == InputConstants.getKey("key.keyboard.up"))
             Component.literal("↑")
         else upKey.displayName
 
     val downDisplay =
-        if (downKey.type == InputConstants.Type.KEYSYM && downKey.value == InputConstants.KEY_DOWN)
+        if (downKey == InputConstants.getKey("key.keyboard.down"))
             Component.literal("↓")
         else downKey.displayName
 
     private val toast = CobblemonToast(
-        Mth.createInsecureUUID(),
+        Mth.createInsecureUUID(RandomSource.create()),
         listOf(CobblemonItems.POKEDEX_RED.defaultInstance),
         lang("ui.party.party_select_title").red(),
         lang(
@@ -53,7 +53,7 @@ object PartyTutorialToasts {
             downDisplay,
             PartySendBinding.boundKey().displayName
         ).darkGray(),
-        AdvancementToast.BACKGROUND_SPRITE,
+        com.cobblemon.mod.common.api.toast.Toast.VANILLA_BACKGROUND_SPRITE,
         -1F,
         0
     )
@@ -88,7 +88,7 @@ object PartyTutorialToasts {
         val minecraft = Minecraft.getInstance()
         if (!toastAttached) {
             toast.nextVisibility = Toast.Visibility.SHOW
-            minecraft.toasts.addToast(toast)
+            minecraft.gui.toastManager().addToast(toast)
             toastAttached = true
         }
     }

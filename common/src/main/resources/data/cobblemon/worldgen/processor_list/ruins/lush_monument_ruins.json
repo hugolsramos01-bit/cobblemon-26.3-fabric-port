@@ -23,7 +23,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:decorated_pot"
+                        "id": "minecraft:decorated_pot"
                     }
                 },
                 {
@@ -36,7 +36,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:decorated_pot"
+                        "id": "minecraft:decorated_pot"
                     }
                 },
                 {
@@ -49,7 +49,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:air"
+                        "id": "minecraft:air"
                     }
                 },
                 {
@@ -62,7 +62,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:air"
+                        "id": "minecraft:air"
                     }
                 },
                 {
@@ -75,7 +75,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:air"
+                        "id": "minecraft:air"
                     }
                 },
                 {
@@ -92,7 +92,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:suspicious_gravel"
+                        "id": "minecraft:suspicious_gravel"
                     }
                 }
             ]
@@ -115,7 +115,7 @@
                             "predicate_type": "minecraft:always_true"
                         },
                         "output_state": {
-                            "Name": "minecraft:suspicious_gravel"
+                            "id": "minecraft:suspicious_gravel"
                         }
                     }
                 ]

@@ -13,8 +13,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "cobblemon:relic_coin_pouch",
-                        "Properties": {
+                        "id": "cobblemon:relic_coin_pouch",
+                        "properties": {
                             "facing": "north",
                             "natural": "true",
                             "waterlogged": "false"
@@ -31,8 +31,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "cobblemon:relic_coin_pouch",
-                        "Properties": {
+                        "id": "cobblemon:relic_coin_pouch",
+                        "properties": {
                             "facing": "south",
                             "natural": "true",
                             "waterlogged": "false"
@@ -49,8 +49,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "cobblemon:relic_coin_pouch",
-                        "Properties": {
+                        "id": "cobblemon:relic_coin_pouch",
+                        "properties": {
                             "facing": "east",
                             "natural": "true",
                             "waterlogged": "false"
@@ -67,8 +67,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "cobblemon:relic_coin_pouch",
-                        "Properties": {
+                        "id": "cobblemon:relic_coin_pouch",
+                        "properties": {
                             "facing": "west",
                             "natural": "true",
                             "waterlogged": "false"
@@ -90,7 +90,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:air"
+                        "id": "minecraft:air"
                     }
                 }
             ]

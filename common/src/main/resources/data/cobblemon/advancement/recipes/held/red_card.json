@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:red_card"
+        "recipes": "cobblemon:red_card"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

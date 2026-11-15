@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:weakness_policy"
+        "recipes": "cobblemon:weakness_policy"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

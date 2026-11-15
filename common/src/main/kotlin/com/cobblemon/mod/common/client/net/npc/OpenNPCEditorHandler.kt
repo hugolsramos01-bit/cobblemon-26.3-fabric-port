@@ -15,6 +15,6 @@ import net.minecraft.client.Minecraft
 
 object OpenNPCEditorHandler : ClientNetworkPacketHandler<OpenNPCEditorPacket> {
     override fun handle(packet: OpenNPCEditorPacket, client: Minecraft) {
-        client.setScreen(NPCEditorScreen(packet.npcId, packet.dto))
+        client.setScreenAndShow(NPCEditorScreen(packet.npcId, packet.dto))
     }
 }

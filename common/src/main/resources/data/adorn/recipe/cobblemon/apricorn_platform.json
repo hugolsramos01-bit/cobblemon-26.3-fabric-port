@@ -6,12 +6,8 @@
     "P"
   ],
   "key": {
-    "S": {
-      "item": "cobblemon:apricorn_slab"
-    },
-    "P": {
-      "item": "adorn:cobblemon/apricorn_post"
-    }
+    "S": "cobblemon:apricorn_slab",
+    "P": "adorn:cobblemon/apricorn_post"
   },
   "result": {
     "id": "adorn:cobblemon/apricorn_platform",

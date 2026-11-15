@@ -7,9 +7,11 @@
       ]
     }
   ],
-  "neoforge:conditions": [{
+  "neoforge:conditions": [
+    {
       "type": "neoforge:false"
-    }],
+    }
+  ],
   "parent": "cobblemon:recipes/misc",
   "criteria": {
     "has_apple": {
@@ -24,7 +26,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:mod_compatibility/farmersdelight/cooking/apple_cider_fabric"
+        "recipes": "cobblemon:mod_compatibility/farmersdelight/cooking/apple_cider_fabric"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

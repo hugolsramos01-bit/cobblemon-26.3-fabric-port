@@ -18,9 +18,9 @@ import com.cobblemon.mod.common.client.gui.battle.BattleGUI
 import com.cobblemon.mod.common.client.keybind.CobblemonBlockingKeyBinding
 import com.cobblemon.mod.common.client.keybind.KeybindCategories
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity
-import com.cobblemon.mod.common.net.messages.server.BattleChallengePacket
 import com.cobblemon.mod.common.net.messages.server.RequestPlayerInteractionsPacket
 import com.cobblemon.mod.common.net.messages.server.SendOutPokemonPacket
+import com.cobblemon.mod.common.net.messages.server.ThrowPokemonForBattlePacket
 import com.cobblemon.mod.common.net.messages.server.riding.DismountPokemonPacket
 import com.cobblemon.mod.common.pokemon.Pokemon
 import com.cobblemon.mod.common.util.isUsingPokedex
@@ -35,7 +35,7 @@ import kotlin.math.pow
 
 object PartySendBinding : CobblemonBlockingKeyBinding(
     "key.cobblemon.throwpartypokemon",
-    InputConstants.Type.KEYSYM,
+    InputConstants.Type.KEYBOARD,
     InputConstants.KEY_R,
     KeybindCategories.COBBLEMON_CATEGORY
 ) {
@@ -53,7 +53,7 @@ object PartySendBinding : CobblemonBlockingKeyBinding(
     override fun onTick() {
         if (wasDown) {
             if (heldDownSeconds < 100) {
-                heldDownSeconds += Minecraft.getInstance().timer.getGameTimeDeltaPartialTick(false)
+                heldDownSeconds += Minecraft.getInstance().getDeltaTracker().getGameTimeDeltaPartialTick(false)
             }
         } else {
             heldDownSeconds = 0F
@@ -78,7 +78,7 @@ object PartySendBinding : CobblemonBlockingKeyBinding(
             return
         }
 
-        if (Minecraft.getInstance().screen != null) return
+        if (Minecraft.getInstance().gui.screen() != null) return
 
         val selectedPartyPokemon = if (CobblemonClient.storage.selectedSlot >= 0) {
             CobblemonClient.storage.party.get(CobblemonClient.storage.selectedSlot)
@@ -95,8 +95,8 @@ object PartySendBinding : CobblemonBlockingKeyBinding(
 
     private fun toggleBattleScreen(battle: ClientBattle) {
         battle.minimised = !battle.minimised
-        if (!battle.minimised && !Minecraft.getInstance().options.hideGui) {
-            Minecraft.getInstance().setScreen(BattleGUI())
+        if (!battle.minimised && !Minecraft.getInstance().gui.hud.isHidden) {
+            Minecraft.getInstance().gui.setScreen(BattleGUI())
         }
     }
 
@@ -129,8 +129,8 @@ object PartySendBinding : CobblemonBlockingKeyBinding(
             }
             is PokemonEntity -> {
                 if (!entity.canBattle(player) || entity.position().distanceToSqr(player.position()) > Cobblemon.config.battleWildMaxDistance.pow(2)) return
-                    sendToServer(BattleChallengePacket(entity.id,  pokemon.uuid, BattleFormat.GEN_9_SINGLES))
-                }
+                sendToServer(ThrowPokemonForBattlePacket(CobblemonClient.storage.selectedSlot))
+            }
         }
     }
 

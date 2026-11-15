@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:soothe_bell"
+        "recipes": "cobblemon:soothe_bell"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

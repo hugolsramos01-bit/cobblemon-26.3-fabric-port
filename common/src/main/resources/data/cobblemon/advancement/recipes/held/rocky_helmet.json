@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:rocky_helmet"
+        "recipes": "cobblemon:rocky_helmet"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

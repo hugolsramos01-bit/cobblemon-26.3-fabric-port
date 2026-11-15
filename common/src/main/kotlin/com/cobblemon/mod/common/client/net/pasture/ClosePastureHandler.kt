@@ -22,11 +22,7 @@ import net.minecraft.client.Minecraft
 object ClosePastureHandler: ClientNetworkPacketHandler<ClosePasturePacket> {
 
     override fun handle(packet: ClosePasturePacket, client: Minecraft) {
-        if (client.screen !is PCGUI) {
-            return
-        }
-
-        val pc = client.screen as PCGUI
+        val pc = client.gui.screen() as? PCGUI ?: return
         pc.configuration.exitFunction.invoke(pc)
     }
 

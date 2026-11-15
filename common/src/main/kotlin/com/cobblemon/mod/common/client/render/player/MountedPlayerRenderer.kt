@@ -15,18 +15,24 @@ import com.cobblemon.mod.common.client.render.models.blockbench.bedrock.animatio
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity
 import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.math.Axis
+import net.minecraft.client.Minecraft
 import net.minecraft.client.model.AnimationUtils
 import net.minecraft.client.model.HumanoidModel
 import net.minecraft.client.model.geom.ModelPart
+import net.minecraft.client.model.geom.PartPose
 import net.minecraft.client.player.AbstractClientPlayer
-import net.minecraft.world.InteractionHand
-import net.minecraft.world.entity.HumanoidArm
+import net.minecraft.client.renderer.entity.state.AvatarRenderState
+import net.minecraft.client.renderer.entity.state.HumanoidRenderState
 import net.minecraft.world.phys.Vec3
 
 /**
  * @author landonjw
  */
 object MountedPlayerRenderer {
+    private var applyingRegularAnimation = false
+
+    private fun ModelPart.snapshotPose() = PartPose(x, y, z, xRot, yRot, zRot, xScale, yScale, zScale)
+
     @JvmField
     var shouldApplyRootAnimation = false
 
@@ -43,7 +49,7 @@ object MountedPlayerRenderer {
     )
 
     fun animate(
-        model: HumanoidModel<AbstractClientPlayer>,
+        model: HumanoidModel<*>,
         pokemonEntity: PokemonEntity,
         player: AbstractClientPlayer,
         headYaw: Float,
@@ -52,6 +58,9 @@ object MountedPlayerRenderer {
         limbSwing: Float,
         limbSwingAmount: Float
     ) {
+        // Re-running setupAnim below can re-enter the mixin that calls this method.
+        if (applyingRegularAnimation) return
+
         // We need to reset the root because it's a synthetic part, Minecraft won't do this for us.
         val root = relevantPartsByName["body"] ?: return
         root.x = 0F
@@ -104,40 +113,53 @@ object MountedPlayerRenderer {
      * rendering thingies. It's largely copy paste.
      */
     fun applyRegularAnimation(
-        model: HumanoidModel<AbstractClientPlayer>,
+        model: HumanoidModel<*>,
         player: AbstractClientPlayer,
         ageInTicks: Float
     ) {
-        val rightHanded = player.mainArm == HumanoidArm.RIGHT
-        if (player.isUsingItem) {
-            val usingMainHand = player.usedItemHand == InteractionHand.MAIN_HAND
-            if (usingMainHand == rightHanded) {
-                model.poseRightArm(player)
-            } else {
-                model.poseLeftArm(player)
+        val minecraft = Minecraft.getInstance()
+        val partialTick = minecraft.deltaTracker.getGameTimeDeltaPartialTick(false)
+        val renderState = minecraft.entityRenderDispatcher.extractEntity(player, partialTick) as? AvatarRenderState ?: return
+        @Suppress("UNCHECKED_CAST")
+        val humanoidModel = model as HumanoidModel<HumanoidRenderState>
+
+        // setupAnim owns the private arm-pose and attack-animation methods in 26.3.
+        // Keep the riding animation on the other parts while using vanilla's state pipeline for arms.
+        val originalPoses = humanoidModel.allParts().associateWith { it.snapshotPose() }
+        val originalRightArm = humanoidModel.rightArm.snapshotPose()
+        val originalLeftArm = humanoidModel.leftArm.snapshotPose()
+
+        applyingRegularAnimation = true
+        try {
+            humanoidModel.setupAnim(renderState)
+
+            val posedRightArm = humanoidModel.rightArm.snapshotPose()
+            val posedLeftArm = humanoidModel.leftArm.snapshotPose()
+            originalPoses.forEach { (part, pose) ->
+                if (part !== humanoidModel.rightArm && part !== humanoidModel.leftArm) {
+                    part.loadPose(pose)
+                }
             }
-        } else {
-            val offHandIsTwoHanded: Boolean = if (rightHanded) model.leftArmPose.isTwoHanded else model.rightArmPose.isTwoHanded
-            if (rightHanded != offHandIsTwoHanded) {
-                model.poseLeftArm(player)
-                model.poseRightArm(player)
+
+            if (renderState.rightArmPose == HumanoidModel.ArmPose.EMPTY && renderState.swingAnimation <= 0F) {
+                humanoidModel.rightArm.loadPose(originalRightArm)
+                AnimationUtils.bobModelPart(humanoidModel.rightArm, ageInTicks, 1.0F)
             } else {
-                model.poseRightArm(player)
-                model.poseLeftArm(player)
+                humanoidModel.rightArm.loadPose(posedRightArm)
             }
+
+            if (renderState.leftArmPose == HumanoidModel.ArmPose.EMPTY && renderState.swingAnimation <= 0F) {
+                humanoidModel.leftArm.loadPose(originalLeftArm)
+                AnimationUtils.bobModelPart(humanoidModel.leftArm, ageInTicks, -1.0F)
+            } else {
+                humanoidModel.leftArm.loadPose(posedLeftArm)
+            }
+
+            // In 26.3 sleeves and hat are children of the arms and head. They
+            // inherit their parent's pose; copying it here transforms them twice.
+        } finally {
+            applyingRegularAnimation = false
         }
-
-        model.setupAttackAnimation(player, ageInTicks)
-
-        if (model.rightArmPose != HumanoidModel.ArmPose.SPYGLASS) {
-            AnimationUtils.bobModelPart(model.rightArm, ageInTicks, 1.0F);
-        }
-
-        if (model.leftArmPose != HumanoidModel.ArmPose.SPYGLASS) {
-            AnimationUtils.bobModelPart(model.leftArm, ageInTicks, -1.0F);
-        }
-
-        model.hat.copyFrom(model.head)
     }
 
     const val RIDING_SITTING_OFFSET = -10.0
@@ -146,8 +168,8 @@ object MountedPlayerRenderer {
         val rootOffset = Vec3(-root.x.toDouble(), root.y.toDouble() + RIDING_SITTING_OFFSET, root.z.toDouble()).scale(1/16.0)
         val rotation = Vec3(root.xRot.toDouble(), root.yRot.toDouble(), root.zRot.toDouble())
         stack.translate(rootOffset.x.toFloat(), rootOffset.y.toFloat(), rootOffset.z.toFloat())
-        stack.mulPose(Axis.ZP.rotation(rotation.z.toFloat()))
-        stack.mulPose(Axis.YP.rotation(rotation.y.toFloat()))
-        stack.mulPose(Axis.XP.rotation(rotation.x.toFloat()))
+        stack.rotate(Axis.ZP.rotation(rotation.z.toFloat()))
+        stack.rotate(Axis.YP.rotation(rotation.y.toFloat()))
+        stack.rotate(Axis.XP.rotation(rotation.x.toFloat()))
     }
 }

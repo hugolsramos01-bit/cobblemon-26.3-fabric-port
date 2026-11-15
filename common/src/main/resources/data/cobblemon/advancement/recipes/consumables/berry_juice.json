@@ -14,7 +14,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:berry_juice"
+        "recipes": "cobblemon:berry_juice"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

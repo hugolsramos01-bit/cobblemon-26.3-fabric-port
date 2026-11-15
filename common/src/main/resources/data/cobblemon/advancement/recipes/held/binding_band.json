@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:binding_band"
+        "recipes": "cobblemon:binding_band"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

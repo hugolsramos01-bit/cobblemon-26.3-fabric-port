@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:power_anklet"
+        "recipes": "cobblemon:power_anklet"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:bright_powder_from_terrain_plants"
+        "recipes": "cobblemon:bright_powder_from_terrain_plants"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

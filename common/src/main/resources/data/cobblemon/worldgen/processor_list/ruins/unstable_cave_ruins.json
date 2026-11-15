@@ -17,7 +17,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:suspicious_sand"
+                        "id": "minecraft:suspicious_sand"
                     }
                 },
                 {
@@ -30,7 +30,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:sand"
+                        "id": "minecraft:sand"
                     }
                 },
                 {
@@ -43,7 +43,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:skeleton_skull"
+                        "id": "minecraft:skeleton_skull"
                     }
                 },
                 {
@@ -60,7 +60,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:decorated_pot"
+                        "id": "minecraft:decorated_pot"
                     }
                 },
                 {
@@ -73,8 +73,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "cobblemon:relic_coin_pouch",
-                        "Properties": {
+                        "id": "cobblemon:relic_coin_pouch",
+                        "properties": {
                             "facing": "west",
                             "natural": "true"
                         }
@@ -90,8 +90,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:brown_candle",
-                        "Properties": {
+                        "id": "minecraft:brown_candle",
+                        "properties": {
                             "candles": "4"
                         }
                     }
@@ -106,8 +106,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:brown_candle",
-                        "Properties": {
+                        "id": "minecraft:brown_candle",
+                        "properties": {
                             "candles": "3"
                         }
                     }
@@ -122,8 +122,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:brown_candle",
-                        "Properties": {
+                        "id": "minecraft:brown_candle",
+                        "properties": {
                             "candles": "2"
                         }
                     }
@@ -138,8 +138,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:brown_candle",
-                        "Properties": {
+                        "id": "minecraft:brown_candle",
+                        "properties": {
                             "candles": "1"
                         }
                     }
@@ -154,7 +154,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:air"
+                        "id": "minecraft:air"
                     }
                 },
                 {
@@ -167,7 +167,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:sand"
+                        "id": "minecraft:sand"
                     }
                 },
                 {
@@ -180,7 +180,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:sand"
+                        "id": "minecraft:sand"
                     }
                 },
                 {
@@ -193,7 +193,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:air"
+                        "id": "minecraft:air"
                     }
                 },
                 {
@@ -206,7 +206,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:sand"
+                        "id": "minecraft:sand"
                     }
                 },
                 {
@@ -219,7 +219,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:air"
+                        "id": "minecraft:air"
                     }
                 }
             ]
@@ -237,8 +237,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:skeleton_skull",
-                        "Properties": {
+                        "id": "minecraft:skeleton_skull",
+                        "properties": {
                             "rotation": "1"
                         }
                     }
@@ -253,8 +253,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:skeleton_skull",
-                        "Properties": {
+                        "id": "minecraft:skeleton_skull",
+                        "properties": {
                             "rotation": "2"
                         }
                     }
@@ -269,8 +269,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:skeleton_skull",
-                        "Properties": {
+                        "id": "minecraft:skeleton_skull",
+                        "properties": {
                             "rotation": "3"
                         }
                     }
@@ -285,8 +285,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:skeleton_skull",
-                        "Properties": {
+                        "id": "minecraft:skeleton_skull",
+                        "properties": {
                             "rotation": "4"
                         }
                     }
@@ -301,8 +301,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:skeleton_skull",
-                        "Properties": {
+                        "id": "minecraft:skeleton_skull",
+                        "properties": {
                             "rotation": "5"
                         }
                     }
@@ -317,8 +317,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:skeleton_skull",
-                        "Properties": {
+                        "id": "minecraft:skeleton_skull",
+                        "properties": {
                             "rotation": "6"
                         }
                     }
@@ -333,8 +333,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:skeleton_skull",
-                        "Properties": {
+                        "id": "minecraft:skeleton_skull",
+                        "properties": {
                             "rotation": "7"
                         }
                     }
@@ -349,8 +349,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:skeleton_skull",
-                        "Properties": {
+                        "id": "minecraft:skeleton_skull",
+                        "properties": {
                             "rotation": "8"
                         }
                     }
@@ -365,8 +365,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:skeleton_skull",
-                        "Properties": {
+                        "id": "minecraft:skeleton_skull",
+                        "properties": {
                             "rotation": "9"
                         }
                     }
@@ -381,8 +381,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:skeleton_skull",
-                        "Properties": {
+                        "id": "minecraft:skeleton_skull",
+                        "properties": {
                             "rotation": "10"
                         }
                     }
@@ -397,8 +397,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:skeleton_skull",
-                        "Properties": {
+                        "id": "minecraft:skeleton_skull",
+                        "properties": {
                             "rotation": "11"
                         }
                     }
@@ -413,8 +413,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:skeleton_skull",
-                        "Properties": {
+                        "id": "minecraft:skeleton_skull",
+                        "properties": {
                             "rotation": "12"
                         }
                     }
@@ -429,8 +429,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:skeleton_skull",
-                        "Properties": {
+                        "id": "minecraft:skeleton_skull",
+                        "properties": {
                             "rotation": "13"
                         }
                     }
@@ -445,8 +445,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:skeleton_skull",
-                        "Properties": {
+                        "id": "minecraft:skeleton_skull",
+                        "properties": {
                             "rotation": "14"
                         }
                     }
@@ -461,8 +461,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:skeleton_skull",
-                        "Properties": {
+                        "id": "minecraft:skeleton_skull",
+                        "properties": {
                             "rotation": "15"
                         }
                     }
@@ -477,8 +477,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "cobblemon:relic_coin_pouch",
-                        "Properties": {
+                        "id": "cobblemon:relic_coin_pouch",
+                        "properties": {
                             "facing": "north",
                             "natural": "true"
                         }
@@ -494,8 +494,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "cobblemon:relic_coin_pouch",
-                        "Properties": {
+                        "id": "cobblemon:relic_coin_pouch",
+                        "properties": {
                             "facing": "south",
                             "natural": "true"
                         }
@@ -511,8 +511,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "cobblemon:relic_coin_pouch",
-                        "Properties": {
+                        "id": "cobblemon:relic_coin_pouch",
+                        "properties": {
                             "facing": "east",
                             "natural": "true"
                         }
@@ -528,8 +528,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "cobblemon:relic_coin_pouch",
-                        "Properties": {
+                        "id": "cobblemon:relic_coin_pouch",
+                        "properties": {
                             "facing": "west",
                             "natural": "true"
                         }
@@ -555,7 +555,7 @@
                             "predicate_type": "minecraft:always_true"
                         },
                         "output_state": {
-                            "Name": "minecraft:suspicious_sand"
+                            "id": "minecraft:suspicious_sand"
                         }
                     }
                 ]
@@ -577,7 +577,7 @@
                             "predicate_type": "minecraft:always_true"
                         },
                         "output_state": {
-                            "Name": "minecraft:air"
+                            "id": "minecraft:air"
                         }
                     }
                 ]
@@ -603,7 +603,7 @@
                             "predicate_type": "minecraft:always_true"
                         },
                         "output_state": {
-                            "Name": "minecraft:suspicious_sand"
+                            "id": "minecraft:suspicious_sand"
                         }
                     }
                 ]
@@ -618,8 +618,8 @@
                     {
                         "input_predicate": {
                             "block_state": {
-                                "Name": "minecraft:chest",
-                                "Properties": {
+                                "id": "minecraft:chest",
+                                "properties": {
                                     "facing": "north"
                                 }
                             },
@@ -630,8 +630,8 @@
                             "predicate_type": "minecraft:always_true"
                         },
                         "output_state": {
-                            "Name": "cobblemon:gimmighoul_chest",
-                            "Properties": {
+                            "id": "cobblemon:gimmighoul_chest",
+                            "properties": {
                                 "facing": "north"
                             }
                         }
@@ -639,8 +639,8 @@
                     {
                         "input_predicate": {
                             "block_state": {
-                                "Name": "minecraft:chest",
-                                "Properties": {
+                                "id": "minecraft:chest",
+                                "properties": {
                                     "facing": "south"
                                 }
                             },
@@ -651,8 +651,8 @@
                             "predicate_type": "minecraft:always_true"
                         },
                         "output_state": {
-                            "Name": "cobblemon:gimmighoul_chest",
-                            "Properties": {
+                            "id": "cobblemon:gimmighoul_chest",
+                            "properties": {
                                 "facing": "south"
                             }
                         }
@@ -660,8 +660,8 @@
                     {
                         "input_predicate": {
                             "block_state": {
-                                "Name": "minecraft:chest",
-                                "Properties": {
+                                "id": "minecraft:chest",
+                                "properties": {
                                     "facing": "east"
                                 }
                             },
@@ -672,8 +672,8 @@
                             "predicate_type": "minecraft:always_true"
                         },
                         "output_state": {
-                            "Name": "cobblemon:gimmighoul_chest",
-                            "Properties": {
+                            "id": "cobblemon:gimmighoul_chest",
+                            "properties": {
                                 "facing": "east"
                             }
                         }
@@ -681,8 +681,8 @@
                     {
                         "input_predicate": {
                             "block_state": {
-                                "Name": "minecraft:chest",
-                                "Properties": {
+                                "id": "minecraft:chest",
+                                "properties": {
                                     "facing": "west"
                                 }
                             },
@@ -693,8 +693,8 @@
                             "predicate_type": "minecraft:always_true"
                         },
                         "output_state": {
-                            "Name": "cobblemon:gimmighoul_chest",
-                            "Properties": {
+                            "id": "cobblemon:gimmighoul_chest",
+                            "properties": {
                                 "facing": "west"
                             }
                         }
@@ -715,8 +715,8 @@
                         },
                         "input_predicate": {
                             "block_state": {
-                                "Name": "minecraft:chest",
-                                "Properties": {
+                                "id": "minecraft:chest",
+                                "properties": {
                                     "facing": "north",
                                     "type": "single",
                                     "waterlogged": "false"
@@ -729,8 +729,8 @@
                             "predicate_type": "minecraft:always_true"
                         },
                         "output_state": {
-                            "Name": "cobblemon:gilded_chest",
-                            "Properties": {
+                            "id": "cobblemon:gilded_chest",
+                            "properties": {
                                 "facing": "north"
                             }
                         }
@@ -742,8 +742,8 @@
                         },
                         "input_predicate": {
                             "block_state": {
-                                "Name": "minecraft:chest",
-                                "Properties": {
+                                "id": "minecraft:chest",
+                                "properties": {
                                     "facing": "south",
                                     "type": "single",
                                     "waterlogged": "false"
@@ -756,8 +756,8 @@
                             "predicate_type": "minecraft:always_true"
                         },
                         "output_state": {
-                            "Name": "cobblemon:gilded_chest",
-                            "Properties": {
+                            "id": "cobblemon:gilded_chest",
+                            "properties": {
                                 "facing": "south"
                             }
                         }
@@ -769,8 +769,8 @@
                         },
                         "input_predicate": {
                             "block_state": {
-                                "Name": "minecraft:chest",
-                                "Properties": {
+                                "id": "minecraft:chest",
+                                "properties": {
                                     "facing": "east",
                                     "type": "single",
                                     "waterlogged": "false"
@@ -783,8 +783,8 @@
                             "predicate_type": "minecraft:always_true"
                         },
                         "output_state": {
-                            "Name": "cobblemon:gilded_chest",
-                            "Properties": {
+                            "id": "cobblemon:gilded_chest",
+                            "properties": {
                                 "facing": "east"
                             }
                         }
@@ -796,8 +796,8 @@
                         },
                         "input_predicate": {
                             "block_state": {
-                                "Name": "minecraft:chest",
-                                "Properties": {
+                                "id": "minecraft:chest",
+                                "properties": {
                                     "facing": "west",
                                     "type": "single",
                                     "waterlogged": "false"
@@ -810,8 +810,8 @@
                             "predicate_type": "minecraft:always_true"
                         },
                         "output_state": {
-                            "Name": "cobblemon:gilded_chest",
-                            "Properties": {
+                            "id": "cobblemon:gilded_chest",
+                            "properties": {
                                 "facing": "west"
                             }
                         }
@@ -832,8 +832,8 @@
                         },
                         "input_predicate": {
                             "block_state": {
-                                "Name": "minecraft:chest",
-                                "Properties": {
+                                "id": "minecraft:chest",
+                                "properties": {
                                     "facing": "north",
                                     "type": "single",
                                     "waterlogged": "false"
@@ -846,8 +846,8 @@
                             "predicate_type": "minecraft:always_true"
                         },
                         "output_state": {
-                            "Name": "minecraft:chest",
-                            "Properties": {
+                            "id": "minecraft:chest",
+                            "properties": {
                                 "facing": "north"
                             }
                         }
@@ -859,8 +859,8 @@
                         },
                         "input_predicate": {
                             "block_state": {
-                                "Name": "minecraft:chest",
-                                "Properties": {
+                                "id": "minecraft:chest",
+                                "properties": {
                                     "facing": "south",
                                     "type": "single",
                                     "waterlogged": "false"
@@ -873,8 +873,8 @@
                             "predicate_type": "minecraft:always_true"
                         },
                         "output_state": {
-                            "Name": "minecraft:chest",
-                            "Properties": {
+                            "id": "minecraft:chest",
+                            "properties": {
                                 "facing": "south"
                             }
                         }
@@ -886,8 +886,8 @@
                         },
                         "input_predicate": {
                             "block_state": {
-                                "Name": "minecraft:chest",
-                                "Properties": {
+                                "id": "minecraft:chest",
+                                "properties": {
                                     "facing": "east",
                                     "type": "single",
                                     "waterlogged": "false"
@@ -900,8 +900,8 @@
                             "predicate_type": "minecraft:always_true"
                         },
                         "output_state": {
-                            "Name": "minecraft:chest",
-                            "Properties": {
+                            "id": "minecraft:chest",
+                            "properties": {
                                 "facing": "east"
                             }
                         }
@@ -913,8 +913,8 @@
                         },
                         "input_predicate": {
                             "block_state": {
-                                "Name": "minecraft:chest",
-                                "Properties": {
+                                "id": "minecraft:chest",
+                                "properties": {
                                     "facing": "west",
                                     "type": "single",
                                     "waterlogged": "false"
@@ -927,8 +927,8 @@
                             "predicate_type": "minecraft:always_true"
                         },
                         "output_state": {
-                            "Name": "minecraft:chest",
-                            "Properties": {
+                            "id": "minecraft:chest",
+                            "properties": {
                                 "facing": "west"
                             }
                         }
@@ -949,8 +949,8 @@
                         },
                         "input_predicate": {
                             "block_state": {
-                                "Name": "minecraft:trapped_chest",
-                                "Properties": {
+                                "id": "minecraft:trapped_chest",
+                                "properties": {
                                     "facing": "north",
                                     "type": "single",
                                     "waterlogged": "false"
@@ -963,8 +963,8 @@
                             "predicate_type": "minecraft:always_true"
                         },
                         "output_state": {
-                            "Name": "minecraft:trapped_chest",
-                            "Properties": {
+                            "id": "minecraft:trapped_chest",
+                            "properties": {
                                 "facing": "north"
                             }
                         }
@@ -976,8 +976,8 @@
                         },
                         "input_predicate": {
                             "block_state": {
-                                "Name": "minecraft:trapped_chest",
-                                "Properties": {
+                                "id": "minecraft:trapped_chest",
+                                "properties": {
                                     "facing": "south",
                                     "type": "single",
                                     "waterlogged": "false"
@@ -990,8 +990,8 @@
                             "predicate_type": "minecraft:always_true"
                         },
                         "output_state": {
-                            "Name": "minecraft:trapped_chest",
-                            "Properties": {
+                            "id": "minecraft:trapped_chest",
+                            "properties": {
                                 "facing": "south"
                             }
                         }
@@ -1003,8 +1003,8 @@
                         },
                         "input_predicate": {
                             "block_state": {
-                                "Name": "minecraft:trapped_chest",
-                                "Properties": {
+                                "id": "minecraft:trapped_chest",
+                                "properties": {
                                     "facing": "east",
                                     "type": "single",
                                     "waterlogged": "false"
@@ -1017,8 +1017,8 @@
                             "predicate_type": "minecraft:always_true"
                         },
                         "output_state": {
-                            "Name": "minecraft:trapped_chest",
-                            "Properties": {
+                            "id": "minecraft:trapped_chest",
+                            "properties": {
                                 "facing": "east"
                             }
                         }
@@ -1030,8 +1030,8 @@
                         },
                         "input_predicate": {
                             "block_state": {
-                                "Name": "minecraft:trapped_chest",
-                                "Properties": {
+                                "id": "minecraft:trapped_chest",
+                                "properties": {
                                     "facing": "west",
                                     "type": "single",
                                     "waterlogged": "false"
@@ -1044,8 +1044,8 @@
                             "predicate_type": "minecraft:always_true"
                         },
                         "output_state": {
-                            "Name": "minecraft:trapped_chest",
-                            "Properties": {
+                            "id": "minecraft:trapped_chest",
+                            "properties": {
                                 "facing": "west"
                             }
                         }

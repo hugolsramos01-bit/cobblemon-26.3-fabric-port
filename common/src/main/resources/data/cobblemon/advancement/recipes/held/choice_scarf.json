@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:choice_scarf"
+        "recipes": "cobblemon:choice_scarf"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

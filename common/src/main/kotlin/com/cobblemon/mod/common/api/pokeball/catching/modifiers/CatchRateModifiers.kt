@@ -8,6 +8,9 @@
 
 package com.cobblemon.mod.common.api.pokeball.catching.modifiers
 
+import com.cobblemon.mod.common.util.dayTime
+import com.cobblemon.mod.common.util.moonPhase
+
 import com.cobblemon.mod.common.Cobblemon
 import com.cobblemon.mod.common.api.pokeball.PokeBalls
 import com.cobblemon.mod.common.api.pokeball.catching.CatchRateModifier
@@ -79,7 +82,7 @@ object CatchRateModifiers {
      * 1× otherwise.
      */
     val MOON_PHASES: CatchRateModifier = WorldStateModifier { _, entity ->
-        if (entity.level().dayTime % 24000 < 12000)
+        if (entity.level().dayTime() % 24000 < 12000)
             return@WorldStateModifier 1F
         when (entity.level().moonPhase) {
             2, 6 -> 1.5F

@@ -13,6 +13,38 @@
       "type": "minecraft:in_square"
     },
     {
+      "type": "minecraft:count",
+      "count": 3
+    },
+    {
+      "type": "minecraft:offset",
+      "x": {
+        "type": "minecraft:uniform",
+        "min_inclusive": -1,
+        "max_inclusive": 1
+      },
+      "y": {
+        "type": "minecraft:uniform",
+        "min_inclusive": -1,
+        "max_inclusive": 1
+      },
+      "z": {
+        "type": "minecraft:uniform",
+        "min_inclusive": -1,
+        "max_inclusive": 1
+      }
+    },
+    {
+      "type": "minecraft:block_predicate_filter",
+      "predicate": {
+        "type": "minecraft:would_survive",
+        "state": {
+          "id": "cobblemon:big_root",
+          "properties": {}
+        }
+      }
+    },
+    {
       "type": "cobblemon:beneath_heightmap",
       "heightmap": "MOTION_BLOCKING_NO_LEAVES",
       "offset": -1,
@@ -26,7 +58,11 @@
           {
             "type": "minecraft:matching_blocks",
             "blocks": "#cobblemon:roots_spreadable",
-            "offset": [0, 1, 0]
+            "offset": [
+              0,
+              1,
+              0
+            ]
           },
           {
             "type": "minecraft:matching_blocks",
@@ -35,12 +71,20 @@
           {
             "type": "minecraft:matching_blocks",
             "blocks": "minecraft:air",
-            "offset": [0, -1, 0]
+            "offset": [
+              0,
+              -1,
+              0
+            ]
           },
           {
             "type": "minecraft:matching_blocks",
             "blocks": "minecraft:air",
-            "offset": [0, -2, 0]
+            "offset": [
+              0,
+              -2,
+              0
+            ]
           }
         ]
       }

@@ -14,7 +14,6 @@ import com.cobblemon.mod.common.api.riding.stats.RidingStat
 import com.cobblemon.mod.common.api.storage.party.PartyPosition
 import com.cobblemon.mod.common.api.storage.pc.PCPosition
 import com.cobblemon.mod.common.net.IntSize
-import com.google.common.collect.Lists
 import io.netty.buffer.ByteBuf
 import io.netty.buffer.ByteBufInputStream
 import io.netty.buffer.ByteBufOutputStream
@@ -29,7 +28,7 @@ import net.minecraft.network.Utf8String
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.ComponentSerialization
 import net.minecraft.network.codec.StreamEncoder
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 import net.minecraft.util.Mth
 import net.minecraft.world.entity.EntityDimensions
 import net.minecraft.world.item.ItemStack
@@ -67,13 +66,6 @@ fun ByteBuf.readEntityDimensions(): EntityDimensions {
 }
 
 
-fun <T> ByteBuf.writeCollection(collection: Collection<T> , writer: (ByteBuf, T) -> Unit) {
-    this.writeInt(collection.size)
-    collection.forEach {
-        writer(this, it)
-    }
-}
-
 fun <T> ByteBuf.writeNullable(obj: T?, writer: (ByteBuf, T) -> Unit) {
     this.writeBoolean(obj != null)
     obj?.let {
@@ -81,7 +73,7 @@ fun <T> ByteBuf.writeNullable(obj: T?, writer: (ByteBuf, T) -> Unit) {
     }
 }
 
-fun <T> ByteBuf.writeNullable(obj: T?, writer: StreamEncoder<ByteBuf, T>) {
+fun <T : Any> ByteBuf.writeNullable(obj: T?, writer: StreamEncoder<ByteBuf, T>) {
     writeNullable(obj) { buf, otherObj ->
         writer.encode(buf, otherObj)
     }
@@ -91,8 +83,6 @@ fun ByteBuf.writeString(string: String): ByteBuf {
     Utf8String.write(this, string, 32767)
     return this
 }
-
-fun <T> RegistryFriendlyByteBuf.readList(reader: (FriendlyByteBuf) -> T): List<T> = readCollection(Lists::newArrayListWithCapacity, reader)
 
 fun ByteBuf.readString(): String {
     return Utf8String.read(this, 32767)
@@ -112,7 +102,7 @@ fun ByteBuf.writeExpressionLike(expressionLike: ExpressionLike): ByteBuf {
 }
 
 fun ByteBuf.writeRidingStats(stats: Map<RidingStat, IntRange>) {
-    return this.writeMap(
+    return this.writeFixedSizeMap(
         stats,
         { buf, stat -> buf.writeEnumConstant(stat) },
         { buf, range -> buf.writeInt(range.first).writeInt(range.last) }
@@ -120,7 +110,7 @@ fun ByteBuf.writeRidingStats(stats: Map<RidingStat, IntRange>) {
 }
 
 fun ByteBuf.readRidingStats(): Map<RidingStat, IntRange> {
-    return this.readMap(
+    return this.readFixedSizeMap(
         { buf -> buf.readEnumConstant(RidingStat::class.java) },
         { buf -> IntRange(buf.readInt(), buf.readInt()) }
     )
@@ -146,33 +136,14 @@ fun <T> ByteBuf.readNullable(reader: (ByteBuf) -> T): T? {
     return null
 }
 
-fun <K, V> ByteBuf.writeMap(map: Map<K, V>, keyWriter: (ByteBuf, K) -> Unit, valueWriter: (ByteBuf, V) -> Unit) {
-    this.writeInt(map.size)
-    map.forEach { (key, value) ->
-        keyWriter(this, key)
-        valueWriter(this, value)
-    }
-}
 
-fun <K, V> ByteBuf.readMap(keyReader: (ByteBuf) -> K, valueReader: (ByteBuf) -> V): Map<K, V> {
-    val map = mutableMapOf<K, V>()
-    val numElements = readInt()
-    repeat(numElements) {
-        val key = keyReader.invoke(this)
-        val value = valueReader.invoke(this)
-        map[key] = value
-    }
-    return map
-}
-
-
-fun ByteBuf.readIdentifier(): ResourceLocation {
+fun ByteBuf.readIdentifier(): Identifier {
     val str = this.readString()
     //If this is null we should be using writeNullable anyway
-    return ResourceLocation.tryParse(str)!!
+    return Identifier.tryParse(str)!!
 }
 
-fun ByteBuf.writeIdentifier(id: ResourceLocation) {
+fun ByteBuf.writeIdentifier(id: Identifier) {
     writeString(id.toString())
 }
 

@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:pink_dye_from_mistleaf"
+        "recipes": "cobblemon:pink_dye_from_mistleaf"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

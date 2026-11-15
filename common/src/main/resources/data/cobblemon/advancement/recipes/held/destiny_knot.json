@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:destiny_knot"
+        "recipes": "cobblemon:destiny_knot"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

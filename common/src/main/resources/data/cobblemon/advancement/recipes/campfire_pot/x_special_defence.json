@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:campfire_pot/x_special_defence"
+        "recipes": "cobblemon:campfire_pot/x_special_defence"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

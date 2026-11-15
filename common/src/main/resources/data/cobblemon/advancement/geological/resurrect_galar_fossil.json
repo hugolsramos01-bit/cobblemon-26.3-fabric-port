@@ -14,27 +14,27 @@
   "criteria": {
     "resurrected_dracozolt": {
       "trigger": "cobblemon:resurrect_pokemon",
-			"conditions": {
-				"species": "cobblemon:dracozolt"
-			}
+      "conditions": {
+        "species": "cobblemon:dracozolt"
+      }
     },
     "resurrected_dracovish": {
       "trigger": "cobblemon:resurrect_pokemon",
-			"conditions": {
-				"species": "cobblemon:dracovish"
-			}
+      "conditions": {
+        "species": "cobblemon:dracovish"
+      }
     },
-	"resurrected_arctozolt": {
+    "resurrected_arctozolt": {
       "trigger": "cobblemon:resurrect_pokemon",
-			"conditions": {
-				"species": "cobblemon:arctozolt"
-			}
+      "conditions": {
+        "species": "cobblemon:arctozolt"
+      }
     },
     "resurrected_arctovish": {
       "trigger": "cobblemon:resurrect_pokemon",
-			"conditions": {
-				"species": "cobblemon:arctovish"
-			}
+      "conditions": {
+        "species": "cobblemon:arctovish"
+      }
     }
   },
   "requirements": [

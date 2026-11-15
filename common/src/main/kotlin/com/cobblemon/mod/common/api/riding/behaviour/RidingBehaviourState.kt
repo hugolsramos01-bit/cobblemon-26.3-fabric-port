@@ -45,12 +45,12 @@ open class RidingBehaviourState {
     }
 
     open fun encode(buffer: FriendlyByteBuf) {
-        buffer.writeVec3(rideVelocity.get())
+        Vec3.STREAM_CODEC.encode(buffer, rideVelocity.get())
         buffer.writeFloat(stamina.get())
     }
 
     open fun decode(buffer: FriendlyByteBuf) {
-        rideVelocity.set(buffer.readVec3(), true)
+        rideVelocity.set(Vec3.STREAM_CODEC.decode(buffer), true)
         stamina.set(buffer.readFloat(), true)
     }
 }

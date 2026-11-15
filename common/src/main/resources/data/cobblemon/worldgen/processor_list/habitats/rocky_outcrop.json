@@ -19,7 +19,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:andesite"
+                        "id": "minecraft:andesite"
                     }
                 },
                 {
@@ -32,7 +32,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:emerald_ore"
+                        "id": "minecraft:emerald_ore"
                     }
                 },
                 {
@@ -45,7 +45,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:air"
+                        "id": "minecraft:air"
                     }
                 }
             ]
@@ -64,7 +64,7 @@
                             "predicate_type": "minecraft:always_true"
                         },
                         "output_state": {
-                            "Name": "minecraft:dripstone_block"
+                            "id": "minecraft:dripstone_block"
                         }
                     }
                 ]

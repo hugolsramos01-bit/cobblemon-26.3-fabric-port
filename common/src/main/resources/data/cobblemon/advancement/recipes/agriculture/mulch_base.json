@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:mulch_base"
+        "recipes": "cobblemon:mulch_base"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

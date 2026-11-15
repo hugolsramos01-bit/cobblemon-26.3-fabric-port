@@ -18,6 +18,7 @@ import net.minecraft.world.InteractionResult
 import net.minecraft.world.damagesource.DamageSource
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.HasCustomInventoryScreen
+import net.minecraft.world.entity.ContainerUser
 import net.minecraft.world.entity.SlotAccess
 import net.minecraft.world.entity.monster.piglin.PiglinAi
 import net.minecraft.world.entity.player.Inventory
@@ -28,11 +29,14 @@ import net.minecraft.world.inventory.ChestMenu
 import net.minecraft.world.item.Item
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.Level
+import net.minecraft.server.level.ServerLevel
+import net.minecraft.world.level.storage.ValueInput
+import net.minecraft.world.level.storage.ValueOutput
 import net.minecraft.world.level.gameevent.GameEvent
 import net.minecraft.world.level.storage.loot.LootTable
 
 @Suppress("unused")
-class CobblemonChestBoatEntity(entityType: EntityType<CobblemonChestBoatEntity>, world: Level) : CobblemonBoatEntity(entityType, world), HasCustomInventoryScreen, ContainerEntity {
+class CobblemonChestBoatEntity(entityType: EntityType<CobblemonChestBoatEntity>, world: Level) : CobblemonBoatEntity(entityType, world, chestBoat = true), HasCustomInventoryScreen, ContainerEntity {
 
     constructor(world: Level) : this(CobblemonEntities.CHEST_BOAT, world)
 
@@ -52,25 +56,25 @@ class CobblemonChestBoatEntity(entityType: EntityType<CobblemonChestBoatEntity>,
         player.openMenu(this)
         if (!player.level().isClientSide) {
             this.gameEvent(GameEvent.CONTAINER_OPEN, player)
-            PiglinAi.angerNearbyPiglins(player, true)
+            PiglinAi.angerNearbyPiglins(player.level() as ServerLevel, player, true)
         }
     }
 
     override fun getMaxPassengers() = 1
 
-    override fun addAdditionalSaveData(compound: CompoundTag) {
-        super.addAdditionalSaveData(compound)
-        this.addChestVehicleSaveData(compound, this.registryAccess())
+    override fun addAdditionalSaveData(output: ValueOutput) {
+        super.addAdditionalSaveData(output)
+        this.addChestVehicleSaveData(output)
     }
 
-    override fun readAdditionalSaveData(compound: CompoundTag) {
-        super.readAdditionalSaveData(compound)
-        this.readChestVehicleSaveData(compound, this.registryAccess())
+    override fun readAdditionalSaveData(input: ValueInput) {
+        super.readAdditionalSaveData(input)
+        this.readChestVehicleSaveData(input)
     }
 
-    public override fun destroy(source: DamageSource) {
-        this.destroy(this.getDropItem())
-        this.chestVehicleDestroyed(source, this.level(), this)
+    override fun destroy(level: ServerLevel, source: DamageSource) {
+        super.destroy(level, source)
+        this.chestVehicleDestroyed(source, level, this)
     }
 
     override fun remove(reason: RemovalReason) {
@@ -81,9 +85,9 @@ class CobblemonChestBoatEntity(entityType: EntityType<CobblemonChestBoatEntity>,
         super.remove(reason)
     }
 
-    override fun interact(player: Player, hand: InteractionHand): InteractionResult {
+    override fun interact(player: Player, hand: InteractionHand, location: net.minecraft.world.phys.Vec3): InteractionResult {
         if (!player.isSecondaryUseActive) {
-            val interactionResult = super.interact(player, hand)
+            val interactionResult = super.interact(player, hand, location)
             if (interactionResult != InteractionResult.PASS) {
                 return interactionResult
             }
@@ -95,7 +99,7 @@ class CobblemonChestBoatEntity(entityType: EntityType<CobblemonChestBoatEntity>,
             val interactionResult: InteractionResult = this.interactWithContainerVehicle(player)
             if (interactionResult.consumesAction()) {
                 this.gameEvent(GameEvent.CONTAINER_OPEN, player)
-                PiglinAi.angerNearbyPiglins(player, true)
+                PiglinAi.angerNearbyPiglins(player.level() as ServerLevel, player, true)
             }
 
             return interactionResult
@@ -129,15 +133,15 @@ class CobblemonChestBoatEntity(entityType: EntityType<CobblemonChestBoatEntity>,
         return ChestMenu.threeRows(syncId, playerInventory, this)
     }
 
-    override fun getLootTable() = lootTableId
+    override fun getContainerLootTable() = lootTableId
 
-    override fun setLootTable(lootTable: ResourceKey<LootTable>?) {
+    override fun setContainerLootTable(lootTable: ResourceKey<LootTable>?) {
         this.lootTableId = lootTable
     }
 
-    override fun getLootTableSeed(): Long = this.lootTableSeed
+    override fun getContainerLootTableSeed(): Long = this.lootTableSeed
 
-    override fun setLootTableSeed(lootTableSeed: Long) {
+    override fun setContainerLootTableSeed(lootTableSeed: Long) {
         this.lootTableSeed = lootTableSeed
     }
 
@@ -147,12 +151,10 @@ class CobblemonChestBoatEntity(entityType: EntityType<CobblemonChestBoatEntity>,
         this.inventory = this.emptyInventory()
     }
 
-    override fun getDropItem(): Item = this.boatType.chestBoatItem
-
     private fun emptyInventory(): NonNullList<ItemStack> = NonNullList.withSize(INVENTORY_SLOTS, ItemStack.EMPTY)
 
-    override fun stopOpen(player: Player) {
-        this.level().gameEvent(GameEvent.CONTAINER_CLOSE, this.position(), GameEvent.Context.of(player))
+    override fun stopOpen(user: ContainerUser) {
+        this.level().gameEvent(GameEvent.CONTAINER_CLOSE, this.position(), GameEvent.Context.of(user.getLivingEntity()))
     }
 
     companion object {

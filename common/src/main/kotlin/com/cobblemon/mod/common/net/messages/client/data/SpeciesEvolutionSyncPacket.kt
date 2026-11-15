@@ -8,6 +8,10 @@
 
 package com.cobblemon.mod.common.net.messages.client.data
 
+import com.cobblemon.mod.common.util.readList
+
+import com.cobblemon.mod.common.util.writeCollection
+
 import com.cobblemon.mod.common.Cobblemon
 import com.cobblemon.mod.common.api.pokemon.PokemonSpecies
 import com.cobblemon.mod.common.api.pokemon.evolution.Evolution
@@ -15,13 +19,14 @@ import com.cobblemon.mod.common.api.pokemon.evolution.PreEvolution
 import com.cobblemon.mod.common.pokemon.FormData
 import com.cobblemon.mod.common.pokemon.Species
 import com.cobblemon.mod.common.util.cobblemonResource
+import com.cobblemon.mod.common.util.adapters.RegistryAccessResolver
 import com.cobblemon.mod.common.util.readIdentifier
 import com.cobblemon.mod.common.util.readString
 import com.cobblemon.mod.common.util.writeIdentifier
 import com.cobblemon.mod.common.util.writeString
 import com.google.gson.reflect.TypeToken
 import net.minecraft.network.RegistryFriendlyByteBuf
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 
 /**
  * Carries the evolutions/preEvolution of every [Species] (and any [FormData] overrides), sent right after
@@ -33,32 +38,53 @@ class SpeciesEvolutionSyncPacket(entries: Collection<SpeciesEvolutionEntry>) : D
     override val id = ID
 
     override fun encodeEntry(buffer: RegistryFriendlyByteBuf, entry: SpeciesEvolutionEntry) {
-        try {
-            buffer.writeIdentifier(entry.speciesIdentifier)
-            buffer.writeString(PokemonSpecies.gson.toJson(entry.evolutions, EVOLUTION_SET_TYPE))
-            buffer.writeNullable(entry.preEvolution) { _, preEvolution -> buffer.writeString(PokemonSpecies.gson.toJson(preEvolution, PreEvolution::class.java)) }
-            buffer.writeCollection(entry.formOverrides) { _, override ->
-                buffer.writeString(override.formName)
-                buffer.writeNullable(override.evolutions) { _, evolutions -> buffer.writeString(PokemonSpecies.gson.toJson(evolutions, EVOLUTION_SET_TYPE)) }
-                buffer.writeNullable(override.preEvolution) { _, preEvolution -> buffer.writeString(PokemonSpecies.gson.toJson(preEvolution, PreEvolution::class.java)) }
+        RegistryAccessResolver.withAccess(buffer.registryAccess()) {
+            // Complete serialization before writing this entry. An exception must abort
+            // the packet, never leave a partial entry behind a successful count prefix.
+            val evolutionsJson = PokemonSpecies.gson.toJson(entry.evolutions, EVOLUTION_SET_TYPE)
+            val preEvolutionJson = entry.preEvolution?.let { PokemonSpecies.gson.toJson(it, PreEvolution::class.java) }
+            val formJson = entry.formOverrides.map { override ->
+                Triple(
+                    override.formName,
+                    override.evolutions?.let { PokemonSpecies.gson.toJson(it, EVOLUTION_SET_TYPE) },
+                    override.preEvolution?.let { PokemonSpecies.gson.toJson(it, PreEvolution::class.java) }
+                )
             }
-        } catch (e: Exception) {
-            Cobblemon.LOGGER.error("Caught exception encoding evolution data for species {}", entry.speciesIdentifier, e)
+            buffer.writeIdentifier(entry.speciesIdentifier)
+            buffer.writeString(evolutionsJson)
+            buffer.writeNullable(preEvolutionJson) { _, json -> buffer.writeString(json) }
+            buffer.writeCollection(formJson) { _, override ->
+                buffer.writeString(override.first)
+                buffer.writeNullable(override.second) { _, json -> buffer.writeString(json) }
+                buffer.writeNullable(override.third) { _, json -> buffer.writeString(json) }
+            }
         }
     }
 
     override fun decodeEntry(buffer: RegistryFriendlyByteBuf): SpeciesEvolutionEntry? {
         val identifier = buffer.readIdentifier()
+        // Read the whole entry before parsing its JSON, so a semantic decode error
+        // cannot make the next entry read JSON as a species identifier.
+        val evolutionsJson = buffer.readString()
+        val preEvolutionJson = buffer.readNullable { _ -> buffer.readString() }
+        val formJson = buffer.readList { _ ->
+            Triple(
+                buffer.readString(),
+                buffer.readNullable { _ -> buffer.readString() },
+                buffer.readNullable { _ -> buffer.readString() }
+            )
+        }
         return try {
-            val evolutions: MutableSet<Evolution> = PokemonSpecies.gson.fromJson(buffer.readString(), EVOLUTION_SET_TYPE)
-            val preEvolution = buffer.readNullable { _ -> PokemonSpecies.gson.fromJson(buffer.readString(), PreEvolution::class.java) }
-            val formOverrides = buffer.readList { _ ->
-                val formName = buffer.readString()
-                val formEvolutions = buffer.readNullable { _ -> PokemonSpecies.gson.fromJson<MutableSet<Evolution>>(buffer.readString(), EVOLUTION_SET_TYPE) }
-                val formPreEvolution = buffer.readNullable { _ -> PokemonSpecies.gson.fromJson(buffer.readString(), PreEvolution::class.java) }
-                FormEvolutionOverride(formName, formEvolutions, formPreEvolution)
+            RegistryAccessResolver.withAccess(buffer.registryAccess()) {
+                val evolutions: MutableSet<Evolution> = PokemonSpecies.gson.fromJson(evolutionsJson, EVOLUTION_SET_TYPE)
+                val preEvolution = preEvolutionJson?.let { PokemonSpecies.gson.fromJson(it, PreEvolution::class.java) }
+                val formOverrides = formJson.map { override ->
+                    val formEvolutions = override.second?.let { PokemonSpecies.gson.fromJson<MutableSet<Evolution>>(it, EVOLUTION_SET_TYPE) }
+                    val formPreEvolution = override.third?.let { PokemonSpecies.gson.fromJson(it, PreEvolution::class.java) }
+                    FormEvolutionOverride(override.first, formEvolutions, formPreEvolution)
+                }
+                SpeciesEvolutionEntry(identifier, evolutions, preEvolution, formOverrides)
             }
-            SpeciesEvolutionEntry(identifier, evolutions, preEvolution, formOverrides)
         } catch (e: Exception) {
             Cobblemon.LOGGER.error("Caught exception decoding evolution data for species {}", identifier, e)
             null
@@ -87,7 +113,7 @@ class SpeciesEvolutionSyncPacket(entries: Collection<SpeciesEvolutionEntry>) : D
 }
 
 class SpeciesEvolutionEntry(
-    val speciesIdentifier: ResourceLocation,
+    val speciesIdentifier: Identifier,
     val evolutions: MutableSet<Evolution>,
     val preEvolution: PreEvolution?,
     val formOverrides: List<FormEvolutionOverride>

@@ -15,25 +15,28 @@ import com.cobblemon.mod.common.util.*
 import net.minecraft.client.multiplayer.ClientLevel
 import net.minecraft.network.RegistryFriendlyByteBuf
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 import net.minecraft.world.entity.Entity
 
 class SpawnPokeballPacket(
     val pokeBall: PokeBall,
     val aspects: Set<String>,
+    val battleChallenge: Boolean,
     vanillaSpawnPacket: ClientboundAddEntityPacket
 ) : SpawnExtraDataEntityPacket<SpawnPokeballPacket, EmptyPokeBallEntity>(vanillaSpawnPacket) {
 
-    override val id: ResourceLocation = ID
+    override val id: Identifier = ID
 
     override fun encodeEntityData(buffer: RegistryFriendlyByteBuf) {
         buffer.writeIdentifier(this.pokeBall.name)
         buffer.writeCollection(aspects) { _, aspect -> buffer.writeString(aspect)}
+        buffer.writeBoolean(battleChallenge)
     }
 
     override fun applyData(entity: EmptyPokeBallEntity, level: ClientLevel) {
         entity.pokeBall = this.pokeBall
         entity.aspects = this.aspects
+        entity.isBattleChallengeProjectile = battleChallenge
     }
 
     override fun checkType(entity: Entity): Boolean = entity is EmptyPokeBallEntity
@@ -43,9 +46,10 @@ class SpawnPokeballPacket(
         fun decode(buffer: RegistryFriendlyByteBuf): SpawnPokeballPacket {
             val pokeBall = PokeBalls.getPokeBall(buffer.readIdentifier())!!
             val aspects = buffer.readList { it.readString() }.toSet()
+            val battleChallenge = buffer.readBoolean()
             val vanillaPacket = decodeVanillaPacket(buffer)
 
-            return SpawnPokeballPacket(pokeBall, aspects, vanillaPacket)
+            return SpawnPokeballPacket(pokeBall, aspects, battleChallenge, vanillaPacket)
         }
     }
 }

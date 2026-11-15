@@ -13,6 +13,7 @@ import com.cobblemon.mod.common.mixin.accessor.StatusEffectInstanceAccessor
 import com.cobblemon.mod.common.pokemon.Pokemon
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.nbt.CompoundTag
+import net.minecraft.server.level.ServerLevel
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.effect.MobEffect
 import net.minecraft.world.effect.MobEffectInstance
@@ -113,9 +114,11 @@ class PotionBaseEffect(
             return false
         }
 
-        override fun tick(entity: LivingEntity, overwriteCallback: Runnable): Boolean {
+        override fun tickServer(level: ServerLevel, entity: LivingEntity, overwriteCallback: Runnable): Boolean {
             if (this.effect.value().shouldApplyEffectTickThisTick(entity.tickCount, this.amplifier)) {
-                this.onEffectStarted(entity)
+                if (!this.effect.value().applyEffectTick(level, entity, this.upgrade?.amplifier ?: this.amplifier)) {
+                    return false
+                }
             }
             this.upgrade?.let {
                 if (--it.duration == 0) {
@@ -127,7 +130,8 @@ class PotionBaseEffect(
         }
 
         override fun onEffectStarted(entity: LivingEntity) {
-            this.effect.value().applyEffectTick(entity, this.upgrade?.amplifier ?: this.amplifier)
+            val level = entity.level() as? ServerLevel ?: return
+            this.effect.value().applyEffectTick(level, entity, this.upgrade?.amplifier ?: this.amplifier)
         }
 
         @Suppress("CAST_NEVER_SUCCEEDS")

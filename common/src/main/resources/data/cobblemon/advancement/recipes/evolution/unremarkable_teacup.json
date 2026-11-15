@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:unremarkable_teacup"
+        "recipes": "cobblemon:unremarkable_teacup"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

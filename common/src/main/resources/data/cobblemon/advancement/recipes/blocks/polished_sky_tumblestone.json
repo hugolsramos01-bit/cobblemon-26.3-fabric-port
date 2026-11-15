@@ -21,7 +21,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipe": "cobblemon:polished_sky_tumblestone"
+        "recipes": "cobblemon:polished_sky_tumblestone"
       }
     }
   },

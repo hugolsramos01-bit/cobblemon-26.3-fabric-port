@@ -41,7 +41,7 @@ import com.cobblemon.mod.common.util.lang
 import com.cobblemon.mod.common.util.toAssetPath
 import com.mojang.blaze3d.platform.InputConstants
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.components.AbstractWidget
 import net.minecraft.client.gui.components.Renderable
 import net.minecraft.client.gui.components.events.GuiEventListener
@@ -110,7 +110,7 @@ class Summary private constructor(party: Collection<Pokemon?>, private val edita
         fun open(party: Collection<Pokemon?>, editable: Boolean = true, selection: Int = 0) {
             val mc = Minecraft.getInstance()
             val screen = Summary(party, editable, selection)
-            mc.setScreen(screen)
+            mc.setScreenAndShow(screen)
         }
     }
 
@@ -129,7 +129,7 @@ class Summary private constructor(party: Collection<Pokemon?>, private val edita
     private var mainScreenIndex = INFO
     var sideScreenIndex = PARTY
 
-    override fun renderBlurredBackground(delta: Float) { }
+    override fun extractBlurredBackground(graphics: GuiGraphicsExtractor) { }
 
     /**
      * Initializes the Summary Screen
@@ -259,7 +259,7 @@ class Summary private constructor(party: Collection<Pokemon?>, private val edita
                 } else {
                     saveActiveMark()
                     saveMarkings()
-                    Minecraft.getInstance().setScreen(null)
+                    Minecraft.getInstance().gui.setScreen(null)
                 }
             }
         )
@@ -364,11 +364,6 @@ class Summary private constructor(party: Collection<Pokemon?>, private val edita
     private fun saveActiveMark() {
         if (mainScreenIndex == MARKS && mainScreen is MarksWidget) (mainScreen as MarksWidget).saveActiveMarkToPokemon()
     }
-
-    /**
-     * Returns if this Screen is open or not
-     */
-    private fun isOpen() = Minecraft.getInstance().screen == this
 
     /**
      * Switch center screen
@@ -488,18 +483,17 @@ class Summary private constructor(party: Collection<Pokemon?>, private val edita
         }
     }
 
-    override fun renderMenuBackground(context: GuiGraphics) {}
+    override fun extractMenuBackground(context: GuiGraphicsExtractor) {}
 
-    override fun render(context: GuiGraphics, mouseX: Int, mouseY: Int, delta: Float) {
+    override fun extractRenderState(context: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, delta: Float) {
         schedulingTracker.update(delta / 20F)
 
         val x = (width - BASE_WIDTH) / 2
         val y = (height - BASE_HEIGHT) / 2
-        val matrices = context.pose()
 
         // Render Portrait Background
         blitk(
-            matrixStack = matrices,
+            context = context,
             texture = portraitBackgroundResource,
             x = x + 6,
             y = y + 32,
@@ -511,7 +505,7 @@ class Summary private constructor(party: Collection<Pokemon?>, private val edita
 
         // Render Base Resource
         blitk(
-            matrixStack = matrices,
+            context = context,
             texture = baseResource,
             x = x,
             y = y,
@@ -524,7 +518,7 @@ class Summary private constructor(party: Collection<Pokemon?>, private val edita
         if (selectedPokemon.isFainted() || status != null) {
             val statusName = if (selectedPokemon.isFainted()) "fnt" else status?.showdownName
             blitk(
-                matrixStack = matrices,
+                context = context,
                 texture = cobblemonResource("textures/gui/battle/battle_status_$statusName.png"),
                 x = x + 34,
                 y = y + 4,
@@ -535,7 +529,7 @@ class Summary private constructor(party: Collection<Pokemon?>, private val edita
             )
 
             blitk(
-                matrixStack = matrices,
+                context = context,
                 texture = cobblemonResource("textures/gui/summary/status_trim.png"),
                 x = x + 34,
                 y = y + 5,
@@ -555,7 +549,7 @@ class Summary private constructor(party: Collection<Pokemon?>, private val edita
         // Poké Ball
         val ballResource = selectedPokemon.caughtBall.name.toAssetPath("textures/item/poke_balls/", ".png")
         blitk(
-            matrixStack = matrices,
+            context = context,
             texture = ballResource,
             x = (x + 3.5) / SCALE,
             y = (y + 15) / SCALE,
@@ -599,7 +593,7 @@ class Summary private constructor(party: Collection<Pokemon?>, private val edita
         // Shiny Icon
         if (selectedPokemon.shiny) {
             blitk(
-                matrixStack = matrices,
+                context = context,
                 texture = iconShinyResource,
                 x = (x + 62.5) / SCALE,
                 y = (y + 33.5) / SCALE,
@@ -611,7 +605,7 @@ class Summary private constructor(party: Collection<Pokemon?>, private val edita
 
         // Type Icon(s)
         blitk(
-            matrixStack = matrices,
+            context = context,
             texture = if (selectedPokemon.secondaryType != null) typeSpacerDoubleResource else typeSpacerResource,
             x = (x + 5.5) / SCALE,
             y = (y + 126) / SCALE,
@@ -625,8 +619,8 @@ class Summary private constructor(party: Collection<Pokemon?>, private val edita
         val itemX = x + 3
         val itemY = y + 104
         if (!displayedItem.isEmpty) {
-            context.renderItem(displayedItem, itemX, itemY)
-            context.renderItemDecorations(Minecraft.getInstance().font, displayedItem, itemX, itemY)
+            context.item(displayedItem, itemX, itemY)
+            context.itemDecorations(Minecraft.getInstance().font, displayedItem, itemX, itemY)
         }
 
         drawScaledText(
@@ -646,7 +640,7 @@ class Summary private constructor(party: Collection<Pokemon?>, private val edita
         ).render(context)
 
         blitk(
-            matrixStack = matrices,
+            context = context,
             texture = sideSpacerResource,
             x = (x + 217) / SCALE,
             y = (y + 141) / SCALE,
@@ -655,19 +649,17 @@ class Summary private constructor(party: Collection<Pokemon?>, private val edita
             scale = SCALE
         )
 
-        matrices.pushPose()
         // Prevent widgets from being overlapped by other components
-        matrices.translate(0.0, 0.0, 1000.0)
+        context.nextStratum()
 
         // Render all added Widgets
-        super.render(context, mouseX, mouseY, delta)
+        super.extractRenderState(context, mouseX, mouseY, delta)
 
         // Render Item Tooltip
         if (!displayedItem.isEmpty) {
             val itemHovered = mouseX.toFloat() in (itemX.toFloat()..(itemX.toFloat() + 16)) && mouseY.toFloat() in (itemY.toFloat()..(itemY.toFloat() + 16))
-            if (itemHovered) context.renderTooltip(Minecraft.getInstance().font, displayedItem, mouseX, mouseY)
+            if (itemHovered) context.setTooltipForNextFrame(Minecraft.getInstance().font, displayedItem, mouseX, mouseY)
         }
-        matrices.popPose()
     }
 
     /**
@@ -679,13 +671,21 @@ class Summary private constructor(party: Collection<Pokemon?>, private val edita
         return children().any { it.mouseScrolled(mouseX, mouseY, amount, verticalAmount) }
     }
 
-    override fun mouseDragged(mouseX: Double, mouseY: Double, button: Int, deltaX: Double, deltaY: Double): Boolean {
-        if (sideScreenIndex == MOVE_SWAP || sideScreenIndex == EVOLVE) sideScreen.mouseDragged(mouseX, mouseY, button, deltaX, deltaY)
-        if (mainScreenIndex == MOVES) mainScreen.mouseDragged(mouseX, mouseY, button, deltaX, deltaY)
-        return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY)
+    override fun mouseDragged(event: net.minecraft.client.input.MouseButtonEvent, deltaX: Double, deltaY: Double): Boolean {
+    val mouseX = event.x()
+    val mouseY = event.y()
+    val button = event.button()
+
+        if (sideScreenIndex == MOVE_SWAP || sideScreenIndex == EVOLVE) sideScreen.mouseDragged(event, deltaX, deltaY)
+        if (mainScreenIndex == MOVES) mainScreen.mouseDragged(event, deltaX, deltaY)
+        return super.mouseDragged(event, deltaX, deltaY)
     }
 
-    override fun keyPressed(keyCode: Int, scanCode: Int, modifiers: Int): Boolean {
+    override fun keyPressed(event: net.minecraft.client.input.KeyEvent): Boolean {
+    val keyCode = event.key()
+    val scanCode = event.keycode()
+    val modifiers = event.modifiers()
+
         val nicknameSelected = this::nicknameEntryWidget.isInitialized && nicknameEntryWidget.isFocused
 
         if (keyCode == InputConstants.KEY_ESCAPE) {
@@ -694,10 +694,10 @@ class Summary private constructor(party: Collection<Pokemon?>, private val edita
         }
 
 
-        if ( !nicknameSelected && (isInventoryKeyPressed(minecraft, keyCode, scanCode) || SummaryBinding.matches(keyCode, scanCode)) ){
+        if ( !nicknameSelected && (isInventoryKeyPressed(minecraft, keyCode, scanCode) || SummaryBinding.matches(event)) ){
             saveActiveMark()
             saveMarkings()
-            Minecraft.getInstance().setScreen(null)
+            Minecraft.getInstance().gui.setScreen(null)
             return true
         }
 
@@ -710,7 +710,7 @@ class Summary private constructor(party: Collection<Pokemon?>, private val edita
 
         handleProfileDebugKeys(keyCode, selectedPokemon.species.resourceIdentifier, modelWidget.state)
 
-        return super.keyPressed(keyCode, scanCode, modifiers)
+        return super.keyPressed(event)
     }
 
     fun playSound(soundEvent: SoundEvent) {

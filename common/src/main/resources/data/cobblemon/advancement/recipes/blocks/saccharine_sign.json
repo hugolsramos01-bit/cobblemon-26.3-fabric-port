@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:saccharine_sign"
+        "recipes": "cobblemon:saccharine_sign"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

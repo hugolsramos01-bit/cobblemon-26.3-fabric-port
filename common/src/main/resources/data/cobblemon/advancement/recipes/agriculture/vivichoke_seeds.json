@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:vivichoke_seeds"
+        "recipes": "cobblemon:vivichoke_seeds"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

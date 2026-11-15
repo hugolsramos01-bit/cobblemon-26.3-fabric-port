@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:metronome"
+        "recipes": "cobblemon:metronome"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

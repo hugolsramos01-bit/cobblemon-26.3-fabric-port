@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:shell_bell"
+        "recipes": "cobblemon:shell_bell"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

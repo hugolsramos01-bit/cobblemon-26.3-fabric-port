@@ -20,8 +20,8 @@ import net.minecraft.world.inventory.MenuType
 
 object CobblemonMenuType : PlatformRegistry<Registry<MenuType<*>>, ResourceKey<Registry<MenuType<*>>>, MenuType<*>>() {
 
-    val COOKING_POT = MenuType.register("cooking_pot_menu", ::CookingPotMenu)
-    val TM_MACHINE = MenuType.register("tm_machine_menu", ::TMMachineMenu)
+    val COOKING_POT = MenuType.register<CookingPotMenu>("cooking_pot_menu") { id, inventory -> CookingPotMenu(id, inventory) }
+    val TM_MACHINE = MenuType.register<TMMachineMenu>("tm_machine_menu") { id, inventory -> TMMachineMenu(id, inventory) }
 
     override val registry: Registry<MenuType<*>>
         get() = BuiltInRegistries.MENU

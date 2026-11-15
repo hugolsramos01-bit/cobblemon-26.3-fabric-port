@@ -21,7 +21,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipe": "cobblemon:black_tumblestone_bricks_from_black_tumblestone_block_in_stonecutter"
+        "recipes": "cobblemon:black_tumblestone_bricks_from_black_tumblestone_block_in_stonecutter"
       }
     }
   },

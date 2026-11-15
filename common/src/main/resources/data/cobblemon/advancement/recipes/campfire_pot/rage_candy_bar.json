@@ -3,7 +3,7 @@
   "criteria": {
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:campfire_pot/rage_candy_bar"
+        "recipes": "cobblemon:campfire_pot/rage_candy_bar"
       },
       "trigger": "minecraft:recipe_unlocked"
     },
@@ -21,7 +21,7 @@
   "requirements": [
     [
       "has_the_recipe",
-	  "has_cocoa"
+      "has_cocoa"
     ]
   ],
   "rewards": {

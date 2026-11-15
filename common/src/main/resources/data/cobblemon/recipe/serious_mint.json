@@ -3,9 +3,7 @@
     "category": "misc",
     "group": "white_mints",
     "key": {
-        "#": {
-            "item": "cobblemon:white_mint_leaf"
-        }
+        "#": "cobblemon:white_mint_leaf"
     },
     "pattern": [
         "##",

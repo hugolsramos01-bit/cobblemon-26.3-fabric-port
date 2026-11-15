@@ -13,7 +13,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:coarse_dirt"
+                        "id": "minecraft:coarse_dirt"
                     }
                 },
                 {
@@ -26,7 +26,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:sand"
+                        "id": "minecraft:sand"
                     }
                 },
                 {
@@ -39,7 +39,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:gravel"
+                        "id": "minecraft:gravel"
                     }
                 },
                 {
@@ -52,7 +52,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:bone_block"
+                        "id": "minecraft:bone_block"
                     }
                 },
                 {
@@ -69,7 +69,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:suspicious_gravel"
+                        "id": "minecraft:suspicious_gravel"
                     }
                 },
                 {
@@ -86,7 +86,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:suspicious_sand"
+                        "id": "minecraft:suspicious_sand"
                     }
                 }
             ]
@@ -109,7 +109,7 @@
                             "predicate_type": "minecraft:always_true"
                         },
                         "output_state": {
-                            "Name": "minecraft:suspicious_gravel"
+                            "id": "minecraft:suspicious_gravel"
                         }
                     }
                 ]
@@ -135,7 +135,7 @@
                             "predicate_type": "minecraft:always_true"
                         },
                         "output_state": {
-                            "Name": "minecraft:suspicious_gravel"
+                            "id": "minecraft:suspicious_gravel"
                         }
                     }
                 ]
@@ -161,7 +161,7 @@
                             "predicate_type": "minecraft:always_true"
                         },
                         "output_state": {
-                            "Name": "minecraft:suspicious_sand"
+                            "id": "minecraft:suspicious_sand"
                         }
                     }
                 ]
@@ -187,7 +187,7 @@
                             "predicate_type": "minecraft:always_true"
                         },
                         "output_state": {
-                            "Name": "minecraft:suspicious_sand"
+                            "id": "minecraft:suspicious_sand"
                         }
                     }
                 ]

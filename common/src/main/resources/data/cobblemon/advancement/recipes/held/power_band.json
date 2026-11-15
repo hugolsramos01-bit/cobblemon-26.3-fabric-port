@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:power_band"
+        "recipes": "cobblemon:power_band"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

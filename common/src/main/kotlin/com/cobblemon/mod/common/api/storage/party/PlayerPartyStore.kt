@@ -69,7 +69,7 @@ open class PlayerPartyStore(
             true
         } else {
             val player = playerUUID.getPlayer()
-            val pc = getOverflowPC(player?.server?.registryAccess() ?: server()!!.registryAccess())
+            val pc = getOverflowPC(player?.level()?.server?.registryAccess() ?: server()!!.registryAccess())
 
             if (pc == null || !pc.add(pokemon)) {
                 if (pc == null) {
@@ -162,7 +162,7 @@ open class PlayerPartyStore(
                     pokemon.tickInteractionCooldown(20)
                 }
 
-                pokemon.features.filterIsInstance<TickingSpeciesFeature>().forEach { it.onSecondPassed(player.serverLevel(), pokemon, null) }
+                pokemon.features.filterIsInstance<TickingSpeciesFeature>().forEach { it.onSecondPassed(player.level() as net.minecraft.server.level.ServerLevel, pokemon, null) }
 
                 if (pokemon.entity?.passengers?.isNotEmpty() != true) {
                     pokemon.rideStamina += 0.1F // Recover all stamina in 10 seconds, as long as no one's on it
@@ -183,11 +183,13 @@ open class PlayerPartyStore(
         }
 
         // Shoulder validation code
-        if (player.shoulderEntityLeft.isPokemonEntity() && !validateShoulder(player, true)) {
-            player.respawnEntityOnShoulder(player.shoulderEntityLeft)
+        val leftShoulder = player.shoulderEntityData(true)
+        if (leftShoulder.isPokemonEntity() && !validateShoulder(player, true)) {
+            reconcileInvalidShoulder(player, true, leftShoulder)
         }
-        if (player.shoulderEntityRight.isPokemonEntity() && !validateShoulder(player, false)) {
-            player.respawnEntityOnShoulder(player.shoulderEntityRight)
+        val rightShoulder = player.shoulderEntityData(false)
+        if (rightShoulder.isPokemonEntity() && !validateShoulder(player, false)) {
+            reconcileInvalidShoulder(player, false, rightShoulder)
         }
 
         forEach {
@@ -199,14 +201,37 @@ open class PlayerPartyStore(
     }
 
     private fun validateShoulder(player: ServerPlayer, isLeft: Boolean): Boolean {
-        val shoulderEntity = if(isLeft) player.shoulderEntityLeft else player.shoulderEntityRight
-        val pokemon = find { it.uuid == shoulderEntity.getCompound("Pokemon").getUUID(DataKeys.POKEMON_UUID) }
+        val shoulderEntity = player.shoulderEntityData(isLeft)
+        val pokemonTag = shoulderEntity.getCompound("Pokemon").orElse(net.minecraft.nbt.CompoundTag())
+        val pokemon = find { it.uuid == pokemonTag.getUUID(DataKeys.POKEMON_UUID) }
+        val state = pokemon?.state as? ShoulderedState
         // No longer valid if (in order): not in party, not the correct shoulder, no longer shoulder mountable
-        if (pokemon == null || (pokemon.state as? ShoulderedState)?.isLeftShoulder != isLeft || !pokemon.form.shoulderMountable || pokemon.isAlpha) {
+        if (pokemon == null || state == null || state.playerUUID != player.uuid || state.pokemonUUID != pokemon.uuid ||
+            state.isLeftShoulder != isLeft || !state.isStillShouldered(player) || !pokemon.form.shoulderMountable || pokemon.isAlpha) {
             return false
         }
         player.updateShoulderNbt(pokemon)
+        // The validation helper updates the display metadata; retain the party Pokemon UUID as the payload identity.
+        val updatedShoulder = player.shoulderEntityData(isLeft)
+        updatedShoulder.putUUID(DataKeys.SHOULDER_UUID, pokemon.uuid)
+        player.setShoulderEntityData(isLeft, updatedShoulder)
         return true
+    }
+
+    /** Drop stale shoulder payloads without ever materializing a duplicate entity. */
+    private fun reconcileInvalidShoulder(player: ServerPlayer, isLeft: Boolean, shoulderData: net.minecraft.nbt.CompoundTag) {
+        val pokemonId = runCatching { CompoundTagUtilities.getPokemonID(shoulderData) }.getOrNull()
+        val pokemon = pokemonId?.let { id -> find { it.uuid == id } }
+        val state = pokemon?.state as? ShoulderedState
+        if (pokemon != null && state != null && state.playerUUID == player.uuid && state.pokemonUUID == pokemon.uuid) {
+            // recall() changes the party state and clears the slot only when its state id still owns it.
+            pokemon.recall()
+        }
+
+        // If the payload did not belong to this party state (or was malformed), clear only this stale copy.
+        if (player.shoulderEntityData(isLeft).isPokemonEntity()) {
+            player.setShoulderEntityData(isLeft, net.minecraft.nbt.CompoundTag())
+        }
     }
 
     override fun swap(position1: PartyPosition, position2: PartyPosition) {

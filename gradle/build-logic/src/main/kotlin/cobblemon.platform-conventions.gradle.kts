@@ -1,9 +1,10 @@
 import utilities.VersionType
 import utilities.writeVersion
+import org.gradle.api.file.DuplicatesStrategy
 
 plugins {
     id("cobblemon.base-conventions")
-    id("com.github.johnrengelman.shadow")
+    id("com.gradleup.shadow")
 }
 
 writeVersion(type = VersionType.FULL)
@@ -47,20 +48,19 @@ tasks {
         entryCompression = ZipEntryCompression.STORED
         archiveBaseName.set("Cobblemon-${project.name}")
         configurations = listOf(bundle)
+        filesMatching("META-INF/*.kotlin_module") {
+            duplicatesStrategy = DuplicatesStrategy.INCLUDE
+        }
+        filesMatching("META-INF/services/**") {
+            duplicatesStrategy = DuplicatesStrategy.INCLUDE
+        }
         mergeServiceFiles()
 
         relocate ("com.oracle", "com.cobblemon.mod.relocations.oracle")
     }
 
-    remapJar {
-        dependsOn(shadowJar)
-        inputFile.set(shadowJar.flatMap { it.archiveFile })
-        archiveBaseName.set("Cobblemon-${project.name}")
-        archiveVersion.set("${rootProject.version}")
-    }
-
     val copyJar by registering(CopyFile::class) {
-        val productionJar = tasks.remapJar.flatMap { it.archiveFile }
+        val productionJar = tasks.shadowJar.flatMap { it.archiveFile }
         fileToCopy = productionJar
         destination = productionJar.flatMap {
             rootProject.layout.buildDirectory.file("libs/${it.asFile.name}")

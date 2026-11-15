@@ -8,9 +8,9 @@
           "type": "minecraft:item",
           "name": "cobblemon:rock_gem",
           "weight": 75,
-          "functions": [
+          "modifier": [
             {
-              "function": "minecraft:set_count",
+              "type": "minecraft:set_count",
               "count": {
                 "type": "minecraft:uniform",
                 "min": 2,
@@ -23,9 +23,9 @@
           "type": "minecraft:item",
           "name": "cobblemon:charti_berry",
           "weight": 25,
-          "functions": [
+          "modifier": [
             {
-              "function": "minecraft:set_count",
+              "type": "minecraft:set_count",
               "count": {
                 "type": "minecraft:uniform",
                 "min": 1,

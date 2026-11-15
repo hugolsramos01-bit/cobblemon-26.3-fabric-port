@@ -10,31 +10,31 @@ package com.cobblemon.mod.common.integration.jei.brewing
 
 import com.cobblemon.mod.common.item.crafting.brewingstand.BrewingStandRecipe
 import mezz.jei.api.recipe.vanilla.IJeiBrewingRecipe
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 import net.minecraft.world.item.ItemStack
 
-class JeiBrewingStandRecipe(
+data class JeiBrewingStandRecipe(
     private val recipe: BrewingStandRecipe,
-    private val id: ResourceLocation
+    private val id: Identifier
 ) : IJeiBrewingRecipe {
 
     override fun getPotionInputs(): List<ItemStack> {
-        return recipe.bottle.items.asList()
+        return recipe.bottle.items().map { it.value().defaultInstance }.toList()
     }
 
     override fun getIngredients(): List<ItemStack> {
-        return recipe.input.items.asList()
+        return recipe.input.items().map { it.value().defaultInstance }.toList()
     }
 
     override fun getPotionOutput(): ItemStack {
-        return recipe.result.copy()
+        return recipe.result.create()
     }
 
     override fun getBrewingSteps(): Int {
         return 1
     }
 
-    override fun getUid(): ResourceLocation {
+    override fun getUid(): Identifier {
         return id
     }
 }

@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:expert_belt"
+        "recipes": "cobblemon:expert_belt"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

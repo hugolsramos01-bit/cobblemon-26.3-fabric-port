@@ -32,7 +32,7 @@ import net.minecraft.client.model.geom.ModelPart
 import net.minecraft.client.multiplayer.ClientLevel
 import net.minecraft.client.resources.sounds.EntityBoundSoundInstance
 import net.minecraft.client.resources.sounds.SimpleSoundInstance
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 import net.minecraft.sounds.SoundEvent
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.phys.Vec3
@@ -105,7 +105,7 @@ class BedrockParticleKeyframe(
 
 class BedrockSoundKeyframe(
     seconds: Float,
-    val sound: ResourceLocation
+    val sound: Identifier
 ): BedrockEffectKeyframe(seconds) {
     override fun run(entity: Entity?, state: PosableState) {
         val soundEvent = SoundEvent.createVariableRangeEvent(sound) // Means we don't need to setup a sound registry entry for every single thing
@@ -297,8 +297,8 @@ class MolangBoneValue(
     override fun resolve(time: Double, runtime: MoLangRuntime): Vec3 {
         val environment = runtime.environment
         environment.setSimpleVariable("anim_time", DoubleValue(time))
-        environment.setSimpleVariable("camera_rotation_x", DoubleValue(Minecraft.getInstance().gameRenderer.mainCamera.rotation().x.toDouble()))
-        environment.setSimpleVariable("camera_rotation_y", DoubleValue(Minecraft.getInstance().gameRenderer.mainCamera.rotation().y.toDouble()))
+        environment.setSimpleVariable("camera_rotation_x", DoubleValue(Minecraft.getInstance().gameRenderer.mainCamera().rotation().x.toDouble()))
+        environment.setSimpleVariable("camera_rotation_y", DoubleValue(Minecraft.getInstance().gameRenderer.mainCamera().rotation().y.toDouble()))
         return Vec3(
             runtime.resolveDouble(x),
             runtime.resolveDouble(y) * yMul,
@@ -315,15 +315,12 @@ class BedrockKeyFrameBoneValue : TreeMap<Double, BedrockAnimationKeyFrame>(), Be
     }
 
     override fun resolve(time: Double, runtime: MoLangRuntime): Vec3 {
-        var afterIndex : Int? = keys.indexOfFirst { it > time }
-        if (afterIndex == -1) afterIndex = null
-        val beforeIndex = when (afterIndex) {
-            null -> size - 1
-            0 -> null
-            else -> afterIndex - 1
-        }
-        val after = getAtIndex(afterIndex)
-        val before = getAtIndex(beforeIndex)
+        // Numeric comparison treats signed zero as equal, unlike Double's map ordering.
+        val queryTime = if (time == 0.0) 0.0 else time
+        val afterEntry = if (time.isNaN()) null else higherEntry(queryTime)?.takeUnless { it.key.isNaN() }
+        val beforeEntry = if (afterEntry == null) lastEntry() else lowerEntry(afterEntry.key)
+        val after = afterEntry?.value
+        val before = beforeEntry?.value
 
         val afterData = after?.pre?.resolve(time, runtime) ?: Vec3.ZERO
         val beforeData = before?.post?.resolve(time, runtime) ?: Vec3.ZERO
@@ -332,10 +329,8 @@ class BedrockKeyFrameBoneValue : TreeMap<Double, BedrockAnimationKeyFrame>(), Be
             if (before != null && before.interpolationType == InterpolationType.SMOOTH || after != null && after.interpolationType == InterpolationType.SMOOTH) {
                 when {
                     before != null && after != null -> {
-                        val beforePlusIndex = if (beforeIndex == null || beforeIndex == 0) null else beforeIndex - 1
-                        val beforePlus = getAtIndex(beforePlusIndex)
-                        val afterPlusIndex = if (afterIndex == null || afterIndex == size - 1) null else afterIndex + 1
-                        val afterPlus = getAtIndex(afterPlusIndex)
+                        val beforePlus = beforeEntry?.let { lowerEntry(it.key)?.value }
+                        val afterPlus = afterEntry?.let { higherEntry(it.key)?.value }
                         return catmullromLerp(beforePlus, before, after, afterPlus, time, runtime)
                     }
                     before != null -> return beforeData

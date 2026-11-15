@@ -21,6 +21,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BeehiveBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
@@ -43,7 +44,7 @@ public abstract class BeehiveBlockEntityMixin {
         if (player != null) {
             final BeehiveBlockEntity blockEntity = (BeehiveBlockEntity) (Object) this;
             // if the block is sedated or the player is too far away, no aggro should be applied
-            if (blockEntity.isSedated() || player.position().distanceToSqr(blockEntity.getBlockPos().getCenter()) > 16.0)
+            if (blockEntity.isSedated() || player.position().distanceToSqr(Vec3.atCenterOf(blockEntity.getBlockPos())) > 16.0)
                 return;
             // from this point need to access private members of the block entity
             final BeehiveBlockEntityAccessor blockEntityAccessor = (BeehiveBlockEntityAccessor) this;

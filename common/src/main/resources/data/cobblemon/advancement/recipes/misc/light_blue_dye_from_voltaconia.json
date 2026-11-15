@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:light_blue_dye_from_voltaconia"
+        "recipes": "cobblemon:light_blue_dye_from_voltaconia"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

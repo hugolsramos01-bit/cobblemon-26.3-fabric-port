@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:clear_amulet"
+        "recipes": "cobblemon:clear_amulet"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

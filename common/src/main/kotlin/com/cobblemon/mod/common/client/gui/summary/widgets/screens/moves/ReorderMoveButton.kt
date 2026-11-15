@@ -12,8 +12,9 @@ import com.cobblemon.mod.common.CobblemonSounds
 import com.cobblemon.mod.common.api.gui.blitk
 import com.cobblemon.mod.common.client.gui.CobblemonRenderable
 import com.cobblemon.mod.common.util.cobblemonResource
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.components.Button
+import net.minecraft.client.input.MouseButtonEvent
 import net.minecraft.client.resources.sounds.SimpleSoundInstance
 import net.minecraft.client.sounds.SoundManager
 import net.minecraft.network.chat.Component
@@ -36,15 +37,15 @@ class ReorderMoveButton(
         private var blocked = false
     }
 
-    override fun mouseDragged(d: Double, e: Double, i: Int, f: Double, g: Double): Boolean {
+    override fun mouseDragged(event: MouseButtonEvent, dragX: Double, dragY: Double): Boolean {
         return false
     }
 
-    override fun renderWidget(context: GuiGraphics, pMouseX: Int, pMouseY: Int, pPartialTicks: Float) {
+    override fun extractContents(context: GuiGraphicsExtractor, pMouseX: Int, pMouseY: Int, pPartialTicks: Float) {
         val offsetY = if (isUp) OFFSET_Y_UP else OFFSET_Y_DOWN
 
         blitk(
-            matrixStack = context.pose(),
+            context = context,
             x = (pX - OFFSET_X) / SCALE,
             y = (pY + offsetY) / SCALE,
             texture = if (isUp) moveReorderUpResource else moveReorderDownResource,
@@ -56,11 +57,11 @@ class ReorderMoveButton(
         )
     }
 
-    override fun onRelease(pMouseX: Double, pMouseY: Double) {
+    override fun onRelease(event: MouseButtonEvent) {
         blocked = false
     }
 
-    override fun onClick(pMouseX: Double, pMouseY: Double) {
+    override fun onClick(event: MouseButtonEvent, doubleClick: Boolean) {
         if (!blocked) {
             blocked = true
             onPress.onPress(this)

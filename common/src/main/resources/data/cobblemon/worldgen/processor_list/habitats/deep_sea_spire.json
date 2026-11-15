@@ -19,7 +19,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:water"
+                        "id": "minecraft:water"
                     }
                 }
             ]
@@ -38,7 +38,7 @@
                             "predicate_type": "minecraft:always_true"
                         },
                         "output_state": {
-                            "Name": "minecraft:tuff"
+                            "id": "minecraft:tuff"
                         }
                     }
                 ]

@@ -8,6 +8,8 @@
 
 package com.cobblemon.mod.common.block.decor
 
+import net.minecraft.world.level.ScheduledTickAccess
+import net.minecraft.world.level.block.BonemealSource
 import com.mojang.serialization.MapCodec
 import com.mojang.serialization.codecs.RecordCodecBuilder
 import net.minecraft.core.BlockPos
@@ -30,7 +32,7 @@ import net.minecraft.world.phys.shapes.CollisionContext
 import net.minecraft.world.phys.shapes.Shapes
 import net.minecraft.world.phys.shapes.VoxelShape
 
-class PauvilleaFlowerBlock(properties: Properties?) : DirectionalBlock(properties), BonemealableBlock {
+class PauvilleaFlowerBlock(properties: Properties) : DirectionalBlock(properties), BonemealableBlock {
     init {
         registerDefaultState(stateDefinition.any()
             .setValue(FACING, Direction.DOWN))
@@ -51,12 +53,12 @@ class PauvilleaFlowerBlock(properties: Properties?) : DirectionalBlock(propertie
         return null
     }
 
-    override fun updateShape(state: BlockState, direction: Direction, neighborState: BlockState, level: LevelAccessor, pos: BlockPos, neighborPos: BlockPos): BlockState {
+    override fun updateShape(state: BlockState, level: LevelReader, tickAccess: ScheduledTickAccess, pos: BlockPos, direction: Direction, neighborPos: BlockPos, neighborState: BlockState, random: RandomSource): BlockState {
         val facing = state.getValue(FACING)
         if (direction == facing.opposite && !canSurvive(state, level, pos)) {
             return Blocks.AIR.defaultBlockState()
         }
-        return super.updateShape(state, direction, neighborState, level, pos, neighborPos)
+        return super.updateShape(state, level, tickAccess, pos, direction, neighborPos, neighborState, random)
     }
 
     override fun canSurvive(state: BlockState, level: LevelReader, pos: BlockPos): Boolean {
@@ -65,7 +67,6 @@ class PauvilleaFlowerBlock(properties: Properties?) : DirectionalBlock(propertie
         return blockState.isCollisionShapeFullBlock(level, pos) or blockState.canOcclude()
     }
 
-    override fun codec(): MapCodec<PauvilleaFlowerBlock> = CODEC
 
     override fun getShape(state: BlockState, blockGetter: BlockGetter, pos: BlockPos, collisionContext: CollisionContext): VoxelShape {
         return when (state.getValue(FACING)) {
@@ -79,9 +80,6 @@ class PauvilleaFlowerBlock(properties: Properties?) : DirectionalBlock(propertie
     }
 
     companion object {
-        val CODEC: MapCodec<PauvilleaFlowerBlock> = RecordCodecBuilder.mapCodec {
-            it.group(propertiesCodec()).apply(it, ::PauvilleaFlowerBlock)
-        }
         val FLOOR = Shapes.box(0.075, 0.0, 0.075, 0.925, 0.4375, 0.925)
         val WALL_NORTH = Shapes.box(0.0, 0.0, 0.8125, 1.0, 1.0, 1.0)
         val WALL_EAST = Shapes.box(0.0, 0.0, 0.0, 0.1875, 1.0, 1.0)
@@ -90,15 +88,15 @@ class PauvilleaFlowerBlock(properties: Properties?) : DirectionalBlock(propertie
         val CEILING = Shapes.box(0.075, 0.0, 0.075, 0.925, 1.0, 0.925)
     }
 
-    override fun isValidBonemealTarget(level: LevelReader?, pos: BlockPos?, state: BlockState?): Boolean {
+    override fun isValidBonemealTarget(level: LevelReader, pos: BlockPos, state: BlockState, source: BonemealSource): Boolean {
         return true
     }
 
-    override fun isBonemealSuccess(level: Level?, random: RandomSource?, pos: BlockPos?, state: BlockState?): Boolean {
+    override fun isBonemealSuccess(level: Level, random: RandomSource, pos: BlockPos, state: BlockState, source: BonemealSource): Boolean {
         return true
     }
 
-    override fun performBonemeal(level: ServerLevel, random: RandomSource?, pos: BlockPos, state: BlockState?) {
+    override fun performBonemeal(level: ServerLevel, random: RandomSource, pos: BlockPos, state: BlockState, source: BonemealSource) {
         popResource(level, pos, ItemStack(this))
     }
 }

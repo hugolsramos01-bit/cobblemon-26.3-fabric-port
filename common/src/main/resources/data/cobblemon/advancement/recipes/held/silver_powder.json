@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:silver_powder"
+        "recipes": "cobblemon:silver_powder"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

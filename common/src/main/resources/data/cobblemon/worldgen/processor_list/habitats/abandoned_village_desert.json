@@ -13,7 +13,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:mossy_cobblestone"
+                        "id": "minecraft:mossy_cobblestone"
                     }
                 },
                 {
@@ -26,7 +26,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:cobblestone"
+                        "id": "minecraft:cobblestone"
                     }
                 },
                 {
@@ -39,7 +39,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:air"
+                        "id": "minecraft:air"
                     }
                 }
             ]
@@ -58,7 +58,7 @@
                             "predicate_type": "minecraft:always_true"
                         },
                         "output_state": {
-                            "Name": "minecraft:sand"
+                            "id": "minecraft:sand"
                         }
                     }
                 ]

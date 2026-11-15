@@ -9,8 +9,9 @@
 package com.cobblemon.mod.common.mixin.entity;
 
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.TamableAnimal;
-import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
@@ -18,9 +19,17 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 @Mixin(TamableAnimal.class)
 public class TameableEntityMixin {
 
-    @Redirect(method = "die", at = @At(value = "FIELD", target = "Lnet/minecraft/world/level/Level;isClientSide:Z"))
-    public boolean cobblemon$checkIfPokemonBeforeSendingMessage(Level world) {
-        return world.isClientSide || (this.getClass().isAssignableFrom(PokemonEntity.class));
+    @Redirect(
+            method = "die",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/server/level/ServerPlayer;sendSystemMessage(Lnet/minecraft/network/chat/Component;)V"
+            )
+    )
+    private void cobblemon$suppressPokemonDeathMessage(ServerPlayer player, Component message) {
+        if (!((Object) this instanceof PokemonEntity)) {
+            player.sendSystemMessage(message);
+        }
     }
 
 }

@@ -15,6 +15,7 @@ object CompoundTagUtilities {
     @JvmStatic
     fun getPokemonID(nbt: CompoundTag): UUID {
         return nbt.getCompound(DataKeys.POKEMON)
+            .orElseThrow { IllegalArgumentException("Shoulder data has no Pokémon compound") }
             .getUUID(DataKeys.POKEMON_UUID)
     }
 

@@ -3,7 +3,7 @@
   "criteria": {
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:campfire_pot/poke_cake"
+        "recipes": "cobblemon:campfire_pot/poke_cake"
       },
       "trigger": "minecraft:recipe_unlocked"
     },

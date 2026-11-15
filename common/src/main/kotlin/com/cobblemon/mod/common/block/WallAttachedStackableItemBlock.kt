@@ -42,10 +42,6 @@ class WallAttachedStackableItemBlock(settings: Properties, val type: WallStackab
         val MAX_AMOUNT: Int = 8
         val AMOUNT: IntegerProperty = IntegerProperty.create("amount", 1, MAX_AMOUNT)
 
-        val CODEC: MapCodec<WallAttachedStackableItemBlock> = RecordCodecBuilder.mapCodec { it.group(
-            propertiesCodec(),
-            WallStackableItemBlockType.CODEC.fieldOf("type").forGetter(WallAttachedStackableItemBlock::type)
-        ).apply(it, ::WallAttachedStackableItemBlock) }
 
         val northShapeMap: Map<WallStackableItemBlockType, List<VoxelShape>> = mapOf(
             WallStackableItemBlockType.TAG to listOf(
@@ -71,7 +67,6 @@ class WallAttachedStackableItemBlock(settings: Properties, val type: WallStackab
             .setValue(WATERLOGGED, false))
     }
 
-    override fun codec(): MapCodec<WallAttachedStackableItemBlock> = CODEC
 
     override fun createBlockStateDefinition(builder: StateDefinition.Builder<Block, BlockState>) {
         super.createBlockStateDefinition(builder)

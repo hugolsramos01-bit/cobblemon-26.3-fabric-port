@@ -3,12 +3,8 @@
     "category": "misc",
     "group": "plaque_redye",
     "ingredients": [
-        {
-            "tag": "cobblemon:plaques"
-        },
-        {
-            "tag": "c:dyes/green"
-        }
+        "#cobblemon:plaques",
+        "#c:dyes/green"
     ],
     "result": {
         "id": "cobblemon:green_plaque"

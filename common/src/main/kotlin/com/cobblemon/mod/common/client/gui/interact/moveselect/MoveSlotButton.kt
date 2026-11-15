@@ -8,7 +8,7 @@
 
 package com.cobblemon.mod.common.client.gui.interact.moveselect
 
-import com.cobblemon.mod.common.api.gui.blitk
+import com.cobblemon.mod.common.client.gui.tmmachine.blitk
 import com.cobblemon.mod.common.api.moves.MoveTemplate
 import com.cobblemon.mod.common.api.text.bold
 import com.cobblemon.mod.common.api.text.gold
@@ -18,11 +18,11 @@ import com.cobblemon.mod.common.client.CobblemonResources
 import com.cobblemon.mod.common.client.gui.CobblemonRenderable
 import com.cobblemon.mod.common.client.gui.MoveCategoryIcon
 import com.cobblemon.mod.common.client.gui.TypeIcon
-import com.cobblemon.mod.common.client.render.drawScaledText
+import com.cobblemon.mod.common.client.gui.tmmachine.drawScaledText
 import com.cobblemon.mod.common.util.cobblemonResource
 import com.cobblemon.mod.common.util.lang
 import com.cobblemon.mod.common.util.math.toRGB
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.components.Button
 import net.minecraft.client.sounds.SoundManager
 import net.minecraft.network.chat.Component
@@ -49,15 +49,13 @@ class MoveSlotButton(
         const val HEIGHT = 22
     }
 
-    override fun renderWidget(context: GuiGraphics, mouseX: Int, mouseY: Int, pPartialTicks: Float) {
+    override fun extractContents(context: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, pPartialTicks: Float) {
         move?.let {
             isHovered = isMouseOver(mouseX.toDouble(), mouseY.toDouble()) && enabled
             val rgb = it.elementalType.hue.toRGB()
             val alpha = if (enabled) 1.0F else 0.7F
-            val matrices = context.pose()
-
             blitk(
-                matrixStack = matrices,
+                matrixStack = context,
                 texture = if (enabled) moveResource else moveDisabledResource,
                 x = x,
                 y = y,
@@ -71,7 +69,7 @@ class MoveSlotButton(
             )
 
             blitk(
-                matrixStack = matrices,
+                matrixStack = context,
                 texture = moveOverlayResource,
                 x = x,
                 y = y,
@@ -81,7 +79,7 @@ class MoveSlotButton(
 
             if (showOverlayBar) {
                 blitk(
-                    matrixStack = matrices,
+                    matrixStack = context,
                     texture = moveOverlayBarResource,
                     x = x + 60,
                     y = y + 13,

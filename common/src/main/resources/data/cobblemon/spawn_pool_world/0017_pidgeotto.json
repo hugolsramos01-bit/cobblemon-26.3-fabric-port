@@ -11,7 +11,7 @@
                 "treetop"
             ],
             "type": "pokemon",
-            "spawnablePositionType": "grounded",
+            "spawnablePositionType": "airborne",
             "bucket": "common",
             "level": "18-35",
             "weight": 5.4,

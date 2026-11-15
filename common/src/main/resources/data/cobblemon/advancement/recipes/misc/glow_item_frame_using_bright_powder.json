@@ -23,7 +23,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:glow_item_frame_using_bright_powder"
+        "recipes": "cobblemon:glow_item_frame_using_bright_powder"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

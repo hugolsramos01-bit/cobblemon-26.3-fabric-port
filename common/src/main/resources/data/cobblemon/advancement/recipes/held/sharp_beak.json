@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:sharp_beak"
+        "recipes": "cobblemon:sharp_beak"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

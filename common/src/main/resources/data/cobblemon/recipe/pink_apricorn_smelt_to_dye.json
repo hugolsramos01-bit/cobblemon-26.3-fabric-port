@@ -2,9 +2,7 @@
     "type": "minecraft:smelting",
     "category": "misc",
     "group": "apricorn",
-    "ingredient": {
-        "item": "cobblemon:pink_apricorn"
-    },
+    "ingredient": "cobblemon:pink_apricorn",
     "result": {
         "id": "minecraft:pink_dye"
     },

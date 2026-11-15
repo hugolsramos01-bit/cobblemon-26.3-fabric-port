@@ -8,6 +8,8 @@
 
 package com.cobblemon.mod.common.pokemon.requirements
 
+import com.cobblemon.mod.common.util.dayTime
+
 import com.cobblemon.mod.common.api.pokemon.requirement.EntityQueryRequirement
 import com.cobblemon.mod.common.api.spawning.TimeRange
 import com.cobblemon.mod.common.pokemon.Pokemon

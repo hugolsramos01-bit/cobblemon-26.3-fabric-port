@@ -51,9 +51,9 @@ import com.cobblemon.mod.common.util.cobblemonResource
 import com.cobblemon.mod.common.util.lang
 import com.cobblemon.mod.common.util.math.fromEulerXYZDegrees
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.resources.sounds.SimpleSoundInstance
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 import net.minecraft.sounds.SoundEvent
 import org.joml.Quaternionf
 import org.joml.Vector3f
@@ -254,7 +254,7 @@ class PokemonInfoWidget(val parent: PokedexGUI, val pX: Int, val pY: Int, val up
         clickAction = { switchPose(true) }
     ).apply { addWidget(this) }
 
-    override fun renderWidget(context: GuiGraphics, mouseX: Int, mouseY: Int, delta: Float) {
+    override fun extractWidgetRenderState(context: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, delta: Float) {
         val currentEntry = this.currentEntry ?: return
 
         val hasKnowledge = CobblemonClient.clientPokedexData.getKnowledgeForSpecies(currentEntry.speciesId) != PokedexEntryProgress.UNREGISTERED
@@ -263,7 +263,7 @@ class PokemonInfoWidget(val parent: PokedexGUI, val pX: Int, val pY: Int, val up
         val matrices = context.pose()
 
         blitk(
-            matrixStack = matrices,
+            context = context,
             texture = backgroundOverlay,
             x = pX, y = pY,
             width = HALF_OVERLAY_WIDTH,
@@ -272,7 +272,7 @@ class PokemonInfoWidget(val parent: PokedexGUI, val pX: Int, val pY: Int, val up
 
         if (!suppressViewport) {
             blitk(
-                matrixStack = matrices,
+                context = context,
                 texture = viewportOverlay,
                 x = pX,
                 y = pY + 24,
@@ -281,7 +281,7 @@ class PokemonInfoWidget(val parent: PokedexGUI, val pX: Int, val pY: Int, val up
             )
 
             blitk(
-                matrixStack = matrices,
+                context = context,
                 texture = pokeBallOverlay,
                 x = pX + 15,
                 y = pY + 25,
@@ -293,7 +293,7 @@ class PokemonInfoWidget(val parent: PokedexGUI, val pX: Int, val pY: Int, val up
 
             // Platform
             blitk(
-                matrixStack = matrices,
+                context = context,
                 texture = platformBase,
                 x = pX + 13,
                 y = pY + 69,
@@ -305,7 +305,7 @@ class PokemonInfoWidget(val parent: PokedexGUI, val pX: Int, val pY: Int, val up
             val platformType = getPlatformResource()
             if (platformType != null && isSelectedPokemonOwned()) {
                 blitk(
-                    matrixStack = matrices,
+                    context = context,
                     texture = platformType,
                     x = pX + 13,
                     y = pY + 66,
@@ -316,7 +316,7 @@ class PokemonInfoWidget(val parent: PokedexGUI, val pX: Int, val pY: Int, val up
             }
 
             blitk(
-                matrixStack = matrices,
+                context = context,
                 texture = platformShadow,
                 x = (pX + 47) / SCALE,
                 y = (pY + 76.5F) / SCALE,
@@ -333,19 +333,18 @@ class PokemonInfoWidget(val parent: PokedexGUI, val pX: Int, val pY: Int, val up
                     pY + portraitStartY + POKEMON_PORTRAIT_HEIGHT
                 )
 
-                matrices.pushPose()
+                matrices.pushMatrix()
                 matrices.translate(
-                    pX.toDouble() + (POKEMON_PORTRAIT_WIDTH.toDouble() + 2) / 2,
-                    pY.toDouble() + portraitStartY - 12,
-                    1000.0 // Prevent model from clipping into background
+                    pX.toFloat() + (POKEMON_PORTRAIT_WIDTH.toFloat() + 2) / 2,
+                    pY.toFloat() + portraitStartY - 12
                 )
-                matrices.scale(scaleAmount, scaleAmount, scaleAmount)
+                matrices.scale(scaleAmount, scaleAmount)
                 val rotationVector = Vector3f(13F, rotationY, 0F)
 
                 drawProfilePokemon(
                     renderablePokemon = renderablePokemon!!,
                     poseType = poseList[selectedPoseIndex],
-                    matrixStack = matrices,
+                    context = context,
                     partialTicks = delta,
                     rotation = Quaternionf().fromEulerXYZDegrees(rotationVector),
                     state = state,
@@ -353,12 +352,12 @@ class PokemonInfoWidget(val parent: PokedexGUI, val pX: Int, val pY: Int, val up
                     profileTransformType = ProfileTransformType.POKEDEX,
                 )
 
-                matrices.popPose()
+                matrices.popMatrix()
                 context.disableScissor()
             } else {
                 // Render question mark
                 blitk(
-                    matrixStack = matrices,
+                    context = context,
                     texture = platformUnknown,
                     x = pX + 50.5,
                     y = pY + 39,
@@ -368,14 +367,13 @@ class PokemonInfoWidget(val parent: PokedexGUI, val pX: Int, val pY: Int, val up
             }
 
             // Ensure elements are not hidden behind Pokémon render
-            matrices.pushPose()
-            matrices.translate(0.0, 0.0, 2000.0)
+            context.nextStratum()
 
             if (isSelectedPokemonOwned()) {
                 val primaryType = type[0]
                 val secondaryType = type[1]
                 blitk(
-                    matrixStack = matrices,
+                    context = context,
                     texture = if (secondaryType != null) typeBarDouble else typeBar,
                     x = pX,
                     y = pY + 14,
@@ -393,7 +391,7 @@ class PokemonInfoWidget(val parent: PokedexGUI, val pX: Int, val pY: Int, val up
                 }
             } else {
                 blitk(
-                    matrixStack = matrices,
+                    context = context,
                     texture = typeBar,
                     x = pX,
                     y = pY + 14,
@@ -403,12 +401,12 @@ class PokemonInfoWidget(val parent: PokedexGUI, val pX: Int, val pY: Int, val up
             }
 
             if (hasKnowledge) {
-                if (genderButton.visible) genderButton.render(context, mouseX, mouseY, delta)
+                if (genderButton.visible) genderButton.extractRenderState(context, mouseX, mouseY, delta)
 
-                shinyButton.render(context, mouseX, mouseY, delta)
+                shinyButton.extractRenderState(context, mouseX, mouseY, delta)
 
                 variationButtons.forEach {
-                    it.getWidget().render(context, mouseX, mouseY, delta)
+                    it.getWidget().extractRenderState(context, mouseX, mouseY, delta)
 
                     // Tooltip
                     if (it.isVisible() && it.getWidget().isButtonHovered(mouseX, mouseY)) {
@@ -428,8 +426,8 @@ class PokemonInfoWidget(val parent: PokedexGUI, val pX: Int, val pY: Int, val up
                 val showableForms = CobblemonClient.clientPokedexData.getEncounteredForms(currentEntry)
 
                 if (showableForms.size > 1 && showableForms.size > selectedFormIndex) {
-                    formLeftButton.render(context, mouseX, mouseY, delta)
-                    formRightButton.render(context, mouseX, mouseY, delta)
+                    formLeftButton.extractRenderState(context, mouseX, mouseY, delta)
+                    formRightButton.extractRenderState(context, mouseX, mouseY, delta)
 
                     val form = showableForms[selectedFormIndex]
                     val formName = if (form.displayForm.lowercase() == "normal") "" else "-${
@@ -447,7 +445,7 @@ class PokemonInfoWidget(val parent: PokedexGUI, val pX: Int, val pY: Int, val up
 
                 // Cry
                 blitk(
-                    matrixStack = matrices,
+                context = context,
                     texture = buttonCryBase,
                     x = (pX + 114) / SCALE,
                     y = (pY + 81) / SCALE,
@@ -456,11 +454,11 @@ class PokemonInfoWidget(val parent: PokedexGUI, val pX: Int, val pY: Int, val up
                     scale = SCALE
                 )
 
-                cryButton.render(context, mouseX, mouseY, delta)
+                cryButton.extractRenderState(context, mouseX, mouseY, delta)
 
                 // Animation
                 blitk(
-                    matrixStack = matrices,
+                context = context,
                     texture = buttonAnimationBase,
                     x = (pX + 3) / SCALE,
                     y = (pY + 81) / SCALE,
@@ -469,8 +467,8 @@ class PokemonInfoWidget(val parent: PokedexGUI, val pX: Int, val pY: Int, val up
                     scale = SCALE
                 )
 
-                animationLeftButton.render(context, mouseX, mouseY, delta)
-                animationRightButton.render(context, mouseX, mouseY, delta)
+                animationLeftButton.extractRenderState(context, mouseX, mouseY, delta)
+                animationRightButton.extractRenderState(context, mouseX, mouseY, delta)
             } else if (renderablePokemon == null) {
                 // Render unimplemented label
                 if (!species.implemented) {
@@ -485,22 +483,25 @@ class PokemonInfoWidget(val parent: PokedexGUI, val pX: Int, val pY: Int, val up
                 }
             }
 
-            matrices.popPose()
         }
     }
 
-    override fun mouseClicked(mouseX: Double, mouseY: Double, button: Int): Boolean {
+    override fun mouseClicked(event: net.minecraft.client.input.MouseButtonEvent, doubleClick: Boolean): Boolean {
+    val mouseX = event.x()
+    val mouseY = event.y()
+    val button = event.button()
+
         if (suppressViewport) {
             return false
         }
-        return super.mouseClicked(mouseX, mouseY, button)
+        return super.mouseClicked(event, doubleClick)
     }
 
-    override fun mouseReleased(mouseX: Double, mouseY: Double, button: Int): Boolean {
+    override fun mouseReleased(event: net.minecraft.client.input.MouseButtonEvent): Boolean {
         if (suppressViewport) {
             return false
         }
-        return super.mouseReleased(mouseX, mouseY, button)
+        return super.mouseReleased(event)
     }
 
     override fun mouseScrolled(mouseX: Double, mouseY: Double, horizontalAmount: Double, verticalAmount: Double): Boolean {
@@ -510,11 +511,15 @@ class PokemonInfoWidget(val parent: PokedexGUI, val pX: Int, val pY: Int, val up
         return super.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount)
     }
 
-    override fun mouseDragged(mouseX: Double, mouseY: Double, button: Int, deltaX: Double, deltaY: Double): Boolean {
+    override fun mouseDragged(event: net.minecraft.client.input.MouseButtonEvent, deltaX: Double, deltaY: Double): Boolean {
+    val mouseX = event.x()
+    val mouseY = event.y()
+    val button = event.button()
+
         if (suppressViewport) {
             return false
         }
-        return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY)
+        return super.mouseDragged(event, deltaX, deltaY)
     }
 
     override fun mouseMoved(mouseX: Double, mouseY: Double) {
@@ -699,7 +704,7 @@ class PokemonInfoWidget(val parent: PokedexGUI, val pX: Int, val pY: Int, val up
             .toTypedArray()
     }
 
-    fun getPlatformResource(): ResourceLocation? {
+    fun getPlatformResource(): Identifier? {
         val primaryType = type[0]
         if (primaryType != null) {
             return try {

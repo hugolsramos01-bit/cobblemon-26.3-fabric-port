@@ -39,7 +39,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:safari_ball"
+        "recipes": "cobblemon:safari_ball"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -49,14 +49,14 @@
       "has_green_apricorn",
       "has_the_recipe"
     ],
-	[
+    [
       "has_yellow_apricorn",
       "has_the_recipe"
     ],
-	[
+    [
       "has_white_apricorn",
       "has_the_recipe"
-	]
+    ]
   ],
   "rewards": {
     "recipes": [

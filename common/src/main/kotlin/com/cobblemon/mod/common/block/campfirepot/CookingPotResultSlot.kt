@@ -10,6 +10,7 @@ package com.cobblemon.mod.common.block.campfirepot
 
 import com.cobblemon.mod.common.CobblemonItemComponents
 import com.cobblemon.mod.common.CobblemonSounds
+import com.cobblemon.mod.common.util.playNotifySound
 import net.minecraft.sounds.SoundSource
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.inventory.CraftingContainer

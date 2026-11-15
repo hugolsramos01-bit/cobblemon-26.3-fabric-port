@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:apricorn_sign"
+        "recipes": "cobblemon:apricorn_sign"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

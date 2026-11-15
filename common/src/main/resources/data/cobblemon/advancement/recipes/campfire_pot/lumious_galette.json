@@ -3,7 +3,7 @@
   "criteria": {
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:campfire_pot/lumiose_galette"
+        "recipes": "cobblemon:campfire_pot/lumiose_galette"
       },
       "trigger": "minecraft:recipe_unlocked"
     },

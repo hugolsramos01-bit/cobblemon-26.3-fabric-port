@@ -3,18 +3,10 @@
     "category": "misc",
     "group": "ev_feather_items",
     "ingredients": [
-        {
-            "item": "minecraft:feather"
-        },
-        {
-            "item": "minecraft:feather"
-        },
-        {
-            "item": "minecraft:feather"
-        },
-        {
-            "item": "cobblemon:white_mint_leaf"
-        }
+        "minecraft:feather",
+        "minecraft:feather",
+        "minecraft:feather",
+        "cobblemon:white_mint_leaf"
     ],
     "result": {
         "id": "cobblemon:health_feather",

@@ -13,10 +13,11 @@
           "type": "minecraft:item",
           "name": "cobblemon:exp_candy_l",
           "weight": 35,
-          "functions": [
+          "modifier": [
             {
-              "function": "set_count",
+              "type": "minecraft:set_count",
               "count": {
+                "type": "minecraft:uniform",
                 "min": 1,
                 "max": 3
               }
@@ -27,9 +28,9 @@
           "type": "minecraft:item",
           "name": "cobblemon:exp_candy_xl",
           "weight": 45,
-          "functions": [
+          "modifier": [
             {
-              "function": "set_count",
+              "type": "minecraft:set_count",
               "count": 1
             }
           ]
@@ -38,9 +39,9 @@
           "type": "minecraft:item",
           "name": "cobblemon:rare_candy",
           "weight": 10,
-          "functions": [
+          "modifier": [
             {
-              "function": "set_count",
+              "type": "minecraft:set_count",
               "count": 1
             }
           ]
@@ -63,10 +64,11 @@
           "type": "minecraft:item",
           "name": "cobblemon:health_candy",
           "weight": 15,
-          "functions": [
+          "modifier": [
             {
-              "function": "set_count",
+              "type": "minecraft:set_count",
               "count": {
+                "type": "minecraft:uniform",
                 "min": 1,
                 "max": 3
               }
@@ -77,10 +79,11 @@
           "type": "minecraft:item",
           "name": "cobblemon:mighty_candy",
           "weight": 15,
-          "functions": [
+          "modifier": [
             {
-              "function": "set_count",
+              "type": "minecraft:set_count",
               "count": {
+                "type": "minecraft:uniform",
                 "min": 1,
                 "max": 3
               }
@@ -91,10 +94,11 @@
           "type": "minecraft:item",
           "name": "cobblemon:tough_candy",
           "weight": 15,
-          "functions": [
+          "modifier": [
             {
-              "function": "set_count",
+              "type": "minecraft:set_count",
               "count": {
+                "type": "minecraft:uniform",
                 "min": 1,
                 "max": 3
               }
@@ -105,10 +109,11 @@
           "type": "minecraft:item",
           "name": "cobblemon:smart_candy",
           "weight": 15,
-          "functions": [
+          "modifier": [
             {
-              "function": "set_count",
+              "type": "minecraft:set_count",
               "count": {
+                "type": "minecraft:uniform",
                 "min": 1,
                 "max": 3
               }
@@ -119,10 +124,11 @@
           "type": "minecraft:item",
           "name": "cobblemon:courage_candy",
           "weight": 15,
-          "functions": [
+          "modifier": [
             {
-              "function": "set_count",
+              "type": "minecraft:set_count",
               "count": {
+                "type": "minecraft:uniform",
                 "min": 1,
                 "max": 3
               }
@@ -133,10 +139,11 @@
           "type": "minecraft:item",
           "name": "cobblemon:quick_candy",
           "weight": 15,
-          "functions": [
+          "modifier": [
             {
-              "function": "set_count",
+              "type": "minecraft:set_count",
               "count": {
+                "type": "minecraft:uniform",
                 "min": 1,
                 "max": 3
               }
@@ -148,5 +155,3 @@
   ],
   "random_sequence": "cobblemon:alpha/alpha_rewards_tier4"
 }
-
-

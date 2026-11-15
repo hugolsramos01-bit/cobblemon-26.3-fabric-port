@@ -12,6 +12,8 @@ import com.mojang.blaze3d.vertex.PoseStack
 import net.minecraft.client.Camera
 import net.minecraft.client.DeltaTracker
 import net.minecraft.client.renderer.LevelRenderer
+import net.minecraft.client.renderer.SubmitNodeCollector
+import net.minecraft.client.renderer.state.level.CameraRenderState
 import org.joml.Matrix4f
 
 /**
@@ -27,7 +29,9 @@ data class RenderEvent(
     val modelViewMatrix: Matrix4f,
     val projectionMatrix: Matrix4f,
     val tickCounter: DeltaTracker,
-    val camera: Camera
+    val camera: Camera? = null,
+    val cameraState: CameraRenderState? = null,
+    val submitNodeCollector: SubmitNodeCollector? = null
 ) {
 
     /** Represents when a layer is rendered by [LevelRenderer.renderLevel]. Ordinal corresponds with its render order. */

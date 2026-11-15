@@ -17,7 +17,9 @@
       "conditions": {
         "items": [
           {
-            "items": ["cobblemon:pewter_crunchies"]
+            "items": [
+              "cobblemon:pewter_crunchies"
+            ]
           }
         ]
       }
@@ -27,7 +29,9 @@
       "conditions": {
         "items": [
           {
-            "items": ["cobblemon:rage_candy_bar"]
+            "items": [
+              "cobblemon:rage_candy_bar"
+            ]
           }
         ]
       }
@@ -37,7 +41,9 @@
       "conditions": {
         "items": [
           {
-            "items": ["cobblemon:lava_cookie"]
+            "items": [
+              "cobblemon:lava_cookie"
+            ]
           }
         ]
       }
@@ -47,7 +53,9 @@
       "conditions": {
         "items": [
           {
-            "items": ["cobblemon:jubilife_muffin"]
+            "items": [
+              "cobblemon:jubilife_muffin"
+            ]
           }
         ]
       }
@@ -57,7 +65,9 @@
       "conditions": {
         "items": [
           {
-            "items": ["cobblemon:old_gateau"]
+            "items": [
+              "cobblemon:old_gateau"
+            ]
           }
         ]
       }
@@ -67,7 +77,9 @@
       "conditions": {
         "items": [
           {
-            "items": ["cobblemon:casteliacone"]
+            "items": [
+              "cobblemon:casteliacone"
+            ]
           }
         ]
       }
@@ -77,7 +89,9 @@
       "conditions": {
         "items": [
           {
-            "items": ["cobblemon:lumiose_galette"]
+            "items": [
+              "cobblemon:lumiose_galette"
+            ]
           }
         ]
       }
@@ -87,7 +101,9 @@
       "conditions": {
         "items": [
           {
-            "items": ["cobblemon:big_malasada"]
+            "items": [
+              "cobblemon:big_malasada"
+            ]
           }
         ]
       }
@@ -97,7 +113,9 @@
       "conditions": {
         "items": [
           {
-            "items": ["cobblemon:smoked_tail_curry"]
+            "items": [
+              "cobblemon:smoked_tail_curry"
+            ]
           }
         ]
       }
@@ -107,23 +125,45 @@
       "conditions": {
         "items": [
           {
-            "items": ["cobblemon:open_faced_sandwich"]
+            "items": [
+              "cobblemon:open_faced_sandwich"
+            ]
           }
         ]
       }
     }
   },
   "requirements": [
-    ["pewter_crunchies"],
-    ["rage_candy_bar"],
-    ["lava_cookie"],
-    ["jubilife_muffin"],
-    ["old_gateau"],
-    ["casteliacone"],
-    ["lumiose_galette"],
-    ["big_malasada"],
-    ["smoked_tail_curry"],
-    ["open_faced_sandwich"]
+    [
+      "pewter_crunchies"
+    ],
+    [
+      "rage_candy_bar"
+    ],
+    [
+      "lava_cookie"
+    ],
+    [
+      "jubilife_muffin"
+    ],
+    [
+      "old_gateau"
+    ],
+    [
+      "casteliacone"
+    ],
+    [
+      "lumiose_galette"
+    ],
+    [
+      "big_malasada"
+    ],
+    [
+      "smoked_tail_curry"
+    ],
+    [
+      "open_faced_sandwich"
+    ]
   ],
   "sends_telemetry_event": false
 }

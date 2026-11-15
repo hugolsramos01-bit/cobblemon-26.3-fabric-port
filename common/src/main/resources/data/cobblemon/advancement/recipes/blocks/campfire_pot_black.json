@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:campfire_pot_black"
+        "recipes": "cobblemon:campfire_pot_black"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

@@ -19,11 +19,15 @@ import com.cobblemon.mod.common.item.CobblemonItem
 import com.cobblemon.mod.common.item.components.TMMoveComponent
 import com.cobblemon.mod.common.util.lang
 import net.minecraft.network.chat.Component
+import net.minecraft.core.registries.BuiltInRegistries
+import net.minecraft.network.protocol.game.ClientboundSoundPacket
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.sounds.SoundEvent
 import net.minecraft.sounds.SoundSource
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.TooltipFlag
+import net.minecraft.world.item.component.TooltipDisplay
+import java.util.function.Consumer
 
 class TechnicalMachineItem(properties: Properties) : CobblemonItem(properties), PokemonEntityInteraction {
     override val accepted: Set<PokemonEntityInteraction.Ownership> = setOf(PokemonEntityInteraction.Ownership.OWNER)
@@ -35,11 +39,11 @@ class TechnicalMachineItem(properties: Properties) : CobblemonItem(properties), 
         val tmLearnableMoves = pokemon.form.moves.tmLearnableMoves()
 
         if (moveTemplate !in tmLearnableMoves) {
-            player.displayClientMessage(lang("tms.cannot_learn", pokemon.getDisplayName(), moveTemplate.displayName), true)
+            player.sendOverlayMessage(lang("tms.cannot_learn", pokemon.getDisplayName(), moveTemplate.displayName))
             return false
         }
         if (pokemon.moveSet.getMoveTemplates().contains(moveTemplate) || pokemon.allAccessibleMoves.contains(moveTemplate)) {
-            player.displayClientMessage(lang("tms.already_known", pokemon.getDisplayName(), moveTemplate.displayName), true)
+            player.sendOverlayMessage(lang("tms.already_known", pokemon.getDisplayName(), moveTemplate.displayName))
             return false
         }
 
@@ -51,16 +55,19 @@ class TechnicalMachineItem(properties: Properties) : CobblemonItem(properties), 
             pokemon.benchedMoves.add(BenchedMove(moveTemplate, 0))
         }
 
-        player.displayClientMessage(lang("tms.teach_move", pokemon.getDisplayName(), moveTemplate.displayName).green(), true)
-        player.playNotifySound(CobblemonSounds.MOVE_LEARN, SoundSource.MASTER, 1.0F, 1.0F)
+        player.sendOverlayMessage(lang("tms.teach_move", pokemon.getDisplayName(), moveTemplate.displayName).green())
+        player.connection.send(ClientboundSoundPacket(
+            BuiltInRegistries.SOUND_EVENT.wrapAsHolder(CobblemonSounds.MOVE_LEARN),
+            SoundSource.MASTER, player.x, player.y, player.z, 1.0F, 1.0F, player.random.nextLong()
+        ))
         return true
     }
 
-    override fun appendHoverText(stack: ItemStack, context: TooltipContext, tooltip: MutableList<Component>, tooltipFlag: TooltipFlag) {
+    override fun appendHoverText(stack: ItemStack, context: TooltipContext, display: TooltipDisplay, tooltip: Consumer<Component>, tooltipFlag: TooltipFlag) {
         val move = TMMoveComponent.getTMMove(stack)
         val text = move?.displayName ?: lang("tms.unknown_move")
-        tooltip.add(text.gray())
-        super.appendHoverText(stack, context, tooltip, tooltipFlag)
+        tooltip.accept(text.gray())
+        super.appendHoverText(stack, context, display, tooltip, tooltipFlag)
     }
 
     override val sound: SoundEvent? = CobblemonSounds.TM_USE

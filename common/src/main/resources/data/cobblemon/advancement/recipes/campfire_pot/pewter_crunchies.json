@@ -3,7 +3,7 @@
   "criteria": {
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:campfire_pot/pewter_crunchies"
+        "recipes": "cobblemon:campfire_pot/pewter_crunchies"
       },
       "trigger": "minecraft:recipe_unlocked"
     },
@@ -32,7 +32,7 @@
     [
       "has_the_recipe",
       "has_pumpkin_seeds",
-	  "has_grain"
+      "has_grain"
     ]
   ],
   "rewards": {

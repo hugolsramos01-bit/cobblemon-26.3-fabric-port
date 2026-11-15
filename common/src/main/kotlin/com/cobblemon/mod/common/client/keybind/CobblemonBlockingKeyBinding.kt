@@ -19,7 +19,7 @@ import net.minecraft.client.Minecraft
  */
 abstract class CobblemonBlockingKeyBinding(
     name: String,
-    type: InputConstants.Type = InputConstants.Type.KEYSYM,
+    type: InputConstants.Type = InputConstants.Type.KEYBOARD,
     key: Int,
     category: String
 ) : CobblemonKeyBinding(name, type, key, category) {
@@ -39,7 +39,7 @@ abstract class CobblemonBlockingKeyBinding(
         } else if (!isDown) {
             wasDown = false
         } else if (wasDown) {
-            timeDown += Minecraft.getInstance().timer.getGameTimeDeltaPartialTick(false)
+            timeDown += Minecraft.getInstance().getDeltaTracker().getGameTimeDeltaPartialTick(false)
         }
     }
 }

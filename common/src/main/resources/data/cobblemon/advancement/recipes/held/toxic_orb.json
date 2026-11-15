@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:toxic_orb"
+        "recipes": "cobblemon:toxic_orb"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

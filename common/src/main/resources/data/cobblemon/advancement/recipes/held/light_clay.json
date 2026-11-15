@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:light_clay"
+        "recipes": "cobblemon:light_clay"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

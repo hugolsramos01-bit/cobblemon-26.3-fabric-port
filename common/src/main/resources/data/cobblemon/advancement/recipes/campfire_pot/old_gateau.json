@@ -3,7 +3,7 @@
   "criteria": {
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:campfire_pot/old_gateau"
+        "recipes": "cobblemon:campfire_pot/old_gateau"
       },
       "trigger": "minecraft:recipe_unlocked"
     },

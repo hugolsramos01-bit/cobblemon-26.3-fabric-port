@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:luminous_moss"
+        "recipes": "cobblemon:luminous_moss"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

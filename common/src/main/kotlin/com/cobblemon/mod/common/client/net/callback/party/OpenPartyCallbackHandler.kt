@@ -15,7 +15,7 @@ import net.minecraft.client.Minecraft
 
 object OpenPartyCallbackHandler : ClientNetworkPacketHandler<OpenPartyCallbackPacket> {
     override fun handle(packet: OpenPartyCallbackPacket, client: Minecraft) {
-        client.setScreen(
+        client.setScreenAndShow(
             PartySelectGUI(
                 title = packet.title,
                 pokemon = packet.pokemon,

@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:automaton_armor_trim_smithing_template"
+        "recipes": "cobblemon:automaton_armor_trim_smithing_template"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

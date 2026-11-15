@@ -23,7 +23,7 @@ import com.cobblemon.mod.common.util.cobblemonResource
 import com.cobblemon.mod.common.util.lang
 import com.cobblemon.mod.common.util.math.fromEulerXYZDegrees
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.components.Button
 import net.minecraft.client.sounds.SoundManager
 import net.minecraft.network.chat.Component
@@ -53,13 +53,13 @@ open class StorageSlot(
     override fun playDownSound(soundManager: SoundManager) {
     }
 
-    override fun renderWidget(context: GuiGraphics, mouseX: Int, mouseY: Int, delta: Float) {
+    override fun extractContents(context: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, delta: Float) {
         if (shouldRender()) {
             renderSlot(context, x, y, delta)
         }
     }
 
-    fun renderSlot(context: GuiGraphics, posX: Int, posY: Int, partialTicks: Float) {
+    fun renderSlot(context: GuiGraphicsExtractor, posX: Int, posY: Int, partialTicks: Float) {
         val pokemon = getPokemon() ?: return
         val matrices = context.pose()
         context.enableScissor(
@@ -70,9 +70,9 @@ open class StorageSlot(
         )
 
         // Render Pokémon
-        matrices.pushPose()
-        matrices.translate(posX + (SIZE / 2.0), posY + 1.0, 0.0)
-        matrices.scale(2.5F, 2.5F, 1F)
+        matrices.pushMatrix()
+        matrices.translate((posX + (SIZE / 2.0)).toFloat(), posY + 1.0F)
+        matrices.scale(2.5F, 2.5F)
 
         val animationConfig = if (this is PartyStorageSlot) Cobblemon.config.summaryProfileAnimations else Cobblemon.config.pcProfileAnimations
         val shouldAnimate = when (animationConfig) {
@@ -83,20 +83,19 @@ open class StorageSlot(
 
         drawProfilePokemon(
             renderablePokemon = pokemon.asRenderablePokemon(),
-            matrixStack = matrices,
+            context = context,
             rotation = Quaternionf().fromEulerXYZDegrees(Vector3f(13F, 35F, 0F)),
             state = state,
             partialTicks = if (shouldAnimate) partialTicks else 0F,
             scale = 4.5F
         )
-        matrices.popPose()
+        matrices.popMatrix()
 
         context.disableScissor()
 
         if (!isSlotSelected) {
             // Ensure elements are not hidden behind Pokémon render
-            matrices.pushPose()
-            matrices.translate(0.0, 0.0, 100.0)
+            context.nextStratum()
             // Level
             drawScaledText(
                 context = context,
@@ -109,7 +108,7 @@ open class StorageSlot(
 
             if (pokemon.gender != Gender.GENDERLESS) {
                 blitk(
-                    matrixStack = matrices,
+                    context = context,
                     texture = if (pokemon.gender == Gender.MALE) genderIconMale else genderIconFemale,
                     x = (posX + 21) / PCGUI.SCALE,
                     y = (posY + 1) / PCGUI.SCALE,
@@ -123,25 +122,23 @@ open class StorageSlot(
             val heldItem = pokemon.heldItemNoCopy()
             if (!heldItem.isEmpty) {
                 renderScaledGuiItemIcon(
+                    context = context,
                     itemStack = heldItem,
                     x = posX + 16.0,
                     y = posY + 16.0,
                     scale = 0.5,
-                    matrixStack = matrices
                 )
             }
-            matrices.popPose()
         }
 
         // Ensure overlay elements are on top
-        matrices.pushPose()
-        matrices.translate(0.0, 0.0, 500.0)
+        context.nextStratum()
 
         val config = parent.pcGui.configuration
         if (pokemon.tetheringId != null && !isSlotSelected) {
             if (isStationary()) {
                 blitk(
-                    matrixStack = matrices,
+                    context = context,
                     x = posX,
                     y = posY,
                     width = SIZE,
@@ -153,7 +150,7 @@ open class StorageSlot(
             val opacity = if (config is PasturePCGUIConfiguration && config.pasturedPokemon.get().none { it.pokemonId == pokemon.uuid }) 0.5F else 1F
 
             blitk(
-                matrixStack = matrices,
+                context = context,
                 x = (posX + 7.5) / PCGUI.SCALE,
                 y = (posY + 7.5) / PCGUI.SCALE,
                 width = 20,
@@ -175,7 +172,7 @@ open class StorageSlot(
                 && config.pasturedPokemon.get().count { it.playerId == Minecraft.getInstance().player!!.uuid } < config.permissions.maxPokemon
             ) {
                 blitk(
-                    matrixStack = matrices,
+                    context = context,
                     x = posX,
                     y = posY,
                     width = SIZE,
@@ -184,7 +181,7 @@ open class StorageSlot(
                 )
 
                 blitk(
-                    matrixStack = matrices,
+                    context = context,
                     x = (posX + 7.5) / PCGUI.SCALE,
                     y = (posY + 7.5) / PCGUI.SCALE,
                     width = 20,
@@ -196,7 +193,7 @@ open class StorageSlot(
 
             // Arrow pointer
             blitk(
-                matrixStack = matrices,
+                context = context,
                 texture = selectPointerResource,
                 x = (posX + 10) / PCGUI.SCALE,
                 y = ((posY - 3) / PCGUI.SCALE) - parent.pcGui.selectPointerOffsetY,
@@ -205,7 +202,6 @@ open class StorageSlot(
                 scale = PCGUI.SCALE
             )
         }
-        matrices.popPose()
     }
 
     open fun isStationary(): Boolean {
@@ -228,8 +224,8 @@ open class StorageSlot(
         return getPokemon() == null || parent.pcGui.search.passes(getPokemon())
     }
 
-    override fun mouseClicked(mouseX: Double, mouseY: Double, button: Int): Boolean {
-        return if (clickable()) super.mouseClicked(mouseX, mouseY, button) else false
+    override fun mouseClicked(event: net.minecraft.client.input.MouseButtonEvent, doubleClick: Boolean): Boolean {
+        return if (clickable()) super.mouseClicked(event, doubleClick) else false
     }
 
     fun isHovered(mouseX: Int, mouseY: Int) = mouseX.toFloat() in (x.toFloat()..(x.toFloat() + SIZE)) && mouseY.toFloat() in (y.toFloat()..(y.toFloat() + SIZE))

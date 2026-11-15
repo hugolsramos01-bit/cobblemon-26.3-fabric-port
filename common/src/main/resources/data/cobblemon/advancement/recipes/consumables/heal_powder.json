@@ -6,8 +6,8 @@
         "items": [
           {
             "items": [
-				"cobblemon:revival_herb"
-			]
+              "cobblemon:revival_herb"
+            ]
           }
         ]
       },
@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:heal_powder"
+        "recipes": "cobblemon:heal_powder"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

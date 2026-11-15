@@ -8,6 +8,7 @@
 
 package com.cobblemon.mod.common.block.entity
 
+import com.cobblemon.mod.common.util.CobblemonInteractionResults
 import com.cobblemon.mod.common.CobblemonBlockEntities
 import com.cobblemon.mod.common.CobblemonItems
 import com.cobblemon.mod.common.block.DiscShelfBlock
@@ -18,6 +19,8 @@ import net.minecraft.core.HolderLookup
 import net.minecraft.core.NonNullList
 import net.minecraft.core.component.DataComponents
 import net.minecraft.nbt.CompoundTag
+import net.minecraft.world.level.storage.ValueOutput
+import net.minecraft.world.level.storage.ValueInput
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket
 import net.minecraft.sounds.SoundEvent
 import net.minecraft.sounds.SoundSource
@@ -38,11 +41,11 @@ class DiscShelfBlockEntity(pos: BlockPos, state: BlockState) : BlockEntity(Cobbl
     private val accessibleSlots = IntArray(14) { it }
     private var lastNotePulseTick: Long = Long.MIN_VALUE
 
-    fun handleUseItem(stack: ItemStack, state: BlockState, level: Level, pos: BlockPos, player: Player, hit: BlockHitResult): ItemInteractionResult {
-        if (stack.isEmpty) return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION
+    fun handleUseItem(stack: ItemStack, state: BlockState, level: Level, pos: BlockPos, player: Player, hit: BlockHitResult): InteractionResult {
+        if (stack.isEmpty) return InteractionResult.TRY_WITH_EMPTY_HAND
         val slot = getHitSlot(hit, state).orElse(-1)
-        if (slot !in 0 until 14) return ItemInteractionResult.SKIP_DEFAULT_BLOCK_INTERACTION
-        if (!isValidItem(stack)) return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION
+        if (slot !in 0 until 14) return InteractionResult.PASS
+        if (!isValidItem(stack)) return InteractionResult.TRY_WITH_EMPTY_HAND
 
         val oldStack = items[slot]
         if (!oldStack.isEmpty) {
@@ -58,7 +61,7 @@ class DiscShelfBlockEntity(pos: BlockPos, state: BlockState) : BlockEntity(Cobbl
         lastInteractedSlot = slot
         onInventoryChanged(level, pos)
 
-        return ItemInteractionResult.sidedSuccess(level.isClientSide)
+        return CobblemonInteractionResults.sidedSuccess(level.isClientSide)
     }
 
     fun handleUseWithoutItem(state: BlockState, level: Level, pos: BlockPos, player: Player, hit: BlockHitResult): InteractionResult {
@@ -74,7 +77,7 @@ class DiscShelfBlockEntity(pos: BlockPos, state: BlockState) : BlockEntity(Cobbl
         lastInteractedSlot = slot
         onInventoryChanged(level, pos)
 
-        return InteractionResult.sidedSuccess(level.isClientSide)
+        return CobblemonInteractionResults.sidedSuccess(level.isClientSide)
     }
 
     private fun onInventoryChanged(level: Level, pos: BlockPos) {
@@ -85,7 +88,7 @@ class DiscShelfBlockEntity(pos: BlockPos, state: BlockState) : BlockEntity(Cobbl
     }
 
     private fun getHitSlot(hit: BlockHitResult, state: BlockState): OptionalInt {
-        val facing = state.getValue(DiscShelfBlock.FACING)
+        val facing: Direction = state.getValue(DiscShelfBlock.FACING)
         if (hit.direction != facing) {
             return OptionalInt.empty()
         }
@@ -235,17 +238,17 @@ class DiscShelfBlockEntity(pos: BlockPos, state: BlockState) : BlockEntity(Cobbl
         return ClientboundBlockEntityDataPacket.create(this)
     }
 
-    override fun saveAdditional(tag: CompoundTag, registries: HolderLookup.Provider) {
-        super.saveAdditional(tag, registries)
-        ContainerHelper.saveAllItems(tag, items, true, registries)
+    override fun saveAdditional(tag: ValueOutput) {
+        super.saveAdditional(tag)
+        ContainerHelper.saveAllItems(tag, items, true)
         tag.putInt("LastInteractedSlot", lastInteractedSlot)
     }
 
-    override fun loadAdditional(tag: CompoundTag, registries: HolderLookup.Provider) {
-        super.loadAdditional(tag, registries)
+    override fun loadAdditional(tag: ValueInput) {
+        super.loadAdditional(tag)
         items.clear()
-        ContainerHelper.loadAllItems(tag, items, registries)
-        lastInteractedSlot = tag.getInt("LastInteractedSlot")
+        ContainerHelper.loadAllItems(tag, items)
+        lastInteractedSlot = tag.getIntOr("LastInteractedSlot", 0)
     }
 
     companion object {

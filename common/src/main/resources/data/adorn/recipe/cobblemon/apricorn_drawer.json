@@ -7,12 +7,8 @@
     "S"
   ],
   "key": {
-    "C": {
-      "tag": "c:chests/wooden"
-    },
-    "S": {
-      "item": "cobblemon:apricorn_slab"
-    }
+    "C": "#c:chests/wooden",
+    "S": "cobblemon:apricorn_slab"
   },
   "result": {
     "id": "adorn:cobblemon/apricorn_drawer",

@@ -21,7 +21,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipe": "cobblemon:apricorn_slab"
+        "recipes": "cobblemon:apricorn_slab"
       }
     }
   },

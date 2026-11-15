@@ -15,7 +15,13 @@ import net.minecraft.core.HolderLookup
 import net.minecraft.resources.RegistryOps
 import java.lang.reflect.Type
 
-class CodecBackedAdapter<T>(val codec: Codec<T>, val registryAccess: HolderLookup.Provider = RegistryAccessResolver.getAccess()) : JsonDeserializer<T>, JsonSerializer<T> {
+class CodecBackedAdapter<T>(val codec: Codec<T>, registryAccess: HolderLookup.Provider? = null) : JsonDeserializer<T>, JsonSerializer<T> {
+
+    private val registryAccessOverride = registryAccess
+    // Gson adapters outlive worlds and are often constructed before a server exists.
+    // Resolve the current operation's registries instead of retaining EMPTY forever.
+    val registryAccess: HolderLookup.Provider
+        get() = registryAccessOverride ?: RegistryAccessResolver.getAccess()
 
     override fun deserialize(
         jElement: JsonElement,

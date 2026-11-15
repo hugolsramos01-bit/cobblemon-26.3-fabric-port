@@ -21,7 +21,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipe": "cobblemon:thunder_stone_from_blasting_deepslate_thunder_stone_ore"
+        "recipes": "cobblemon:thunder_stone_from_blasting_deepslate_thunder_stone_ore"
       }
     }
   },

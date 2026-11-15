@@ -18,10 +18,8 @@ import com.cobblemon.mod.common.net.messages.server.dialogue.InputToDialoguePack
 import com.cobblemon.mod.common.util.cobblemonResource
 import com.mojang.blaze3d.platform.InputConstants
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.components.EditBox
-import net.minecraft.client.gui.screens.Screen
-import org.lwjgl.glfw.GLFW
 
 class DialogueTextInputWidget(
     val dialogueScreen: DialogueScreen,
@@ -43,7 +41,11 @@ class DialogueTextInputWidget(
         isFocused = true
     }
 
-    override fun mouseClicked(mouseX: Double, mouseY: Double, button: Int): Boolean {
+    override fun mouseClicked(event: net.minecraft.client.input.MouseButtonEvent, doubleClick: Boolean): Boolean {
+    val mouseX = event.x()
+    val mouseY = event.y()
+    val button = event.button()
+
         if (!dialogueScreen.renderInput()) {
             return false
         }
@@ -59,7 +61,7 @@ class DialogueTextInputWidget(
         }
     }
 
-    override fun renderWidget(context: GuiGraphics, mouseX: Int, mouseY: Int, delta: Float) {
+    override fun extractWidgetRenderState(context: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, delta: Float) {
         if (!dialogueScreen.renderInput()) {
             return
         }
@@ -67,11 +69,11 @@ class DialogueTextInputWidget(
             return
         }
         if (cursorPosition != value.length) {
-            moveCursorToEnd(Screen.hasShiftDown())
+            moveCursorToEnd(Minecraft.getInstance().hasShiftDown())
         }
 
         blitk(
-            matrixStack = context.pose(),
+            context = context,
             x = x,
             y = y,
             width = width,
@@ -89,10 +91,12 @@ class DialogueTextInputWidget(
         )
     }
 
-    override fun keyPressed(keyCode: Int, scanCode: Int, modifiers: Int): Boolean {
-        if (keyCode == InputConstants.KEY_ESCAPE || keyCode == GLFW.GLFW_KEY_ENTER || keyCode == GLFW.GLFW_KEY_KP_ENTER) {
+    override fun keyPressed(event: net.minecraft.client.input.KeyEvent): Boolean {
+        val keyCode = event.key()
+
+        if (keyCode == InputConstants.KEY_ESCAPE || keyCode == InputConstants.KEY_RETURN || keyCode == InputConstants.KEY_NUMPADENTER) {
             this.dialogueScreen.sendToServer(InputToDialoguePacket(dialogueScreen.dialogueDTO.dialogueInput.inputId, value.trim()))
         }
-        return super.keyPressed(keyCode, scanCode, modifiers)
+        return super.keyPressed(event)
     }
 }

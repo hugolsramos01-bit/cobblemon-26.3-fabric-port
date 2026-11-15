@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:exp_share"
+        "recipes": "cobblemon:exp_share"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

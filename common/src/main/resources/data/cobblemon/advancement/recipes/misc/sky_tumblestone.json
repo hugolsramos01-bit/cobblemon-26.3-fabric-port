@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:sky_tumblestone"
+        "recipes": "cobblemon:sky_tumblestone"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

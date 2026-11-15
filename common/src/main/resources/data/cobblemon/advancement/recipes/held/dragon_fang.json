@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:dragon_fang"
+        "recipes": "cobblemon:dragon_fang"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

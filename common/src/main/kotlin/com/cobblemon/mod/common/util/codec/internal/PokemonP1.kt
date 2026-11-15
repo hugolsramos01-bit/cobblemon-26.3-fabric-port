@@ -31,7 +31,6 @@ import java.util.UUID
 import net.minecraft.core.UUIDUtil
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.nbt.StringTag
-import net.minecraft.nbt.Tag
 
 internal class PokemonP1(
     val uuid: UUID,
@@ -59,16 +58,14 @@ internal class PokemonP1(
         other.species = this.species
         other.form = this.form
         this.features.forEach { featureNbt ->
-            val featureId = featureNbt.getString(FEATURE_ID)
+            val featureId = featureNbt.getString(FEATURE_ID).orElse("")
             if (featureId.isEmpty()) {
                 return@forEach
             }
             val speciesFeatureProviders = SpeciesFeatures.getFeaturesFor(other.species)
             val feature = speciesFeatureProviders.firstNotNullOfOrNull { provider -> provider(featureNbt) } ?: return@forEach
-            if (
-                featureNbt.contains("keys", Tag.TAG_STRING.toInt()) &&
-                !featureNbt.getList("keys", Tag.TAG_STRING.toInt()).contains(StringTag.valueOf(featureId))
-            ) {
+            val featureKeys = featureNbt.getList("keys").orElse(null)
+            if (featureKeys != null && !featureKeys.contains(StringTag.valueOf(featureId))) {
                 return@forEach
             }
             other.features.removeIf { it.name == feature.name }

@@ -17,7 +17,9 @@
       "conditions": {
         "items": [
           {
-            "items": ["cobblemon:ancient_poke_ball"]
+            "items": [
+              "cobblemon:ancient_poke_ball"
+            ]
           }
         ]
       }
@@ -27,7 +29,9 @@
       "conditions": {
         "items": [
           {
-            "items": ["cobblemon:ancient_citrine_ball"]
+            "items": [
+              "cobblemon:ancient_citrine_ball"
+            ]
           }
         ]
       }
@@ -37,7 +41,9 @@
       "conditions": {
         "items": [
           {
-            "items": ["cobblemon:ancient_verdant_ball"]
+            "items": [
+              "cobblemon:ancient_verdant_ball"
+            ]
           }
         ]
       }
@@ -47,7 +53,9 @@
       "conditions": {
         "items": [
           {
-            "items": ["cobblemon:ancient_azure_ball"]
+            "items": [
+              "cobblemon:ancient_azure_ball"
+            ]
           }
         ]
       }
@@ -57,7 +65,9 @@
       "conditions": {
         "items": [
           {
-            "items": ["cobblemon:ancient_roseate_ball"]
+            "items": [
+              "cobblemon:ancient_roseate_ball"
+            ]
           }
         ]
       }
@@ -67,7 +77,9 @@
       "conditions": {
         "items": [
           {
-            "items": ["cobblemon:ancient_slate_ball"]
+            "items": [
+              "cobblemon:ancient_slate_ball"
+            ]
           }
         ]
       }
@@ -77,7 +89,9 @@
       "conditions": {
         "items": [
           {
-            "items": ["cobblemon:ancient_ivory_ball"]
+            "items": [
+              "cobblemon:ancient_ivory_ball"
+            ]
           }
         ]
       }
@@ -87,7 +101,9 @@
       "conditions": {
         "items": [
           {
-            "items": ["cobblemon:ancient_great_ball"]
+            "items": [
+              "cobblemon:ancient_great_ball"
+            ]
           }
         ]
       }
@@ -97,7 +113,9 @@
       "conditions": {
         "items": [
           {
-            "items": ["cobblemon:ancient_ultra_ball"]
+            "items": [
+              "cobblemon:ancient_ultra_ball"
+            ]
           }
         ]
       }
@@ -107,7 +125,9 @@
       "conditions": {
         "items": [
           {
-            "items": ["cobblemon:ancient_feather_ball"]
+            "items": [
+              "cobblemon:ancient_feather_ball"
+            ]
           }
         ]
       }
@@ -117,7 +137,9 @@
       "conditions": {
         "items": [
           {
-            "items": ["cobblemon:ancient_wing_ball"]
+            "items": [
+              "cobblemon:ancient_wing_ball"
+            ]
           }
         ]
       }
@@ -127,7 +149,9 @@
       "conditions": {
         "items": [
           {
-            "items": ["cobblemon:ancient_jet_ball"]
+            "items": [
+              "cobblemon:ancient_jet_ball"
+            ]
           }
         ]
       }
@@ -137,7 +161,9 @@
       "conditions": {
         "items": [
           {
-            "items": ["cobblemon:ancient_heavy_ball"]
+            "items": [
+              "cobblemon:ancient_heavy_ball"
+            ]
           }
         ]
       }
@@ -147,7 +173,9 @@
       "conditions": {
         "items": [
           {
-            "items": ["cobblemon:ancient_leaden_ball"]
+            "items": [
+              "cobblemon:ancient_leaden_ball"
+            ]
           }
         ]
       }
@@ -157,28 +185,60 @@
       "conditions": {
         "items": [
           {
-            "items": ["cobblemon:ancient_gigaton_ball"]
+            "items": [
+              "cobblemon:ancient_gigaton_ball"
+            ]
           }
         ]
       }
     }
   },
   "requirements": [
-    ["ancient_poke_ball"],
-    ["ancient_citrine_ball"],
-    ["ancient_verdant_ball"],
-    ["ancient_azure_ball"],
-    ["ancient_roseate_ball"],
-    ["ancient_slate_ball"],
-    ["ancient_ivory_ball"],
-    ["ancient_great_ball"],
-    ["ancient_ultra_ball"],
-    ["ancient_feather_ball"],
-    ["ancient_wing_ball"],
-    ["ancient_jet_ball"],
-    ["ancient_heavy_ball"],
-    ["ancient_leaden_ball"],
-    ["ancient_gigaton_ball"]
+    [
+      "ancient_poke_ball"
+    ],
+    [
+      "ancient_citrine_ball"
+    ],
+    [
+      "ancient_verdant_ball"
+    ],
+    [
+      "ancient_azure_ball"
+    ],
+    [
+      "ancient_roseate_ball"
+    ],
+    [
+      "ancient_slate_ball"
+    ],
+    [
+      "ancient_ivory_ball"
+    ],
+    [
+      "ancient_great_ball"
+    ],
+    [
+      "ancient_ultra_ball"
+    ],
+    [
+      "ancient_feather_ball"
+    ],
+    [
+      "ancient_wing_ball"
+    ],
+    [
+      "ancient_jet_ball"
+    ],
+    [
+      "ancient_heavy_ball"
+    ],
+    [
+      "ancient_leaden_ball"
+    ],
+    [
+      "ancient_gigaton_ball"
+    ]
   ],
   "sends_telemetry_event": false
 }

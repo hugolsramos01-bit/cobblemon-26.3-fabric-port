@@ -8,6 +8,9 @@
 
 package com.cobblemon.mod.common.block.decor
 
+import net.minecraft.world.level.ScheduledTickAccess
+import net.minecraft.world.level.LevelReader
+import net.minecraft.world.level.block.BonemealSource
 import com.cobblemon.mod.common.CobblemonBlocks
 import com.cobblemon.mod.common.CobblemonItems
 import com.cobblemon.mod.common.CobblemonSounds
@@ -16,6 +19,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.server.level.ServerLevel
+import net.minecraft.server.level.ServerPlayer
 import net.minecraft.util.RandomSource
 import net.minecraft.util.StringRepresentable
 import net.minecraft.world.entity.player.Player
@@ -37,10 +41,6 @@ import net.minecraft.world.phys.shapes.VoxelShape
 @Suppress("OVERRIDE_DEPRECATION")
 class TerrainSeedBlock(private val terrainSeedType: TerrainSeedType, settings: Properties) : CropBlock(settings) {
     companion object {
-        val CODEC: MapCodec<TerrainSeedBlock> = RecordCodecBuilder.mapCodec { it.group(
-            TerrainSeedType.CODEC.fieldOf("terrainSeedType").forGetter(TerrainSeedBlock::terrainSeedType),
-            propertiesCodec()
-        ).apply(it, ::TerrainSeedBlock) }
         const val MATURE_AGE = 4
         val AGE: IntegerProperty = IntegerProperty.create("age", 0, MATURE_AGE)
         val HALF: EnumProperty<DoubleBlockHalf> = BlockStateProperties.DOUBLE_BLOCK_HALF
@@ -62,9 +62,6 @@ class TerrainSeedBlock(private val terrainSeedType: TerrainSeedType, settings: P
         )
     }
 
-    override fun codec(): MapCodec<out CropBlock> {
-        return CODEC
-    }
 
     init {
         this.registerDefaultState(
@@ -104,15 +101,15 @@ class TerrainSeedBlock(private val terrainSeedType: TerrainSeedType, settings: P
         return blockState.isAir || blockState.`is`(this.terrainSeedType.getCropBlock())
     }
 
-    override fun updateShape(state: BlockState, direction: Direction, neighborState: BlockState, world: LevelAccessor, pos: BlockPos, neighborPos: BlockPos): BlockState {
+    override fun updateShape(state: BlockState, world: LevelReader, tickAccess: ScheduledTickAccess, pos: BlockPos, direction: Direction, neighborPos: BlockPos, neighborState: BlockState, random: RandomSource): BlockState {
         return if (state.getValue(AGE) >= 2) {
-            super.updateShape(state, direction, neighborState, world, pos, neighborPos)
+            super.updateShape(state, world, tickAccess, pos, direction, neighborPos, neighborState, random)
         } else {
             if (state.canSurvive(world, pos)) state else Blocks.AIR.defaultBlockState()
         }
     }
 
-    override fun isValidBonemealTarget(level: LevelReader, pos: BlockPos, state: BlockState): Boolean {
+    override fun isValidBonemealTarget(level: LevelReader, pos: BlockPos, state: BlockState, source: BonemealSource): Boolean {
         val posAndState = getLowerHalf(level, pos, state)
         return if (posAndState == null) false else this.canGrow(
             level,
@@ -121,7 +118,7 @@ class TerrainSeedBlock(private val terrainSeedType: TerrainSeedType, settings: P
         )
     }
 
-    override fun performBonemeal(level: ServerLevel, random: RandomSource, pos: BlockPos, state: BlockState) {
+    override fun performBonemeal(level: ServerLevel, random: RandomSource, pos: BlockPos, state: BlockState, source: BonemealSource) {
         val posAndState = getLowerHalf(level, pos, state)
         if (posAndState != null) {
             grow(level, posAndState.first, posAndState.second, getBonemealAgeIncrease(level))
@@ -246,8 +243,8 @@ class TerrainSeedBlock(private val terrainSeedType: TerrainSeedType, settings: P
     }
 
     override fun playerDestroy(
-        level: Level,
-        player: Player,
+        level: ServerLevel,
+        player: ServerPlayer,
         pos: BlockPos,
         state: BlockState,
         blockEntity: BlockEntity?,
@@ -257,11 +254,11 @@ class TerrainSeedBlock(private val terrainSeedType: TerrainSeedType, settings: P
     }
 
     fun preventDropFromBottomPart(level: Level, pos: BlockPos, state: BlockState, player: Player?) {
-        val doubleblockhalf = state.getValue<DoubleBlockHalf?>(DoublePlantBlock.HALF) as DoubleBlockHalf
+        val doubleblockhalf = state.getValue<DoubleBlockHalf>(DoublePlantBlock.HALF) as DoubleBlockHalf
         if (doubleblockhalf == DoubleBlockHalf.UPPER) {
             val blockpos = pos.below()
             val blockstate = level.getBlockState(blockpos)
-            if (blockstate.`is`(state.getBlock()) && blockstate.getValue<DoubleBlockHalf?>(DoublePlantBlock.HALF) == DoubleBlockHalf.LOWER) {
+            if (blockstate.`is`(state.getBlock()) && blockstate.getValue<DoubleBlockHalf>(DoublePlantBlock.HALF) == DoubleBlockHalf.LOWER) {
                 val blockstate1 = if (blockstate.getFluidState()
                         .`is`(Fluids.WATER)
                 ) Blocks.WATER.defaultBlockState() else Blocks.AIR.defaultBlockState()

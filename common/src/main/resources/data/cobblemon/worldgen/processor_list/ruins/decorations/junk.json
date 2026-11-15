@@ -17,7 +17,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:suspicious_gravel"
+                        "id": "minecraft:suspicious_gravel"
                     }
                 },
                 {
@@ -30,8 +30,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "cobblemon:relic_coin_pouch",
-                        "Properties": {
+                        "id": "cobblemon:relic_coin_pouch",
+                        "properties": {
                             "facing": "west",
                             "natural": "true"
                         }
@@ -57,7 +57,7 @@
                             "predicate_type": "minecraft:always_true"
                         },
                         "output_state": {
-                            "Name": "minecraft:suspicious_gravel"
+                            "id": "minecraft:suspicious_gravel"
                         }
                     }
                 ]
@@ -78,8 +78,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "cobblemon:relic_coin_pouch",
-                        "Properties": {
+                        "id": "cobblemon:relic_coin_pouch",
+                        "properties": {
                             "facing": "north",
                             "natural": "true"
                         }
@@ -95,8 +95,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "cobblemon:relic_coin_pouch",
-                        "Properties": {
+                        "id": "cobblemon:relic_coin_pouch",
+                        "properties": {
                             "facing": "south",
                             "natural": "true"
                         }
@@ -112,8 +112,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "cobblemon:relic_coin_pouch",
-                        "Properties": {
+                        "id": "cobblemon:relic_coin_pouch",
+                        "properties": {
                             "facing": "east",
                             "natural": "true"
                         }
@@ -129,8 +129,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "cobblemon:relic_coin_pouch",
-                        "Properties": {
+                        "id": "cobblemon:relic_coin_pouch",
+                        "properties": {
                             "facing": "west",
                             "natural": "true"
                         }
@@ -150,7 +150,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:decorated_pot"
+                        "id": "minecraft:decorated_pot"
                     }
                 }
             ]

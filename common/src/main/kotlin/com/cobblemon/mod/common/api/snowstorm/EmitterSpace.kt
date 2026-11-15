@@ -43,9 +43,9 @@ class EmitterSpace(
             locatorMatrix.matrix.getScale(scale)
 
             // If any value is zero we get NaNs, so default to a large enough value to be safe
-            scale.x.coerceAtLeast(.01f)
-            scale.y.coerceAtLeast(.01f)
-            scale.z.coerceAtLeast(.01f)
+            scale.x = scale.x.coerceAtLeast(.01f)
+            scale.y = scale.y.coerceAtLeast(.01f)
+            scale.z = scale.z.coerceAtLeast(.01f)
         }
 
         //Presumably we will want to make the initial rotation configurable instead of always using root

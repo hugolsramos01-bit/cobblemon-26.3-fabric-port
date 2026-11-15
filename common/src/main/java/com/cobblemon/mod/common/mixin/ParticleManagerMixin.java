@@ -9,7 +9,7 @@
 package com.cobblemon.mod.common.mixin;
 
 import com.cobblemon.mod.common.api.snowstorm.ParticleMaterials;
-import com.google.common.collect.ImmutableList;
+import com.cobblemon.mod.common.client.particle.SnowstormParticleGroup;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
@@ -17,10 +17,13 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.client.particle.ParticleEngine;
 import net.minecraft.client.particle.ParticleRenderType;
+import net.minecraft.client.particle.ParticleGroup;
 
 @Mixin(ParticleEngine.class)
 final class ParticleManagerMixin {
@@ -31,7 +34,15 @@ final class ParticleManagerMixin {
 
     @Inject(at = @At("RETURN"), method = "<clinit>")
     private static void lodestone$addTypes(CallbackInfo ci) {
-        RENDER_ORDER = ImmutableList.<ParticleRenderType>builder().addAll(RENDER_ORDER)
-                .add(ParticleMaterials.INSTANCE.getADD(), ParticleMaterials.INSTANCE.getALPHA(), ParticleMaterials.INSTANCE.getBLEND(), ParticleMaterials.INSTANCE.getOPAQUE()).build();
+        // Fabric's particle group registry sorts this list during initialization, so it must stay mutable.
+        RENDER_ORDER = new ArrayList<>(RENDER_ORDER);
+        RENDER_ORDER.add(ParticleMaterials.INSTANCE.getSNOWSTORM());
+    }
+
+    @Inject(method = "createParticleGroup", at = @At("HEAD"), cancellable = true)
+    private void cobblemon$createSnowstormGroup(ParticleRenderType type, CallbackInfoReturnable<ParticleGroup<?>> cir) {
+        if (type.equals(ParticleMaterials.INSTANCE.getSNOWSTORM())) {
+            cir.setReturnValue(new SnowstormParticleGroup((ParticleEngine) (Object) this));
+        }
     }
 }

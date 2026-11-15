@@ -16,7 +16,7 @@ import net.minecraft.world.entity.ai.behavior.declarative.Trigger
 import net.minecraft.world.entity.ai.memory.MemoryModuleType
 
 object StopTryingToReachItemTask {
-    fun create(maxTimeToReachItem: Int, disableDuration: Int): BehaviorControl<LivingEntity?> {
+    fun create(maxTimeToReachItem: Int, disableDuration: Int): BehaviorControl<LivingEntity> {
         return BehaviorBuilder.create {
             it.group(
                 it.present(MemoryModuleType.NEAREST_VISIBLE_WANTED_ITEM),
@@ -24,8 +24,6 @@ object StopTryingToReachItemTask {
                 it.registered(CobblemonMemories.DISABLE_WALK_TO_WANTED_ITEM)
             ).apply(it) { itemBlockPosMemory, timeTryingMemory, isDisabledMemory ->
                 Trigger { world, entity, time ->
-                    if (entity == null) return@Trigger false
-
                     val timeSpentTryingToMoveToWantedItem = it.get(timeTryingMemory)
                     if (timeSpentTryingToMoveToWantedItem > maxTimeToReachItem) {
                         itemBlockPosMemory.erase()

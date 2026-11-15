@@ -14,10 +14,10 @@
   "criteria": {
     "trade": {
       "trigger": "cobblemon:trade_pokemon",
-	  "conditions": {
-		  "traded": "any",
-		  "received": "any"
-	  }
+      "conditions": {
+        "traded": "any",
+        "received": "any"
+      }
     }
   },
   "sends_telemetry_event": false

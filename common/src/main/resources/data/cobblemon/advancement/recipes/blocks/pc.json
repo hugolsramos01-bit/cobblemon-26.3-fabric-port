@@ -27,7 +27,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:pc"
+        "recipes": "cobblemon:pc"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

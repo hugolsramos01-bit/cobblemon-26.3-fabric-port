@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:utility_umbrella"
+        "recipes": "cobblemon:utility_umbrella"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

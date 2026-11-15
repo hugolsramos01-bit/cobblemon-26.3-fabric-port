@@ -13,7 +13,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:water"
+                        "id": "minecraft:water"
                     }
                 },
                 {
@@ -26,7 +26,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:muddy_mangrove_roots"
+                        "id": "minecraft:muddy_mangrove_roots"
                     }
                 },
                 {
@@ -39,7 +39,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:mud"
+                        "id": "minecraft:mud"
                     }
                 },
                 {
@@ -52,7 +52,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:air"
+                        "id": "minecraft:air"
                     }
                 },
                 {
@@ -65,7 +65,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:air"
+                        "id": "minecraft:air"
                     }
                 },
                 {
@@ -78,7 +78,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:air"
+                        "id": "minecraft:air"
                     }
                 },
                 {
@@ -91,7 +91,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:air"
+                        "id": "minecraft:air"
                     }
                 },
                 {
@@ -104,7 +104,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:air"
+                        "id": "minecraft:air"
                     }
                 },
                 {
@@ -117,7 +117,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:air"
+                        "id": "minecraft:air"
                     }
                 },
                 {
@@ -130,7 +130,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:air"
+                        "id": "minecraft:air"
                     }
                 },
                 {
@@ -143,7 +143,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:water"
+                        "id": "minecraft:water"
                     }
                 },
                 {
@@ -156,7 +156,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:water"
+                        "id": "minecraft:water"
                     }
                 },
                 {
@@ -169,7 +169,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:water"
+                        "id": "minecraft:water"
                     }
                 },
                 {
@@ -182,8 +182,8 @@
                         "predicate_type": "minecraft:block_match"
                     },
                     "output_state": {
-                        "Name": "minecraft:water",
-                        "Properties": {
+                        "id": "minecraft:water",
+                        "properties": {
                             "level": "0"
                         }
                     }
@@ -204,7 +204,7 @@
                             "predicate_type": "minecraft:always_true"
                         },
                         "output_state": {
-                            "Name": "minecraft:mangrove_roots"
+                            "id": "minecraft:mangrove_roots"
                         }
                     }
                 ]

@@ -17,7 +17,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:suspicious_sand"
+                        "id": "minecraft:suspicious_sand"
                     }
                 },
                 {
@@ -30,7 +30,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:red_sandstone"
+                        "id": "minecraft:red_sandstone"
                     }
                 },
                 {
@@ -43,7 +43,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:sand"
+                        "id": "minecraft:sand"
                     }
                 }
             ]
@@ -71,7 +71,7 @@
                             "predicate_type": "minecraft:always_true"
                         },
                         "output_state": {
-                            "Name": "minecraft:suspicious_sand"
+                            "id": "minecraft:suspicious_sand"
                         }
                     }
                 ]
@@ -97,7 +97,7 @@
                             "predicate_type": "minecraft:always_true"
                         },
                         "output_state": {
-                            "Name": "minecraft:suspicious_sand"
+                            "id": "minecraft:suspicious_sand"
                         }
                     }
                 ]

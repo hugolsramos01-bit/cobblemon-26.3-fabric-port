@@ -17,6 +17,8 @@ import com.cobblemon.mod.common.client.net.battle.*
 import com.cobblemon.mod.common.client.net.callback.move.OpenMoveCallbackHandler
 import com.cobblemon.mod.common.client.net.callback.party.OpenPartyCallbackHandler
 import com.cobblemon.mod.common.client.net.callback.partymove.OpenPartyMoveCallbackHandler
+import com.cobblemon.mod.common.client.net.cooking.CookingPotPreviewHandler
+import com.cobblemon.mod.common.net.messages.client.cooking.CookingPotPreviewPacket
 import com.cobblemon.mod.common.client.net.cooking.ToggleCookingPotLidHandler
 import com.cobblemon.mod.common.client.net.data.CobblemonMechanicsSyncHandler
 import com.cobblemon.mod.common.client.net.data.DataRegistrySyncPacketHandler
@@ -49,6 +51,7 @@ import com.cobblemon.mod.common.client.net.pokedex.ServerConfirmedRegisterHandle
 import com.cobblemon.mod.common.client.net.pokemon.update.ClientboundSeatAssignmentPacketHandler
 import com.cobblemon.mod.common.client.net.pokemon.update.ClientboundUpdateRidingStateHandler
 import com.cobblemon.mod.common.client.net.pokemon.update.PokemonUpdatePacketHandler
+import com.cobblemon.mod.common.client.net.recipe.ClientboundCobblemonRecipeSnapshotHandler
 import com.cobblemon.mod.common.client.net.riding.ClientboundUpdateDriverInputHandler
 import com.cobblemon.mod.common.client.net.settings.OpenCobblemonConfigEditorHandler
 import com.cobblemon.mod.common.client.net.settings.ServerSettingsPacketHandler
@@ -107,6 +110,7 @@ import com.cobblemon.mod.common.net.messages.client.pokemon.update.evolution.Add
 import com.cobblemon.mod.common.net.messages.client.pokemon.update.evolution.ClearEvolutionsPacket
 import com.cobblemon.mod.common.net.messages.client.pokemon.update.evolution.ClientboundSeatAssignmentPacket
 import com.cobblemon.mod.common.net.messages.client.pokemon.update.evolution.RemoveEvolutionPacket
+import com.cobblemon.mod.common.net.messages.client.recipe.ClientboundCobblemonRecipeSnapshotPacket
 import com.cobblemon.mod.common.net.messages.client.settings.OpenCobblemonConfigScreenPacket
 import com.cobblemon.mod.common.net.messages.client.settings.ServerSettingsPacket
 import com.cobblemon.mod.common.net.messages.client.sound.UnvalidatedPlaySoundS2CPacket
@@ -150,6 +154,7 @@ import com.cobblemon.mod.common.net.messages.client.ui.SetTMMachineContainerData
 import com.cobblemon.mod.common.net.messages.client.ui.SummaryUIPacket
 import com.cobblemon.mod.common.net.messages.client.ui.SynchronizeActiveTMPacket
 import com.cobblemon.mod.common.net.messages.server.BattleChallengePacket
+import com.cobblemon.mod.common.net.messages.server.ThrowPokemonForBattlePacket
 import com.cobblemon.mod.common.net.messages.server.BattleChallengeResponsePacket
 import com.cobblemon.mod.common.net.messages.server.BenchMovePacket
 import com.cobblemon.mod.common.net.messages.server.RequestMoveSwapPacket
@@ -212,6 +217,7 @@ import com.cobblemon.mod.common.net.messages.server.trade.OfferTradePacket
 import com.cobblemon.mod.common.net.messages.server.trade.PerformTradePacket
 import com.cobblemon.mod.common.net.messages.server.trade.UpdateTradeOfferPacket
 import com.cobblemon.mod.common.net.serverhandling.ChallengeHandler
+import com.cobblemon.mod.common.net.serverhandling.ThrowPokemonForBattleHandler
 import com.cobblemon.mod.common.net.serverhandling.ChallengeResponseHandler
 import com.cobblemon.mod.common.net.serverhandling.RequestInteractionsHandler
 import com.cobblemon.mod.common.net.serverhandling.battle.BattleSelectActionsHandler
@@ -439,6 +445,8 @@ object CobblemonNetwork {
         list.add(PacketRegisterInfo(DexEntrySyncPacket.ID, DexEntrySyncPacket::decode, DataRegistrySyncPacketHandler()))
         list.add(PacketRegisterInfo(SpawnBaitRegistrySyncPacket.ID, SpawnBaitRegistrySyncPacket::decode, DataRegistrySyncPacketHandler()))
         list.add(PacketRegisterInfo(SeasoningRegistrySyncPacket.ID, SeasoningRegistrySyncPacket::decode, DataRegistrySyncPacketHandler()))
+        list.add(PacketRegisterInfo(ClientboundCobblemonRecipeSnapshotPacket.ID, ClientboundCobblemonRecipeSnapshotPacket::decode, ClientboundCobblemonRecipeSnapshotHandler))
+        list.add(PacketRegisterInfo(CookingPotPreviewPacket.ID, CookingPotPreviewPacket::decode, CookingPotPreviewHandler))
         list.add(PacketRegisterInfo(CallbackRegistrySyncPacket.ID, CallbackRegistrySyncPacket::decode, DataRegistrySyncPacketHandler()))
         list.add(PacketRegisterInfo(CosmeticItemAssignmentSyncPacket.ID, CosmeticItemAssignmentSyncPacket::decode, DataRegistrySyncPacketHandler()))
         list.add(PacketRegisterInfo(BehaviourSyncPacket.ID, BehaviourSyncPacket::decode, DataRegistrySyncPacketHandler()))
@@ -542,6 +550,7 @@ object CobblemonNetwork {
         list.add(PacketRegisterInfo(RequestMoveSwapPacket.ID, RequestMoveSwapPacket::decode, RequestMoveSwapHandler))
         list.add(PacketRegisterInfo(BenchMovePacket.ID, BenchMovePacket::decode, BenchMoveHandler))
         list.add(PacketRegisterInfo(BattleChallengePacket.ID, BattleChallengePacket::decode, ChallengeHandler))
+        list.add(PacketRegisterInfo(ThrowPokemonForBattlePacket.ID, ThrowPokemonForBattlePacket::decode, ThrowPokemonForBattleHandler))
         list.add(PacketRegisterInfo(BattleChallengeResponsePacket.ID, BattleChallengeResponsePacket::decode, ChallengeResponseHandler))
         list.add(PacketRegisterInfo(BattleTeamRequestPacket.ID, BattleTeamRequestPacket::decode, TeamRequestHandler))
         list.add(PacketRegisterInfo(BattleTeamResponsePacket.ID, BattleTeamResponsePacket::decode, TeamRequestResponseHandler))

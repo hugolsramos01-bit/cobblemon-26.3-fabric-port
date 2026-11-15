@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:yellow_dye_from_pomohana"
+        "recipes": "cobblemon:yellow_dye_from_pomohana"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

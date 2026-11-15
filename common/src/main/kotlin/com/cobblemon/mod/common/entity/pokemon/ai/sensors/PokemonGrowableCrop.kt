@@ -16,6 +16,7 @@ import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.entity.ai.memory.MemoryModuleType
 import net.minecraft.world.entity.ai.sensing.Sensor
 import net.minecraft.world.level.block.CropBlock
+import net.minecraft.world.level.block.BonemealSource
 
 class PokemonGrowableCropSensor : Sensor<PokemonEntity>() {
     override fun doTick(world: ServerLevel, entity: PokemonEntity) {
@@ -56,6 +57,6 @@ class PokemonGrowableCropSensor : Sensor<PokemonEntity>() {
         val blockState = world.getBlockState(pos)
         val block = blockState.block
 
-        return block is CropBlock && !block.isValidBonemealTarget(world, pos, blockState)
+        return block is CropBlock && !block.isValidBonemealTarget(world, pos, blockState, BonemealSource.MOB)
     }
 }

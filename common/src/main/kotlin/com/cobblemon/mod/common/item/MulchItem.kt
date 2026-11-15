@@ -8,6 +8,7 @@
 
 package com.cobblemon.mod.common.item
 
+import com.cobblemon.mod.common.util.CobblemonInteractionResults
 import com.cobblemon.mod.common.api.mulch.MulchVariant
 import com.cobblemon.mod.common.api.mulch.Mulchable
 import net.minecraft.core.BlockPos
@@ -19,7 +20,7 @@ import net.minecraft.world.item.context.UseOnContext
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.LevelEvent
 
-class MulchItem(val variant: MulchVariant) : CobblemonItem(Properties()) {
+class MulchItem(properties: net.minecraft.world.item.Item.Properties, val variant: MulchVariant) : CobblemonItem(properties) {
 
     override fun useOn(context: UseOnContext): InteractionResult {
         val world = context.level
@@ -29,7 +30,7 @@ class MulchItem(val variant: MulchVariant) : CobblemonItem(Properties()) {
             if (!world.isClientSide) {
                 world.levelEvent(LevelEvent.PARTICLES_AND_SOUND_PLANT_GROWTH, pos, 0)
             }
-            return InteractionResult.sidedSuccess(true)
+            return CobblemonInteractionResults.sidedSuccess(true)
         }
         return InteractionResult.PASS
     }

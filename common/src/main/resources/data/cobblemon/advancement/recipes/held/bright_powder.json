@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:bright_powder"
+        "recipes": "cobblemon:bright_powder"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

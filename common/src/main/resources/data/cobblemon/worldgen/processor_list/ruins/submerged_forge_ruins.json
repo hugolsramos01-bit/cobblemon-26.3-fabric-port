@@ -23,7 +23,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:suspicious_gravel"
+                        "id": "minecraft:suspicious_gravel"
                     }
                 },
                 {
@@ -36,7 +36,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:cobbled_deepslate"
+                        "id": "minecraft:cobbled_deepslate"
                     }
                 },
                 {
@@ -49,7 +49,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:deepslate"
+                        "id": "minecraft:deepslate"
                     }
                 },
                 {
@@ -59,8 +59,8 @@
                     },
                     "input_predicate": {
                         "block_state": {
-                            "Name": "cobblemon:gilded_chest",
-                            "Properties": {
+                            "id": "cobblemon:gilded_chest",
+                            "properties": {
                                 "facing": "north",
                                 "waterlogged": "true"
                             }
@@ -72,8 +72,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "cobblemon:gilded_chest",
-                        "Properties": {
+                        "id": "cobblemon:gilded_chest",
+                        "properties": {
                             "facing": "north",
                             "waterlogged": "true"
                         }
@@ -86,8 +86,8 @@
                     },
                     "input_predicate": {
                         "block_state": {
-                            "Name": "cobblemon:gilded_chest",
-                            "Properties": {
+                            "id": "cobblemon:gilded_chest",
+                            "properties": {
                                 "facing": "south",
                                 "waterlogged": "true"
                             }
@@ -99,8 +99,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "cobblemon:gilded_chest",
-                        "Properties": {
+                        "id": "cobblemon:gilded_chest",
+                        "properties": {
                             "facing": "south",
                             "waterlogged": "true"
                         }
@@ -113,8 +113,8 @@
                     },
                     "input_predicate": {
                         "block_state": {
-                            "Name": "cobblemon:gilded_chest",
-                            "Properties": {
+                            "id": "cobblemon:gilded_chest",
+                            "properties": {
                                 "facing": "east",
                                 "waterlogged": "true"
                             }
@@ -126,8 +126,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "cobblemon:gilded_chest",
-                        "Properties": {
+                        "id": "cobblemon:gilded_chest",
+                        "properties": {
                             "facing": "east",
                             "waterlogged": "true"
                         }
@@ -140,8 +140,8 @@
                     },
                     "input_predicate": {
                         "block_state": {
-                            "Name": "cobblemon:gilded_chest",
-                            "Properties": {
+                            "id": "cobblemon:gilded_chest",
+                            "properties": {
                                 "facing": "west",
                                 "waterlogged": "true"
                             }
@@ -153,8 +153,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "cobblemon:gilded_chest",
-                        "Properties": {
+                        "id": "cobblemon:gilded_chest",
+                        "properties": {
                             "facing": "west",
                             "waterlogged": "true"
                         }
@@ -174,8 +174,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:decorated_pot",
-                        "Properties": {
+                        "id": "minecraft:decorated_pot",
+                        "properties": {
                             "waterlogged": "true"
                         }
                     }
@@ -190,8 +190,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:decorated_pot",
-                        "Properties": {
+                        "id": "minecraft:decorated_pot",
+                        "properties": {
                             "waterlogged": "true"
                         }
                     }
@@ -206,7 +206,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:water"
+                        "id": "minecraft:water"
                     }
                 },
                 {
@@ -219,8 +219,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:chain",
-                        "Properties": {
+                        "id": "minecraft:iron_chain",
+                        "properties": {
                             "waterlogged": "true"
                         }
                     }
@@ -235,7 +235,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:water"
+                        "id": "minecraft:water"
                     }
                 },
                 {
@@ -248,7 +248,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:water"
+                        "id": "minecraft:water"
                     }
                 },
                 {
@@ -261,7 +261,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:water"
+                        "id": "minecraft:water"
                     }
                 },
                 {
@@ -274,7 +274,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:water"
+                        "id": "minecraft:water"
                     }
                 },
                 {
@@ -287,7 +287,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:water"
+                        "id": "minecraft:water"
                     }
                 },
                 {
@@ -300,7 +300,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:water"
+                        "id": "minecraft:water"
                     }
                 },
                 {
@@ -313,7 +313,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:water"
+                        "id": "minecraft:water"
                     }
                 },
                 {
@@ -326,7 +326,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:water"
+                        "id": "minecraft:water"
                     }
                 },
                 {
@@ -339,7 +339,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:water"
+                        "id": "minecraft:water"
                     }
                 },
                 {
@@ -352,7 +352,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:water"
+                        "id": "minecraft:water"
                     }
                 },
                 {
@@ -365,7 +365,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:water"
+                        "id": "minecraft:water"
                     }
                 }
             ]
@@ -388,7 +388,7 @@
                             "predicate_type": "minecraft:always_true"
                         },
                         "output_state": {
-                            "Name": "minecraft:suspicious_gravel"
+                            "id": "minecraft:suspicious_gravel"
                         }
                     }
                 ]
@@ -414,7 +414,7 @@
                             "predicate_type": "minecraft:always_true"
                         },
                         "output_state": {
-                            "Name": "minecraft:suspicious_gravel"
+                            "id": "minecraft:suspicious_gravel"
                         }
                     }
                 ]

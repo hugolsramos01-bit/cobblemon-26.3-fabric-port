@@ -13,6 +13,8 @@ import com.cobblemon.mod.common.api.berry.Berries
 import com.cobblemon.mod.common.api.data.JsonDataRegistry
 import com.cobblemon.mod.common.api.reactive.SimpleObservable
 import com.cobblemon.mod.common.client.render.atlas.CobblemonAtlases
+import net.minecraft.client.renderer.texture.TextureAtlasSprite
+import kotlin.math.roundToInt
 import com.cobblemon.mod.common.client.render.models.blockbench.TexturedModel
 import com.cobblemon.mod.common.util.cobblemonResource
 import com.google.gson.Gson
@@ -21,7 +23,7 @@ import net.minecraft.client.model.geom.ModelPart
 
 import net.minecraft.server.packs.PackType
 import net.minecraft.server.level.ServerPlayer
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 
 /**
  * The data registry responsible for berry fruit and flower models.
@@ -35,12 +37,12 @@ object BerryModelRepository : JsonDataRegistry<TexturedModel> {
     override val gson: Gson = TexturedModel.GSON
     override val typeToken: TypeToken<TexturedModel> = TypeToken.get(TexturedModel::class.java)
     override val resourcePath = "bedrock/berries"
-    private val rawModels = hashMapOf<ResourceLocation, TexturedModel>()
-    private val processedModels = hashMapOf<ResourceLocation, ModelPart>()
+    private val rawModels = hashMapOf<Identifier, TexturedModel>()
+    private val processedModels = hashMapOf<Identifier, ModelPart>()
 
     override fun sync(player: ServerPlayer) {}
 
-    override fun reload(data: Map<ResourceLocation, TexturedModel>) {
+    override fun reload(data: Map<Identifier, TexturedModel>) {
         data.forEach { (identifier, model) ->
             this.rawModels[identifier] = model
         }
@@ -57,20 +59,30 @@ object BerryModelRepository : JsonDataRegistry<TexturedModel> {
             val flowerTexId = it.flowerTexture
             val fruitTex = CobblemonAtlases.BERRY_SPRITE_ATLAS.getSprite(fruitTexId)
             val flowerTex = CobblemonAtlases.BERRY_SPRITE_ATLAS.getSprite(flowerTexId)
+            val fruitAtlasWidth = atlasWidth(fruitTex)
+            val fruitAtlasHeight = atlasHeight(fruitTex)
+            val flowerAtlasWidth = atlasWidth(flowerTex)
+            val flowerAtlasHeight = atlasHeight(flowerTex)
             processedModels[it.fruitModelIdentifier] = fruitModel?.createWithUvOverride(
                 fruitTex.x,
                 fruitTex.y,
-                CobblemonAtlases.BERRY_SPRITE_ATLAS.textureAtlas.width,
-                CobblemonAtlases.BERRY_SPRITE_ATLAS.textureAtlas.height
+                fruitAtlasWidth,
+                fruitAtlasHeight
             )?.bakeRoot()!!
             processedModels[it.flowerModelIdentifier] = flowerModel?.createWithUvOverride(
                 flowerTex.x,
                 flowerTex.y,
-                CobblemonAtlases.BERRY_SPRITE_ATLAS.textureAtlas.width,
-                CobblemonAtlases.BERRY_SPRITE_ATLAS.textureAtlas.height
+                flowerAtlasWidth,
+                flowerAtlasHeight
             )?.bakeRoot()!!
         }
     }
 
-    fun modelOf(identifier: ResourceLocation) = this.processedModels[identifier]
+    private fun atlasWidth(sprite: TextureAtlasSprite): Int =
+        (sprite.contents().width().toFloat() / (sprite.u1 - sprite.u0)).roundToInt()
+
+    private fun atlasHeight(sprite: TextureAtlasSprite): Int =
+        (sprite.contents().height().toFloat() / (sprite.v1 - sprite.v0)).roundToInt()
+
+    fun modelOf(identifier: Identifier) = this.processedModels[identifier]
 }

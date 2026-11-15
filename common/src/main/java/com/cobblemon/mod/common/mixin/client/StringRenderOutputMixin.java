@@ -35,9 +35,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
  * @author Hiroku
  * @since April 18th, 2025
  */
-@Mixin(Font.StringRenderOutput.class)
+@Mixin(targets = "net.minecraft.client.gui.Font$PreparedTextBuilder")
 public class StringRenderOutputMixin {
-    @Inject(method = "accept", at = @At(value = "HEAD"), cancellable = true)
+    @Inject(method = "accept(ILnet/minecraft/network/chat/Style;I)Z", at = @At(value = "HEAD"), cancellable = true)
     public void onAccept(int i, Style style, int j, CallbackInfoReturnable<Boolean> cir) {
         if (!TextClipping.canDrawAnotherCharacter()) {
             cir.setReturnValue(true);

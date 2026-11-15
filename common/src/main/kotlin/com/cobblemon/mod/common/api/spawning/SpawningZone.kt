@@ -54,10 +54,16 @@ class SpawningZone(
     val height = blocks[0].size
     val width = blocks[0][0].size
 
+    private val surfaceLevels: Array<IntArray> = Array(length) { x ->
+        IntArray(width) { z ->
+            (baseY + height - 1 downTo baseY).firstOrNull { y -> blocks[x][y - baseY][z].state.isSolid } ?: Int.MIN_VALUE
+        }
+    }
+
     private val structureChunkCaches = mutableMapOf<ChunkPos, SpawnablePosition.StructureChunkCache>()
 
     fun getStructureCache(pos: BlockPos): SpawnablePosition.StructureChunkCache {
-        return structureChunkCaches.getOrPut(ChunkPos(pos), SpawnablePosition::StructureChunkCache)
+        return structureChunkCaches.getOrPut(ChunkPos(pos.x shr 4, pos.z shr 4), SpawnablePosition::StructureChunkCache)
     }
 
     companion object {
@@ -65,6 +71,19 @@ class SpawningZone(
     }
 
     fun isInBounds(x: Int, y: Int, z: Int) = x >= baseX && x < baseX + length && y >= baseY && y < baseY + height && z >= baseZ && z < baseZ + width
+    fun surfaceY(x: Int, z: Int): Int? {
+        if (x < baseX || x >= baseX + length || z < baseZ || z >= baseZ + width) return null
+        return surfaceLevels[x - baseX][z - baseZ].takeIf { it != Int.MIN_VALUE }
+    }
+
+    fun hasOpenSky(position: BlockPos): Boolean {
+        if (!isInBounds(position.x, position.y, position.z)) return false
+        for (y in position.y + 1 until baseY + height) {
+            val state = getBlockState(position.x, y, position.z)
+            if (state.isSolid || !state.fluidState.isEmpty) return false
+        }
+        return true
+    }
     fun getBlockData(x: Int, y: Int, z: Int): BlockData = blocks[x - baseX][y - baseY][z - baseZ]
     fun getBlockData(position: BlockPos) = getBlockData(position.x, position.y, position.z)
 
@@ -99,7 +118,7 @@ class SpawningZone(
         return if (!isInBounds(x, y, z) || skyLevel[x - baseX][z - baseZ] > y) {
             0
         } else {
-            max(0, world.maxBuildHeight - y)
+            max(0, world.maxY - y)
         }
     }
     fun skySpaceAbove(position: BlockPos) = skySpaceAbove(position.x, position.y, position.z)

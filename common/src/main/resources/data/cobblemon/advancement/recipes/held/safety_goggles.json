@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:safety_goggles"
+        "recipes": "cobblemon:safety_goggles"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

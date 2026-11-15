@@ -19,7 +19,7 @@ import com.cobblemon.mod.common.client.render.drawScaledText
 import com.cobblemon.mod.common.net.messages.server.pasture.UnpastureAllPokemonPacket
 import com.cobblemon.mod.common.util.cobblemonResource
 import com.cobblemon.mod.common.util.lang
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.network.chat.Component
 
 class PastureWidget(
@@ -48,9 +48,9 @@ class PastureWidget(
         parent = this
     )
 
-    override fun renderWidget(context: GuiGraphics, mouseX: Int, mouseY: Int, delta: Float) {
+    override fun extractWidgetRenderState(context: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, delta: Float) {
         blitk(
-            matrixStack = context.pose(),
+            context = context,
             texture = baseResource,
             x = x,
             y = y,
@@ -67,14 +67,17 @@ class PastureWidget(
             centered = true
         )
 
-        pastureScrollList.render(context, mouseX, mouseY, delta)
+        pastureScrollList.extractRenderState(context, mouseX, mouseY, delta)
 
-        recallButton.render(context, mouseX, mouseY, delta)
+        recallButton.extractRenderState(context, mouseX, mouseY, delta)
     }
 
-    override fun mouseClicked(pMouseX: Double, pMouseY: Double, pButton: Int): Boolean {
-        if (recallButton.isHovered(pMouseX, pMouseY)) recallButton.mouseClicked(pMouseX, pMouseY, pButton)
-        if (pastureScrollList.isHovered(pMouseX, pMouseY)) pastureScrollList.mouseClicked(pMouseX, pMouseY, pButton)
-        return super.mouseClicked(pMouseX, pMouseY, pButton)
+    override fun mouseClicked(event: net.minecraft.client.input.MouseButtonEvent, doubleClick: Boolean): Boolean {
+        val mouseX = event.x()
+        val mouseY = event.y()
+
+        if (recallButton.isHovered(mouseX, mouseY)) recallButton.mouseClicked(event, doubleClick)
+        if (pastureScrollList.isHovered(mouseX, mouseY)) pastureScrollList.mouseClicked(event, doubleClick)
+        return super.mouseClicked(event, doubleClick)
     }
 }

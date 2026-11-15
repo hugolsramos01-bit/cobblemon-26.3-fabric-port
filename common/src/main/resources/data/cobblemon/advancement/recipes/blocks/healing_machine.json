@@ -27,7 +27,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:healing_machine"
+        "recipes": "cobblemon:healing_machine"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

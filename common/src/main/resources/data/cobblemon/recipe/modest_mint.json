@@ -3,12 +3,8 @@
     "category": "misc",
     "group": "cyan_mints",
     "key": {
-        "#": {
-            "item": "cobblemon:cyan_mint_leaf"
-        },
-        "W": {
-            "item": "cobblemon:red_mint_leaf"
-        }
+        "#": "cobblemon:cyan_mint_leaf",
+        "W": "cobblemon:red_mint_leaf"
     },
     "pattern": [
         "##",

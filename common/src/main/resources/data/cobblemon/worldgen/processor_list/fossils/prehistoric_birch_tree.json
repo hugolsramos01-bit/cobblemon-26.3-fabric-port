@@ -17,7 +17,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:suspicious_gravel"
+                        "id": "minecraft:suspicious_gravel"
                     }
                 },
                 {
@@ -30,7 +30,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:dirt"
+                        "id": "minecraft:dirt"
                     }
                 },
                 {
@@ -43,7 +43,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:rooted_dirt"
+                        "id": "minecraft:rooted_dirt"
                     }
                 },
                 {
@@ -56,7 +56,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:coarse_dirt"
+                        "id": "minecraft:coarse_dirt"
                     }
                 },
                 {
@@ -69,14 +69,14 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:tuff"
+                        "id": "minecraft:tuff"
                     }
                 },
                 {
                     "input_predicate": {
                         "block_state": {
-                            "Name": "minecraft:birch_wood",
-                            "Properties": {
+                            "id": "minecraft:birch_wood",
+                            "properties": {
                                 "axis": "x"
                             }
                         },
@@ -87,8 +87,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:stripped_birch_wood",
-                        "Properties": {
+                        "id": "minecraft:stripped_birch_wood",
+                        "properties": {
                             "axis": "x"
                         }
                     }
@@ -96,8 +96,8 @@
                 {
                     "input_predicate": {
                         "block_state": {
-                            "Name": "minecraft:birch_wood",
-                            "Properties": {
+                            "id": "minecraft:birch_wood",
+                            "properties": {
                                 "axis": "y"
                             }
                         },
@@ -108,8 +108,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:stripped_birch_wood",
-                        "Properties": {
+                        "id": "minecraft:stripped_birch_wood",
+                        "properties": {
                             "axis": "y"
                         }
                     }
@@ -117,8 +117,8 @@
                 {
                     "input_predicate": {
                         "block_state": {
-                            "Name": "minecraft:birch_wood",
-                            "Properties": {
+                            "id": "minecraft:birch_wood",
+                            "properties": {
                                 "axis": "z"
                             }
                         },
@@ -129,8 +129,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:stripped_birch_wood",
-                        "Properties": {
+                        "id": "minecraft:stripped_birch_wood",
+                        "properties": {
                             "axis": "z"
                         }
                     }
@@ -138,8 +138,8 @@
                 {
                     "input_predicate": {
                         "block_state": {
-                            "Name": "minecraft:birch_log",
-                            "Properties": {
+                            "id": "minecraft:birch_log",
+                            "properties": {
                                 "axis": "x"
                             }
                         },
@@ -150,8 +150,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:stripped_birch_log",
-                        "Properties": {
+                        "id": "minecraft:stripped_birch_log",
+                        "properties": {
                             "axis": "x"
                         }
                     }
@@ -159,8 +159,8 @@
                 {
                     "input_predicate": {
                         "block_state": {
-                            "Name": "minecraft:birch_log",
-                            "Properties": {
+                            "id": "minecraft:birch_log",
+                            "properties": {
                                 "axis": "y"
                             }
                         },
@@ -171,8 +171,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:stripped_birch_log",
-                        "Properties": {
+                        "id": "minecraft:stripped_birch_log",
+                        "properties": {
                             "axis": "y"
                         }
                     }
@@ -180,8 +180,8 @@
                 {
                     "input_predicate": {
                         "block_state": {
-                            "Name": "minecraft:birch_log",
-                            "Properties": {
+                            "id": "minecraft:birch_log",
+                            "properties": {
                                 "axis": "z"
                             }
                         },
@@ -192,8 +192,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:stripped_birch_log",
-                        "Properties": {
+                        "id": "minecraft:stripped_birch_log",
+                        "properties": {
                             "axis": "z"
                         }
                     }
@@ -201,8 +201,8 @@
                 {
                     "input_predicate": {
                         "block_state": {
-                            "Name": "minecraft:stripped_birch_log",
-                            "Properties": {
+                            "id": "minecraft:stripped_birch_log",
+                            "properties": {
                                 "axis": "x"
                             }
                         },
@@ -213,8 +213,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:birch_log",
-                        "Properties": {
+                        "id": "minecraft:birch_log",
+                        "properties": {
                             "axis": "x"
                         }
                     }
@@ -222,8 +222,8 @@
                 {
                     "input_predicate": {
                         "block_state": {
-                            "Name": "minecraft:stripped_birch_log",
-                            "Properties": {
+                            "id": "minecraft:stripped_birch_log",
+                            "properties": {
                                 "axis": "y"
                             }
                         },
@@ -234,8 +234,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:birch_log",
-                        "Properties": {
+                        "id": "minecraft:birch_log",
+                        "properties": {
                             "axis": "y"
                         }
                     }
@@ -243,8 +243,8 @@
                 {
                     "input_predicate": {
                         "block_state": {
-                            "Name": "minecraft:stripped_birch_log",
-                            "Properties": {
+                            "id": "minecraft:stripped_birch_log",
+                            "properties": {
                                 "axis": "z"
                             }
                         },
@@ -255,8 +255,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:birch_log",
-                        "Properties": {
+                        "id": "minecraft:birch_log",
+                        "properties": {
                             "axis": "z"
                         }
                     }
@@ -281,7 +281,7 @@
                             "predicate_type": "minecraft:always_true"
                         },
                         "output_state": {
-                            "Name": "minecraft:suspicious_gravel"
+                            "id": "minecraft:suspicious_gravel"
                         }
                     }
                 ]
@@ -307,7 +307,7 @@
                             "predicate_type": "minecraft:always_true"
                         },
                         "output_state": {
-                            "Name": "minecraft:suspicious_gravel"
+                            "id": "minecraft:suspicious_gravel"
                         }
                     }
                 ]

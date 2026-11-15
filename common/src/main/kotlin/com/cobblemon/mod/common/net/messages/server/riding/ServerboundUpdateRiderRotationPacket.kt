@@ -22,7 +22,7 @@ class ServerboundUpdateRiderRotationPacket internal constructor(
     override fun encode(buffer: RegistryFriendlyByteBuf) {
         buffer.writeFloat(riderXRot)
         buffer.writeFloat(riderYRot)
-        buffer.writeVec3(rideEyePos)
+        Vec3.STREAM_CODEC.encode(buffer, rideEyePos)
     }
 
     companion object {
@@ -30,7 +30,7 @@ class ServerboundUpdateRiderRotationPacket internal constructor(
         fun decode(buffer: RegistryFriendlyByteBuf): ServerboundUpdateRiderRotationPacket {
             val riderXRot = buffer.readFloat()
             val riderYRot = buffer.readFloat()
-            val rideEyePos = buffer.readVec3()
+            val rideEyePos = Vec3.STREAM_CODEC.decode(buffer)
             return ServerboundUpdateRiderRotationPacket(riderXRot, riderYRot, rideEyePos)
         }
     }

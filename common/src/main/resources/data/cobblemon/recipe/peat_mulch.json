@@ -3,12 +3,8 @@
     "category": "misc",
     "group": "mulches",
     "ingredients": [
-        {
-            "item": "minecraft:moss_block"
-        },
-        {
-            "item": "cobblemon:mulch_base"
-        }
+        "minecraft:moss_block",
+        "cobblemon:mulch_base"
     ],
     "result": {
         "id": "cobblemon:peat_mulch"

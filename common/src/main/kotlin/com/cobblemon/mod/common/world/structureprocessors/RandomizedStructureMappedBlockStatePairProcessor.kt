@@ -40,36 +40,36 @@ class RandomizedStructureMappedBlockStatePairProcessor(
     val transformer: BlockStateTransformer,
     val rules: List<RuleTest>,
     val probability: Float = 1.0f
-) : StructureProcessor() {
+) : StructureProcessor {
     override fun processBlock(
         world: LevelReader,
-        pos: BlockPos,
-        pivot: BlockPos,
-        originalBlockInfo: StructureTemplate.StructureBlockInfo,
-        currentBlockInfo: StructureTemplate.StructureBlockInfo,
+        targetPosition: BlockPos,
+        referencePos: BlockPos,
+        templateRelativePos: BlockPos,
+        processedBlockInfo: StructureTemplate.StructureBlockInfo,
         data: StructurePlaceSettings
-    ): StructureTemplate.StructureBlockInfo {
-        val random = RandomSource.create(pivot.hashCode().toLong())
+    ): StructureTemplate.StructureBlockInfo? {
+        val random = RandomSource.create(referencePos.hashCode().toLong())
         val active = random.nextFloat() < probability
         if (!active) {
-            return currentBlockInfo
+            return processedBlockInfo
         }
 
         for (rule in rules) {
-            if (rule.test(currentBlockInfo.state, data.getRandom(pos))) {
+            if (rule.test(processedBlockInfo.state, templateRelativePos, data.getRandom(templateRelativePos))) {
                 val (block1, block2) = targetBlockPairs[random.nextInt(targetBlockPairs.size)]
                 val targetState = setOf(block1, block2).random().defaultBlockState().let(transformer::transform)
                 return StructureTemplate.StructureBlockInfo(
-                    currentBlockInfo.pos,
+                    processedBlockInfo.pos,
                     targetState,
-                    currentBlockInfo.nbt
+                    processedBlockInfo.nbt
                 )
             }
         }
-        return currentBlockInfo
+        return processedBlockInfo
     }
 
-    override fun getType() = CobblemonProcessorTypes.RANDOM_POOLED_STATES
+    override fun codec() = CODEC
 
     companion object {
         val CODEC: MapCodec<RandomizedStructureMappedBlockStatePairProcessor> = RecordCodecBuilder.mapCodec { instance ->

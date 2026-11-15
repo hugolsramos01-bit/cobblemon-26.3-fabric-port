@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:slate_ball"
+        "recipes": "cobblemon:slate_ball"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

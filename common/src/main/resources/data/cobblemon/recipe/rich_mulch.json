@@ -3,12 +3,8 @@
     "category": "misc",
     "group": "mulches",
     "ingredients": [
-        {
-            "item": "minecraft:blaze_powder"
-        },
-        {
-            "item": "cobblemon:mulch_base"
-        }
+        "minecraft:blaze_powder",
+        "cobblemon:mulch_base"
     ],
     "result": {
         "id": "cobblemon:rich_mulch"

@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:citrine_ball"
+        "recipes": "cobblemon:citrine_ball"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

@@ -25,6 +25,7 @@ import com.cobblemon.mod.common.util.asTranslated
 import com.cobblemon.mod.common.util.lang
 import net.minecraft.client.Minecraft
 import net.minecraft.core.registries.BuiltInRegistries
+import net.minecraft.resources.Identifier
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.MutableComponent
 import net.minecraft.world.item.Item
@@ -170,7 +171,7 @@ fun renderFriendshipRequirement(friendshipRequirement: FriendshipRequirement): R
 
 fun renderHeldItemRequirement(heldItemRequirement: HeldItemRequirement): RenderRequirementData? {
     val item = heldItemRequirement.itemCondition.items.get().first().value()
-    val tooltip = lang("ui.pokedex.requirement.held_item.tooltip", item.description.plainCopy().green())
+    val tooltip = lang("ui.pokedex.requirement.held_item.tooltip", item.defaultInstance.hoverName.plainCopy().green())
 
     return RenderRequirementData(item, tooltip)
 }
@@ -235,7 +236,7 @@ fun renderMoveTypeRequirement(moveTypeRequirement: MoveTypeRequirement): RenderR
 
 fun renderOwnerHoldsItemRequirement(ownerHoldsItemRequirement: OwnerHoldsItemRequirement): RenderRequirementData? {
     val item = ownerHoldsItemRequirement.itemCondition.items.get().first().value()
-    val tooltip = lang("ui.pokedex.requirement.owner_held_item.tooltip", item.description.plainCopy().green())
+    val tooltip = lang("ui.pokedex.requirement.owner_held_item.tooltip", item.defaultInstance.hoverName.plainCopy().green())
 
     return RenderRequirementData(item, tooltip)
 }
@@ -263,7 +264,7 @@ fun renderPokemonPropertiesRequirement(pokemonPropertiesRequirement: PokemonProp
 fun renderPropertyRangeRequirement(propertyRangeRequirement: PropertyRangeRequirement): RenderRequirementData? {
     val provider = SpeciesFeatures.getFeature(propertyRangeRequirement.feature) as? IntSpeciesFeatureProvider ?: return null
     val displayName = provider.display?.name?.takeIf { it.isNotBlank() }?.asTranslated()?.green() ?: return null
-    val icon = provider.itemPoints.keys.firstOrNull()?.let { BuiltInRegistries.ITEM.get(it) } ?: Items.NAME_TAG
+    val icon = provider.itemPoints.keys.firstOrNull()?.let { BuiltInRegistries.ITEM.getValue(it) } ?: Items.NAME_TAG
 
     val range = propertyRangeRequirement.range
     val tooltip = lang(
@@ -364,10 +365,10 @@ fun renderWeatherRequirement(weatherRequirement: WeatherRequirement): RenderRequ
     val tooltip: MutableComponent
 
     if (weatherRequirement.isThundering == true) {
-        icon = Items.LIGHTNING_ROD
+        icon = BuiltInRegistries.ITEM.getValue(Identifier.withDefaultNamespace("lightning_rod"))
         tooltip = lang("ui.pokedex.requirement.weather.tooltip.thundering")
     } else {
-        icon = Items.WATER_BUCKET
+        icon = BuiltInRegistries.ITEM.getValue(Identifier.withDefaultNamespace("water_bucket"))
         tooltip = lang("ui.pokedex.requirement.weather.tooltip.raining")
     }
 

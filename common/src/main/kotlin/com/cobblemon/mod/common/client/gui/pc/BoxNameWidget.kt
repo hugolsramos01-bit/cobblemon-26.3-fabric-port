@@ -17,7 +17,8 @@ import com.cobblemon.mod.common.client.storage.ClientBox
 import com.cobblemon.mod.common.net.messages.server.storage.pc.RequestRenamePCBoxPacket
 import com.mojang.blaze3d.platform.InputConstants
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
+import net.minecraft.client.input.KeyEvent
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.MutableComponent
 
@@ -29,7 +30,7 @@ class BoxNameWidget(
     private val storageWidget: StorageWidget
 ): TextWidget(pX, pY, text = text, update = {}) {
 
-    override fun renderWidget(context: GuiGraphics, mouseX: Int, mouseY: Int, delta: Float) {
+    override fun extractWidgetRenderState(context: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, delta: Float) {
         val label = getBox().name?: defaultBoxLabel()
         val input = applyTextCursor(value, label).bold()
         val textWidth = Minecraft.getInstance().font.width((if (isFocused) value.text() else label).bold().font(CobblemonResources.DEFAULT_LARGE))
@@ -55,10 +56,10 @@ class BoxNameWidget(
         }
     }
 
-    override fun keyPressed(keyCode: Int, scanCode: Int, modifiers: Int): Boolean {
+    override fun keyPressed(event: KeyEvent): Boolean {
         // Reset box name
-        if (isFocused && keyCode == InputConstants.KEY_ESCAPE) value = getBox().name?.string ?: ""
-        return super.keyPressed(keyCode, scanCode, modifiers)
+        if (isFocused && event.key() == InputConstants.KEY_ESCAPE) value = getBox().name?.string ?: ""
+        return super.keyPressed(event)
     }
 
     override fun unfocused() {

@@ -2,9 +2,7 @@
     "type": "minecraft:blasting",
     "category": "misc",
     "group": "dawn_stone",
-    "ingredient": {
-        "item": "cobblemon:dawn_stone_ore"
-    },
+    "ingredient": "cobblemon:dawn_stone_ore",
     "result": {
         "id": "cobblemon:dawn_stone"
     },

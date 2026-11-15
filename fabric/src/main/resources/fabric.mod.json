@@ -28,11 +28,11 @@
     "jei_mod_plugin": [
       "com.cobblemon.mod.common.integration.jei.CobblemonJeiPlugin"
     ],
-    "dynamiclights": [
-      "com.cobblemon.mod.common.compat.lambdynamiclights.LambDynamicLightsInitializer"
-    ],
     "modmenu": [
       "com.cobblemon.mod.fabric.client.integration.modmenu.CobblemonModMenu"
+    ],
+    "lambdynlights:initializer": [
+      "com.cobblemon.mod.common.compat.lambdynamiclights.LambDynamicLightsInitializer"
     ]
   },
   "mixins": [
@@ -43,6 +43,7 @@
   "depends": {
     "fabricloader": ">=${fabric_loader_version}",
     "fabric-api": ">=${fabric_api_version}",
+    "fabric-language-kotlin": ">=${fabric_kotlin_version}",
     "minecraft": "${minecraft_version}",
     "java": "${java_version}"
   },
@@ -55,7 +56,7 @@
       }
     },
     "loom:injected_interfaces": {
-      "net/minecraft/class_630": ["com/cobblemon/mod/common/client/render/models/blockbench/pose/Bone"]
+      "net/minecraft/client/model/geom/ModelPart": ["com/cobblemon/mod/common/client/render/models/blockbench/pose/Bone"]
     }
   }
 }

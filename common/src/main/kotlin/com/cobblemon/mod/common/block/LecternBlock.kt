@@ -40,13 +40,14 @@ import net.minecraft.world.level.block.state.StateDefinition
 import net.minecraft.world.level.block.state.properties.BooleanProperty
 import net.minecraft.world.level.pathfinder.PathComputationType
 import net.minecraft.world.phys.BlockHitResult
+import net.minecraft.world.phys.Vec3
 import net.minecraft.world.phys.shapes.CollisionContext
 import net.minecraft.world.phys.shapes.VoxelShape
 import net.minecraft.world.level.block.LecternBlock as MinecraftLecternBlock
 
 class LecternBlock(properties: Properties): BaseEntityBlock(properties) {
     companion object {
-        val CODEC: MapCodec<LecternBlock> = simpleCodec(::LecternBlock)
+
         val EMIT_LIGHT: BooleanProperty = BooleanProperty.create("emit_light")
     }
 
@@ -58,46 +59,42 @@ class LecternBlock(properties: Properties): BaseEntityBlock(properties) {
         )
     }
 
-    override fun codec() = CODEC
 
     override fun <T : BlockEntity> getTicker(world: Level, blockState: BlockState, BlockWithEntityType: BlockEntityType<T>) = createTickerHelper(BlockWithEntityType, CobblemonBlockEntities.LECTERN, ViewerCountBlockEntity.TICKER::tick)
 
-    override fun getRenderShape(blockState: BlockState?) = RenderShape.MODEL
+    override fun getRenderShape(blockState: BlockState) = RenderShape.MODEL
 
-    override fun getOcclusionShape(blockState: BlockState?, blockGetter: BlockGetter?, blockPos: BlockPos?): VoxelShape = MinecraftLecternBlock.SHAPE_COMMON
+    private fun vanillaState(blockState: BlockState): BlockState =
+        Blocks.LECTERN.defaultBlockState().setValue(FACING, blockState.getValue(FACING))
 
-    override fun useShapeForLightOcclusion(blockState: BlockState?) = true
+    override fun getOcclusionShape(blockState: BlockState): VoxelShape = vanillaState(blockState).occlusionShape
 
-    override fun getCollisionShape(blockState: BlockState?, blockGetter: BlockGetter?, blockPos: BlockPos?, collisionContext: CollisionContext?): VoxelShape = MinecraftLecternBlock.SHAPE_COLLISION
+    override fun useShapeForLightOcclusion(blockState: BlockState) = true
 
-    override fun getShape(blockState: BlockState, blockGetter: BlockGetter?, blockPos: BlockPos?, collisionContext: CollisionContext?): VoxelShape {
-        return when (blockState.getValue(FACING) as Direction) {
-            Direction.NORTH -> MinecraftLecternBlock.SHAPE_NORTH
-            Direction.SOUTH -> MinecraftLecternBlock.SHAPE_SOUTH
-            Direction.EAST -> MinecraftLecternBlock.SHAPE_EAST
-            Direction.WEST -> MinecraftLecternBlock.SHAPE_WEST
-            else -> MinecraftLecternBlock.SHAPE_COMMON
-        }
-    }
+    override fun getCollisionShape(blockState: BlockState, blockGetter: BlockGetter, blockPos: BlockPos, collisionContext: CollisionContext): VoxelShape =
+        vanillaState(blockState).getCollisionShape(blockGetter, blockPos, collisionContext)
+
+    override fun getShape(blockState: BlockState, blockGetter: BlockGetter, blockPos: BlockPos, collisionContext: CollisionContext): VoxelShape =
+        vanillaState(blockState).getShape(blockGetter, blockPos, collisionContext)
 
     override fun getStateForPlacement(blockPlaceContext: BlockPlaceContext): BlockState = this.defaultBlockState().setValue(FACING, blockPlaceContext.horizontalDirection.opposite).setValue(EMIT_LIGHT, false)
 
-    override fun getCloneItemStack(levelReader: LevelReader, blockPos: BlockPos, blockState: BlockState): ItemStack = ItemStack(Blocks.LECTERN)
+    override fun getCloneItemStack(levelReader: LevelReader, blockPos: BlockPos, blockState: BlockState, includeData: Boolean): ItemStack = ItemStack(Blocks.LECTERN)
 
     override fun rotate(blockState: BlockState, rotation: Rotation) = blockState.setValue(FACING, rotation.rotate(blockState.getValue(FACING) as Direction)) as BlockState
 
     override fun mirror(blockState: BlockState, mirror: Mirror): BlockState = blockState.rotate(mirror.getRotation(blockState.getValue(FACING) as Direction))
 
-    override fun createBlockStateDefinition(builder: StateDefinition.Builder<Block?, BlockState?>) {
+    override fun createBlockStateDefinition(builder: StateDefinition.Builder<Block, BlockState>) {
         builder.add(FACING)
         builder.add(EMIT_LIGHT)
     }
 
     override fun newBlockEntity(blockPos: BlockPos, blockState: BlockState): BlockEntity = LecternBlockEntity(blockPos, blockState)
 
-    override fun isSignalSource(blockState: BlockState?): Boolean = true
+    override fun isSignalSource(blockState: BlockState): Boolean = true
 
-    override fun getSignal(blockState: BlockState?, blockGetter: BlockGetter?, blockPos: BlockPos?, direction: Direction?): Int = 15
+    override fun getSignal(blockState: BlockState, blockGetter: BlockGetter, blockPos: BlockPos, direction: Direction): Int = 15
 
     override fun playerWillDestroy(level: Level, blockPos: BlockPos, blockState: BlockState, player: Player): BlockState {
         if (!level.isClientSide) {
@@ -127,15 +124,15 @@ class LecternBlock(properties: Properties): BaseEntityBlock(properties) {
                     else {
                         blockEntity.incrementViewerCount()
                         PokedexUIPacket(type = (blockEntity.getItemStack().item as PokedexItem).type, blockPos = blockPos).sendToPlayer(player as ServerPlayer)
-                        level.playSoundServer(position = blockPos.bottomCenter, sound = CobblemonSounds.POKEDEX_OPEN, volume = 0.25F)
+                        level.playSoundServer(position = Vec3.atBottomCenterOf(blockPos), sound = CobblemonSounds.POKEDEX_OPEN, volume = 0.25F)
                     }
                 }
             }
         }
-        return InteractionResult.SUCCESS_NO_ITEM_USED
+        return InteractionResult.SUCCESS.withoutItem()
     }
 
-    override fun isPathfindable(blockState: BlockState?, pathComputationType: PathComputationType?) = false
+    override fun isPathfindable(blockState: BlockState, pathComputationType: PathComputationType) = false
 
     private fun takeStoredItem(blockEntity: LecternBlockEntity, blockState: BlockState, level: Level, blockPos: BlockPos, player: Player) {
         if (player.getItemInHand(InteractionHand.MAIN_HAND).isEmpty) {

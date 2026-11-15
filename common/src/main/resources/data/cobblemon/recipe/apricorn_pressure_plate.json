@@ -6,9 +6,7 @@
         "##"
     ],
     "key": {
-        "#": {
-            "item": "cobblemon:apricorn_planks"
-        }
+        "#": "cobblemon:apricorn_planks"
     },
     "result": {
         "id": "cobblemon:apricorn_pressure_plate"

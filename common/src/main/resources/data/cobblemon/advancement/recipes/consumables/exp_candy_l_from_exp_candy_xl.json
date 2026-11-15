@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:exp_candy_l_from_exp_candy_xl"
+        "recipes": "cobblemon:exp_candy_l_from_exp_candy_xl"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

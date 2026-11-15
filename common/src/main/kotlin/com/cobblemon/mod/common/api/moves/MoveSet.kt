@@ -120,8 +120,11 @@ class MoveSet : Iterable<Move> {
      * Writes the MoveSet to Buffer
      */
     fun saveToBuffer(buffer: RegistryFriendlyByteBuf) {
-        buffer.writeSizedInt(IntSize.U_BYTE, getMoves().size)
-        getMoves().forEach {
+        // Network encoding may overlap a server-side move change. The length and
+        // entries must come from the same snapshot or the payload is malformed.
+        val movesToWrite = getMoves()
+        buffer.writeSizedInt(IntSize.U_BYTE, movesToWrite.size)
+        movesToWrite.forEach {
             it.saveToBuffer(buffer)
         }
     }
@@ -171,7 +174,7 @@ class MoveSet : Iterable<Move> {
     fun loadFromNBT(nbt: CompoundTag): MoveSet {
         doWithoutEmitting {
             clear()
-            nbt.getList(DataKeys.POKEMON_MOVESET, Tag.TAG_COMPOUND.toInt()).forEachIndexed { index, tag ->
+            nbt.getListOrEmpty(DataKeys.POKEMON_MOVESET).forEachIndexed { index, tag ->
                 setMove(index, Move.loadFromNBT(tag as CompoundTag))
             }
         }

@@ -15,6 +15,27 @@
     },
     {
       "type": "apply_behaviours",
+      "condition": "q.entity.behaviour.moving.fly.can_fly",
+      "behaviours": [
+        "cobblemon:wanders_air"
+      ]
+    },
+    {
+      "type": "apply_behaviours",
+      "condition": "q.entity.behaviour.moving.fly.can_fly && q.entity.behaviour.moving.walk.can_walk && !q.entity.behaviour.moving.walk.avoids_land",
+      "behaviours": [
+        "cobblemon:wanders"
+      ]
+    },
+    {
+      "type": "apply_behaviours",
+      "condition": "q.entity.behaviour.moving.walk.can_walk && !q.entity.behaviour.moving.fly.can_fly",
+      "behaviours": [
+        "cobblemon:wanders"
+      ]
+    },
+    {
+      "type": "apply_behaviours",
       "condition": "q.entity.behaviour.moving.can_look",
       "behaviours": [
         "cobblemon:looks_around"

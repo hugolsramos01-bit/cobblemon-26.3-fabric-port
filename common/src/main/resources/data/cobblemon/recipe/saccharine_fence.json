@@ -7,12 +7,8 @@
         "W#W"
     ],
     "key": {
-        "W": {
-            "item": "cobblemon:saccharine_planks"
-        },
-        "#": {
-            "item": "minecraft:stick"
-        }
+        "W": "cobblemon:saccharine_planks",
+        "#": "minecraft:stick"
     },
     "result": {
         "count": 3,

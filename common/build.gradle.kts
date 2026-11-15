@@ -23,7 +23,7 @@ plugins {
 }
 
 architectury {
-    common("neoforge", "fabric")
+    common("fabric")
 }
 
 repositories {
@@ -36,28 +36,24 @@ repositories {
 
 dependencies {
     implementation(libs.bundles.kotlin)
-    modImplementation(libs.fabric.loader)
-    modApi(libs.molang)
+    implementation(libs.fabric.loader)
+    api(libs.molang)
 
     // Integrations
     compileOnlyApi(libs.jei.api)
-    modCompileOnly(libs.bundles.common.integrations.compileOnly) {
+    compileOnlyApi(libs.lambDynamicLights)
+    compileOnly(libs.bundles.common.integrations.compileOnly) {
         isTransitive = false
-    }
-    // LambDynamicLights is handled differently because we need the Mojang-mappings version of it.
-    modCompileOnly(libs.lambDynamicLights) {
-        capabilities {
-            requireCapability("dev.lambdaurora.lambdynamiclights:api-mojmap")
-        }
     }
     // Flywheel has no common dep so just pick one and don't use any platform specific code in common
     // modCompileOnly(libs.flywheelFabric)
 
     // Showdown
-    modCompileOnly(libs.graal.core)
+    compileOnly(libs.graal.core)
+    compileOnly(libs.graal.sdk)
 
     // Data Storage
-    modCompileOnly(libs.bundles.mongo)
+    compileOnly(libs.bundles.mongo)
 
     // Unit Testing
     testImplementation(libs.bundles.unitTesting)

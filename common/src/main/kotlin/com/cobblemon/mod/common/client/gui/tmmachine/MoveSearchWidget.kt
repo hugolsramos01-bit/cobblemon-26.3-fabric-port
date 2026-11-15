@@ -9,16 +9,14 @@
 package com.cobblemon.mod.common.client.gui.tmmachine
 
 import com.cobblemon.mod.common.CobblemonSounds
-import com.cobblemon.mod.common.api.gui.blitk
 import com.cobblemon.mod.common.api.text.bold
 import com.cobblemon.mod.common.api.text.text
 import com.cobblemon.mod.common.client.CobblemonResources
-import com.cobblemon.mod.common.client.gui.pc.TextWidget
-import com.cobblemon.mod.common.client.render.drawScaledText
 import com.cobblemon.mod.common.util.cobblemonResource
 import com.cobblemon.mod.common.util.lang
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
+import net.minecraft.client.input.MouseButtonEvent
 import net.minecraft.client.resources.sounds.SimpleSoundInstance
 import net.minecraft.network.chat.Component
 
@@ -27,7 +25,7 @@ class MoveSearchWidget(
     private var pY: Int,
     text: Component = "MoveSearchWidget".text(),
     update: () -> (Unit)
-): TextWidget(pX, pY, text = text, update = update) {
+): TMTextWidget(pX, pY, text = text, update = update) {
 
     companion object {
         const val ICON_SIZE = 16
@@ -37,9 +35,9 @@ class MoveSearchWidget(
         private val labelFilter = lang("ui.pokedex.search")
     }
 
-    override fun renderWidget(context: GuiGraphics, mouseX: Int, mouseY: Int, delta: Float) {
+    override fun extractWidgetRenderState(context: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, delta: Float) {
         blitk(
-            matrixStack = context.pose(),
+            matrixStack = context,
             x = (x - 10.5) / SCALE,
             y = (y + 2.5) / SCALE,
             texture = iconFilterResource,
@@ -63,13 +61,14 @@ class MoveSearchWidget(
         renderCursor(context, input)
     }
 
-    override fun mouseClicked(mouseX: Double, mouseY: Double, button: Int): Boolean {
+    override fun mouseClicked(event: MouseButtonEvent, doubleClick: Boolean): Boolean {
+        val mouseX=event.x(); val mouseY=event.y()
         if (iconHovered(mouseX.toInt(), mouseY.toInt())) {
             Minecraft.getInstance().soundManager.play(SimpleSoundInstance.forUI(CobblemonSounds.GUI_CLICK, 1.0F, 0.25F))
             // Simulate clicking on text area if icon is clicked
-            if (!isFocused) return super.mouseClicked(x + (width / 2.0), y + (height / 2.0), button)
+            if (!isFocused) return super.mouseClicked(MouseButtonEvent(x + width/2.0, y + height/2.0, event.buttonInfo()), doubleClick)
         }
-        return super.mouseClicked(mouseX, mouseY, button)
+        return super.mouseClicked(event, doubleClick)
     }
 
     fun iconHovered(mouseX: Int, mouseY: Int): Boolean = mouseX >= (x - 10.5) && mouseY >= (y + 2.5)

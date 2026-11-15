@@ -43,13 +43,13 @@
     },
     "has_original_recipe": {
       "conditions": {
-        "recipe": "minecraft:mushroom_stew"
+        "recipes": "minecraft:mushroom_stew"
       },
       "trigger": "minecraft:recipe_unlocked"
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:campfire_pot/mushroom_stew_in_campfire_pot"
+        "recipes": "cobblemon:campfire_pot/mushroom_stew_in_campfire_pot"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -61,7 +61,7 @@
       "has_bowl",
       "has_brown_mushroom",
       "has_red_mushroom",
-	  "has_original_recipe"
+      "has_original_recipe"
     ]
   ],
   "rewards": {

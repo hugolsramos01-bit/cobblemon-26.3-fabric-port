@@ -21,7 +21,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipe": "cobblemon:polished_tumblestone_stairs"
+        "recipes": "cobblemon:polished_tumblestone_stairs"
       }
     }
   },

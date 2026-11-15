@@ -3,12 +3,8 @@
     "category": "misc",
     "group": "plaque_redye",
     "ingredients": [
-        {
-            "tag": "cobblemon:plaques"
-        },
-        {
-            "tag": "c:dyes/magenta"
-        }
+        "#cobblemon:plaques",
+        "#c:dyes/magenta"
     ],
     "result": {
         "id": "cobblemon:magenta_plaque"

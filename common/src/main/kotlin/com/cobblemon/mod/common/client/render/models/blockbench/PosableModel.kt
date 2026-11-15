@@ -21,6 +21,9 @@ import com.cobblemon.mod.common.client.entity.PokemonClientDelegate
 import com.cobblemon.mod.common.client.render.AnimatedModelTextureSupplier
 import com.cobblemon.mod.common.client.render.ModelLayer
 import com.cobblemon.mod.common.client.render.ScrollingTextureSettings
+import com.cobblemon.mod.common.client.render.StaticModelTextureSupplier
+import com.cobblemon.mod.common.client.render.block.LayerGeometryCapture
+import com.cobblemon.mod.common.client.render.block.ModelGeometryCapture
 import com.cobblemon.mod.common.client.render.models.blockbench.animation.*
 import com.cobblemon.mod.common.client.render.models.blockbench.bedrock.animation.BedrockActiveAnimation
 import com.cobblemon.mod.common.client.render.models.blockbench.bedrock.animation.BedrockAnimationRepository
@@ -44,24 +47,29 @@ import com.cobblemon.mod.common.util.asExpressionLike
 import com.cobblemon.mod.common.util.plus
 import com.cobblemon.mod.common.util.toRGBA
 import com.mojang.blaze3d.systems.RenderSystem
-import com.mojang.blaze3d.vertex.DefaultVertexFormat
 import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.blaze3d.vertex.VertexConsumer
-import com.mojang.blaze3d.vertex.VertexFormat
 import com.mojang.math.Axis
-import net.minecraft.Util
+import com.mojang.renderpearl.api.pipeline.ColorTargetState
+import com.mojang.renderpearl.api.pipeline.CompareOp
+import com.mojang.renderpearl.api.pipeline.DepthStencilState
+import com.mojang.renderpearl.api.pipeline.RenderPipeline
+import com.mojang.renderpearl.api.textures.FilterMode
+import net.minecraft.util.Util
 import net.minecraft.client.model.geom.ModelPart
-import net.minecraft.client.renderer.MultiBufferSource
-import net.minecraft.client.renderer.RenderStateShard
-import net.minecraft.client.renderer.RenderType
+import net.minecraft.client.renderer.RenderPipelines
+import net.minecraft.client.renderer.rendertype.RenderSetup
+import net.minecraft.client.renderer.rendertype.RenderType
+import net.minecraft.client.renderer.rendertype.RenderTypes
 import net.minecraft.client.renderer.texture.DynamicTexture
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 import net.minecraft.util.Mth
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.item.ItemDisplayContext
 import net.minecraft.world.phys.Vec3
 import org.joml.Matrix4f
 import org.joml.Vector3f
+import java.util.Optional
 
 /**
  * A model that can be posed and animated using [PoseAnimation]s and [ActiveAnimation]s. This
@@ -170,7 +178,7 @@ open class PosableModel(@Transient override val rootPart: Bone) : ModelFrame {
     var currentLayers: Iterable<ModelLayer> = listOf()
 
     @Transient
-    var bufferProvider: MultiBufferSource? = null
+    var bufferProvider: LayerVertexConsumers? = null
 
     @Transient
     var currentState: PosableState? = null
@@ -244,17 +252,20 @@ open class PosableModel(@Transient override val rootPart: Bone) : ModelFrame {
     }
 
     fun withLayerContext(
-        buffer: MultiBufferSource,
+        buffer: LayerVertexConsumers,
         state: PosableState,
         layers: Iterable<ModelLayer>,
         action: () -> Unit
     ) {
         setLayerContext(buffer, state, layers)
-        action()
-        resetLayerContext()
+        try {
+            action()
+        } finally {
+            resetLayerContext()
+        }
     }
 
-    fun setLayerContext(buffer: MultiBufferSource, state: PosableState, layers: Iterable<ModelLayer>) {
+    fun setLayerContext(buffer: LayerVertexConsumers, state: PosableState, layers: Iterable<ModelLayer>) {
         currentLayers = layers.sortedBy { it.translucent }
         bufferProvider = buffer
         currentState = state
@@ -419,13 +430,6 @@ open class PosableModel(@Transient override val rootPart: Bone) : ModelFrame {
 
     fun registerRelevantPart(pairing: Pair<String, ModelPart>) = registerRelevantPart(pairing.first, pairing.second)
 
-    /** Needed a custom one, so I can make it take in a dynamic texture instead of resource location */
-    class DynamicStateShard(texture: DynamicTexture) : RenderStateShard.EmptyTextureStateShard(Runnable {
-        RenderSystem.setShaderTexture(0, texture.id)
-    }, Runnable {
-        texture.close() // Cleanup
-    })
-
     /** Renders the model. Assumes rotations have been set. Will simply render the base model and then any extra layers. */
     fun render(
         context: RenderContext,
@@ -459,6 +463,15 @@ open class PosableModel(@Transient override val rootPart: Bone) : ModelFrame {
 
         val provider = bufferProvider
         if (provider != null) {
+            // Native parts emit the same vertices for each texture pass, differing only in color.
+            // Custom bones and texture suppliers can change the model while resolving a pass.
+            val sharedLayers = (provider as? LayerGeometryCapture)?.takeIf {
+                it.reuseBaseGeometry && buffer is ModelGeometryCapture && rootPart is ModelPart &&
+                    currentLayers.all { layer ->
+                        val texture = layer.texture
+                        texture == null || texture is StaticModelTextureSupplier || texture is AnimatedModelTextureSupplier
+                    }
+            }
             for (layer in currentLayers) {
                 val texture = layer.texture?.invoke(currentState ?: FloatingState()) ?: continue
                 val scrolling = layer.scrolling
@@ -467,17 +480,23 @@ open class PosableModel(@Transient override val rootPart: Bone) : ModelFrame {
                     getScrollingLayer(texture, scrolling, layer)
                 } else if (layer.texture is AnimatedModelTextureSupplier && layer.texture.interpolation) {
                     val interpolatedTexture = layer.texture.interpolatedTexture(currentState ?: FloatingState()) ?: continue
-                    makeLayer(DynamicStateShard(interpolatedTexture), layer.emissive, layer.translucent, layer.translucent_cull)
+                    val interpolatedIdentifier = TransientRenderTextures.register(interpolatedTexture)
+                    makeLayer(interpolatedIdentifier, layer.emissive, layer.translucent, layer.translucent_cull)
                 } else {
                     getLayer(texture, layer.emissive, layer.translucent, layer.translucent_cull)
                 }
-                val consumer = provider.getBuffer(renderLayer)
+                val consumer = if (sharedLayers == null) provider.getBuffer(renderLayer) else null
                 val tint = layer.tint
                 val tintRed = (tint.x * r2 * 255).toInt()
                 val tintGreen = (tint.y * g2 * 255).toInt()
                 val tintBlue = (tint.z * b2 * 255).toInt()
                 val tintAlpha = (tint.w * a2 * 255).toInt()
                 val tintColor = tintAlpha shl 24 or (tintRed shl 16) or (tintGreen shl 8) or tintBlue
+
+                if (consumer == null) {
+                    checkNotNull(sharedLayers).addSharedPass(renderLayer, tintColor)
+                    continue
+                }
 
                 stack.pushPose()
                 rootPart.render(
@@ -499,56 +518,102 @@ open class PosableModel(@Transient override val rootPart: Bone) : ModelFrame {
         return ItemDisplayContext.valueOf(displayContextString)
     }
 
-    /** Generates a [RenderType] by the power of god and anime. Only possible thanks to 100 access wideners. */
-    fun makeLayer(texture: RenderStateShard.EmptyTextureStateShard, emissive: Boolean, translucent: Boolean, translucentCull: Boolean): RenderType {
-        val multiPhaseParameters: RenderType.CompositeState = RenderType.CompositeState.builder()
-            .setShaderState(
-                when {
-                    emissive && translucent -> RenderStateShard.RENDERTYPE_ENTITY_TRANSLUCENT_EMISSIVE_SHADER
-                    !emissive && translucent && translucentCull -> RenderStateShard.RENDERTYPE_ENTITY_TRANSLUCENT_CULL_SHADER
-                    !emissive && translucent -> RenderStateShard.RENDERTYPE_ENTITY_TRANSLUCENT_SHADER
-                    !emissive && !translucent -> RenderStateShard.RENDERTYPE_ENTITY_CUTOUT_SHADER
-                    else -> RenderStateShard.RENDERTYPE_ENTITY_TRANSLUCENT_EMISSIVE_SHADER
-                }
-            )
-            .setTextureState(texture)
-            .setTransparencyState(if (translucent) RenderStateShard.TRANSLUCENT_TRANSPARENCY else RenderStateShard.NO_TRANSPARENCY)
-            .setLightmapState(if (!emissive) RenderStateShard.LIGHTMAP else RenderStateShard.LightmapStateShard(false))
-            .setCullState(RenderStateShard.CULL)
-            .setWriteMaskState(RenderStateShard.COLOR_DEPTH_WRITE)
-            .setOverlayState(RenderStateShard.OVERLAY)
-            .createCompositeState(false)
+    /** Recreates the former entity layer states using the 26.3 render pipeline and setup API. */
+    fun makeLayer(texture: Identifier, emissive: Boolean, translucent: Boolean, translucentCull: Boolean): RenderType {
+        return makeLayer(texture, emissive, translucent, translucentCull, cull = true, affectsOutline = false)
+    }
 
-        return RenderType.create(
-            "cobblemon_entity_layer",
-            DefaultVertexFormat.NEW_ENTITY,
-            VertexFormat.Mode.QUADS,
-            256,
-            true,
-            translucent,
-            multiPhaseParameters
-        )
+    private fun makeLayer(
+        texture: Identifier,
+        emissive: Boolean,
+        translucent: Boolean,
+        translucentCull: Boolean,
+        cull: Boolean,
+        affectsOutline: Boolean
+    ): RenderType {
+        // The legacy custom RenderType always enabled culling and depth writes. 26.3's emissive
+        // translucent pipeline disables both; clone its shader contract while restoring those
+        // states, and remove blending for emissive cutout layers.
+        val pipeline = layerPipelines.getOrPut(listOf(emissive, translucent, translucentCull, cull)) {
+            val source = when {
+                emissive -> RenderPipelines.ENTITY_TRANSLUCENT_EMISSIVE
+                translucent && translucentCull -> RenderPipelines.ENTITY_TRANSLUCENT_CULL
+                translucent -> RenderPipelines.ENTITY_TRANSLUCENT
+                else -> RenderPipelines.ENTITY_CUTOUT_CULL
+            }
+            val colorTargets = source.colorTargetStates.map { target ->
+                target?.let {
+                    ColorTargetState(
+                        if (translucent) it.blendFunction else Optional.empty(),
+                        it.format,
+                        it.writeMask
+                    )
+                }
+            }.toTypedArray()
+            val depthState = source.depthStencilState?.let {
+                // The body and emissive cutout use coincident geometry. Minecraft 26.3
+                // uses reversed depth, so a small positive bias brings the overlay forward.
+                if (emissive && !translucent) DepthStencilState(it.depthTest, true, 1.0F, 1.0F)
+                else DepthStencilState(it.depthTest, true, it.depthBiasScaleFactor, it.depthBiasConstant)
+            } ?: if (emissive && !translucent) {
+                DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, true, 1.0F, 1.0F)
+            } else {
+                DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, true)
+            }
+            RenderPipeline.builder(
+                RenderPipeline.Snippet(
+                    source.shaders,
+                    Optional.of(source.shaderDefines),
+                    Optional.of(source.bindGroupLayouts),
+                    colorTargets,
+                    colorTargets.size,
+                    Optional.of(depthState),
+                    Optional.ofNullable(source.polygonMode),
+                    Optional.of(cull),
+                    source.vertexFormatBindings.toTypedArray(),
+                    Optional.of(source.primitiveTopology),
+                    source.pushConstantSize()
+                )
+            )
+                .withLocation(Identifier.fromNamespaceAndPath(
+                    "cobblemon",
+                    "pipeline/entity_layer_${if (emissive) "emissive" else "lit"}_${if (translucent) "translucent" else "cutout"}_${if (translucentCull) "cull" else "no_cull"}_${if (cull) "cull_state" else "no_cull_state"}"
+                ))
+                .build()
+        }
+        val setup = RenderSetup.builder(pipeline)
+            .withTexture("Sampler0", texture) {
+                RenderSystem.getSamplerCache().getRepeat(FilterMode.NEAREST, false)
+            }
+            .also { if (!emissive) it.useLightmap() }
+            .useOverlay()
+            .affectsCrumbling()
+            .also { if (translucent) it.sortOnUpload() }
+            .setOutline(
+                if (affectsOutline) RenderSetup.OutlineProperty.AFFECTS_OUTLINE
+                else RenderSetup.OutlineProperty.NONE
+            )
+            .createRenderSetup()
+        return RenderType.create("cobblemon_entity_layer", setup)
     }
 
     /** Makes a [RenderType] in a jank way. Mostly works so that's cool. */
-    fun getLayer(texture: ResourceLocation, emissive: Boolean, translucent: Boolean, translucentCull: Boolean): RenderType {
-        return if (!emissive && !translucent) {
-            RenderType.entityCutout(texture)
-        } else if (!emissive && !translucentCull) {
-            RenderType.entityTranslucent(texture)
-        } else {
-            makeLayer(RenderStateShard.TextureStateShard(texture, false, false), emissive = emissive, translucent = translucent, translucentCull = translucentCull)
-        }
+    fun getLayer(texture: Identifier, emissive: Boolean, translucent: Boolean, translucentCull: Boolean): RenderType {
+        // The old fast paths selected the ordinary translucent pass without culling, while
+        // cutout and custom passes culled. Preserve that distinction through pipeline state.
+        val cull = emissive || !translucent || translucentCull
+        val affectsOutline = !emissive && (!translucent || !translucentCull)
+        return makeLayer(texture, emissive, translucent, translucentCull, cull, affectsOutline)
     }
 
-    fun getScrollingLayer(texture: ResourceLocation, scrolling: ScrollingTextureSettings, layer: ModelLayer): RenderType {
+    fun getScrollingLayer(texture: Identifier, scrolling: ScrollingTextureSettings, layer: ModelLayer): RenderType {
         val gameTime = Util.getMillis().toFloat() / 1000f
         val offsetU = (gameTime * scrolling.speedU) % 1.0f
         val offsetV = (gameTime * scrolling.speedV) % 1.0f
         return if (layer.emissive) {
-            RenderType.energySwirl(texture, offsetU, offsetV)
+            RenderTypes.energySwirl(texture, offsetU, offsetV)
         } else {
-            RenderType.breezeWind(texture, offsetU, offsetV)
+            RenderTypes.breezeWind(texture, offsetU, offsetV)
         }
     }
 
@@ -764,7 +829,7 @@ open class PosableModel(@Transient override val rootPart: Bone) : ModelFrame {
         if (entity is PokemonEntity) {
             scale = entity.pokemon.form.baseScale * entity.pokemon.effectiveScale * (entity.delegate as PokemonClientDelegate).activeSendoutScale
             // If scale is 0 we start getting NaNs
-            scale.coerceAtLeast(0.01f)
+            scale = scale.coerceAtLeast(0.01f)
             if (entity.passengers.isNotEmpty() && entity.controllingPassenger is OrientationControllable
                 && (entity as OrientationControllable).orientationController.active){
                 val controller = entity.orientationController
@@ -791,10 +856,10 @@ open class PosableModel(@Transient override val rootPart: Bone) : ModelFrame {
         }
 
         matrixStack.scale(scale, scale, scale)
-        matrixStack.mulPose(Axis.YP.rotationDegrees(yRot))
+        matrixStack.rotate(Axis.YP.rotationDegrees(yRot))
 
         // Entities' locators are positioned upside-down so this fixes that
-        if(entity != null) matrixStack.mulPose(Axis.ZP.rotationDegrees(180f))
+        if(entity != null) matrixStack.rotate(Axis.ZP.rotationDegrees(180f))
 
         locatorAccess.update(matrixStack, entity, scale, state.locatorStates, isRoot = true)
     }
@@ -860,4 +925,8 @@ open class PosableModel(@Transient override val rootPart: Bone) : ModelFrame {
     )
 
     fun isReadyForAnimation() = ::context.isInitialized
+
+    private companion object {
+        val layerPipelines = mutableMapOf<List<Boolean>, RenderPipeline>()
+    }
 }

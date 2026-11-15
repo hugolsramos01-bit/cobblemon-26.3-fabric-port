@@ -210,9 +210,9 @@ class PokemonServerDelegate : PokemonSideDelegate {
                             val paramString = opponentValue.asString()
                             val playerUUID = paramString.asUUID
                             if (playerUUID != null) {
-                                entity.server!!.playerList.getPlayer(playerUUID) ?: return@addFunction DoubleValue.ZERO
+                                entity.level().server!!.playerList.getPlayer(playerUUID) ?: return@addFunction DoubleValue.ZERO
                             } else {
-                                entity.server!!.playerList.getPlayerByName(paramString) ?: return@addFunction DoubleValue.ZERO
+                                entity.level().server!!.playerList.getPlayerByName(paramString) ?: return@addFunction DoubleValue.ZERO
                             }
                         }
 
@@ -244,12 +244,17 @@ class PokemonServerDelegate : PokemonSideDelegate {
         entity.entityData.set(PokemonEntity.ASPECTS, trackedAspects)
         entity.entityData.set(PokemonEntity.LABEL_LEVEL, entity.pokemon.level)
 
-        if (entity.getCurrentPoseType() in PoseType.FLYING_POSES) {
-            entity.entityData.set(PokemonEntity.MOVING, entity.isPokemonFlying)
+        // The server must choose the movement pose from authoritative entity motion. The
+        // LivingEntity walk/fly animation values are render animation state and can stay at
+        // zero on a dedicated server, which leaves moving wild Pokemon in their idle pose.
+        val motion = entity.deltaMovement
+        val isFlyingOrSubmerged = entity.getBehaviourFlag(PokemonBehaviourFlag.FLYING) || entity.getIsSubmerged()
+        val isMoving = if (isFlyingOrSubmerged) {
+            motion.lengthSqr() > 0.000025
+        } else {
+            motion.horizontalDistanceSqr() > 0.000025
         }
-        else {
-            entity.entityData.set(PokemonEntity.MOVING, entity.isPokemonWalking)
-        }
+        entity.entityData.set(PokemonEntity.MOVING, isMoving)
 
         entity.entityData.set(PokemonEntity.FRIENDSHIP, entity.pokemon.friendship)
         entity.entityData.set(PokemonEntity.CAUGHT_BALL, trackedBall)
@@ -410,9 +415,9 @@ class PokemonServerDelegate : PokemonSideDelegate {
     }
 
     fun doDeathDrops() {
-        if (entity.ownerUUID == null && entity.owner == null && entity.level().gameRules.getBoolean(CobblemonGameRules.DO_POKEMON_LOOT)) {
+        if (entity.ownerUUID == null && entity.owner == null && (entity.level() as ServerLevel).gameRules.get(CobblemonGameRules.DO_POKEMON_LOOT)) {
             val heldItem = (entity as PokemonEntity?)?.pokemon?.heldItemNoCopy() ?: ItemStack.EMPTY
-            if (!heldItem.isEmpty) entity.spawnAtLocation(heldItem.item)
+            if (!heldItem.isEmpty) entity.spawnAtLocation(entity.level() as ServerLevel, heldItem.item)
 
             val dropTable = (entity.drops ?: entity.pokemon.form.drops)
             val drops = dropTable.getDrops().toMutableList()

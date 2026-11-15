@@ -9,6 +9,7 @@
 package com.cobblemon.mod.common.api.spawning.condition
 
 import com.cobblemon.mod.common.util.lang
+import com.cobblemon.mod.common.util.moonPhase
 import net.minecraft.network.chat.MutableComponent
 import net.minecraft.world.level.Level
 

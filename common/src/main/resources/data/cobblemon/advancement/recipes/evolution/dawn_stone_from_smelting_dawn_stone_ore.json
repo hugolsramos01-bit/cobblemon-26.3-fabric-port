@@ -21,7 +21,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipe": "cobblemon:dawn_stone_from_smelting_dawn_stone_ore"
+        "recipes": "cobblemon:dawn_stone_from_smelting_dawn_stone_ore"
       }
     }
   },

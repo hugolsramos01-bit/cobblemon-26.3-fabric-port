@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:heavy_duty_boots"
+        "recipes": "cobblemon:heavy_duty_boots"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

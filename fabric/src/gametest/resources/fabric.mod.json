@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "id": "cobblemon-gametest",
+  "version": "1.0.0",
+  "name": "Cobblemon Game Tests",
+  "environment": "*",
+  "mixins": [
+    "mixins.cobblemon-gametest.json"
+  ],
+  "entrypoints": {
+    "fabric-gametest": [
+      "com.cobblemon.mod.fabric.gametest.CobblemonBootstrapGameTest",
+      "com.cobblemon.mod.fabric.gametest.CobblemonEvolutionSyncGameTest",
+      "com.cobblemon.mod.fabric.gametest.CobblemonSherdMigrationGameTest",
+      "com.cobblemon.mod.fabric.gametest.RepurposedStructuresGameTest"
+    ],
+    "fabric-client-gametest": [
+      "com.cobblemon.mod.fabric.gametest.CobblemonStarterScrollClientGameTest",
+      "com.cobblemon.mod.fabric.gametest.CobblemonMigrationClientGameTest",
+      "com.cobblemon.mod.fabric.gametest.CobblemonClientSmokeGameTest"
+    ]
+  }
+}

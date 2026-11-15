@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:charcoal_stick"
+        "recipes": "cobblemon:charcoal_stick"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

@@ -26,6 +26,7 @@ import com.cobblemon.mod.common.api.spawning.detail.SpawnAction
 import com.cobblemon.mod.common.api.spawning.detail.SpawnDetail
 import com.cobblemon.mod.common.api.spawning.influence.SpawningInfluence
 import com.cobblemon.mod.common.api.spawning.position.AreaSpawnablePositionResolver
+import com.cobblemon.mod.common.api.spawning.position.AirborneSpawnablePosition
 import com.cobblemon.mod.common.api.spawning.position.FishingSpawnablePosition
 import com.cobblemon.mod.common.api.spawning.position.GroundedSpawnablePosition
 import com.cobblemon.mod.common.api.spawning.position.LavafloorSpawnablePosition
@@ -34,6 +35,7 @@ import com.cobblemon.mod.common.api.spawning.position.SpawnablePosition
 import com.cobblemon.mod.common.api.spawning.position.SubmergedSpawnablePosition
 import com.cobblemon.mod.common.api.spawning.position.SurfaceSpawnablePosition
 import com.cobblemon.mod.common.api.spawning.position.calculators.GroundedSpawnablePositionCalculator
+import com.cobblemon.mod.common.api.spawning.position.calculators.AirborneSpawnablePositionCalculator
 import com.cobblemon.mod.common.api.spawning.position.calculators.LavafloorSpawnablePositionCalculator
 import com.cobblemon.mod.common.api.spawning.position.calculators.SeafloorSpawnablePositionCalculator
 import com.cobblemon.mod.common.api.spawning.position.calculators.SpawnablePositionCalculator
@@ -104,12 +106,14 @@ object BestSpawner {
         LOGGER.info("Loaded ${SpawningCondition.conditionTypes.size} spawning condition types.")
 
         SpawnablePositionCalculator.register(GroundedSpawnablePositionCalculator)
+        SpawnablePositionCalculator.register(AirborneSpawnablePositionCalculator)
         SpawnablePositionCalculator.register(SeafloorSpawnablePositionCalculator)
         SpawnablePositionCalculator.register(LavafloorSpawnablePositionCalculator)
         SpawnablePositionCalculator.register(SubmergedSpawnablePositionCalculator)
         SpawnablePositionCalculator.register(SurfaceSpawnablePositionCalculator)
 
         SpawnablePosition.register(name = "grounded", clazz = GroundedSpawnablePosition::class.java, defaultCondition = GroundedSpawningCondition.NAME)
+        SpawnablePosition.register(name = "airborne", clazz = AirborneSpawnablePosition::class.java, defaultCondition = AreaSpawningCondition.NAME)
         SpawnablePosition.register(name = "seafloor", clazz = SeafloorSpawnablePosition::class.java, defaultCondition = SeafloorSpawningCondition.NAME)
         SpawnablePosition.register(name = "lavafloor", clazz = LavafloorSpawnablePosition::class.java, defaultCondition = GroundedSpawningCondition.NAME)
         SpawnablePosition.register(name = "submerged", clazz = SubmergedSpawnablePosition::class.java, defaultCondition = SubmergedSpawningCondition.NAME)

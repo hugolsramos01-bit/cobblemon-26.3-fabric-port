@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:black_tumblestone"
+        "recipes": "cobblemon:black_tumblestone"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

@@ -8,6 +8,8 @@
 
 package com.cobblemon.mod.common.api.ai.config.task
 
+import net.minecraft.world.phys.Vec3
+
 import com.cobblemon.mod.common.CobblemonActivities
 import com.cobblemon.mod.common.CobblemonMemories
 import com.cobblemon.mod.common.api.ai.BehaviourConfigurationContext
@@ -59,9 +61,9 @@ class SwitchToSleepOnTrainerBedTaskConfig : SingleTaskConfig {
                     val blockState = entity.level().getBlockState(blockPos)
                     val bedPos = blockState.getOptionalValue(BedBlock.FACING).orElse(null)
                         ?.let { direction -> blockPos.relative(direction.opposite) }
-                        ?: BlockPos(blockPos)
+                        ?: blockPos.immutable()
 
-                    walkTarget.set(WalkTarget(bedPos.center, 0.35F, 0))
+                    walkTarget.set(WalkTarget(Vec3.atCenterOf(bedPos), 0.35F, 0))
                     entity.brain.setActiveActivityIfPossible(CobblemonActivities.POKEMON_SLEEP_ON_TRAINER_BED)
                     return@Trigger true
                 }

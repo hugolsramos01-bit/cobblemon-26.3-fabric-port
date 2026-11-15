@@ -37,6 +37,13 @@ class MatrixWrapper {
         return position.add(matrix.getOrigin())
     }
     fun transformPosition(position: Vec3) = this.position.add(matrix.transformPosition(position))
-    fun transformWorldToParticle(position: Vec3) = Matrix4f(matrix).invertAffine().transformPosition(position.subtract(this.position))
+    fun transformWorldToParticle(position: Vec3): Vec3 {
+        val inverse = Matrix4f(matrix)
+        val determinant = inverse.determinant()
+        if (!determinant.isFinite() || kotlin.math.abs(determinant) < 1.0E-8f) {
+            return position.subtract(this.position)
+        }
+        return inverse.invertAffine().transformPosition(position.subtract(this.position))
+    }
     fun clone() = MatrixWrapper().updateMatrix(matrix).updatePosition(position)
 }

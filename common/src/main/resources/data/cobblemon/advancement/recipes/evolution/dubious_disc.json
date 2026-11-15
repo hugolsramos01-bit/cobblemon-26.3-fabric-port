@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:dubious_disc"
+        "recipes": "cobblemon:dubious_disc"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

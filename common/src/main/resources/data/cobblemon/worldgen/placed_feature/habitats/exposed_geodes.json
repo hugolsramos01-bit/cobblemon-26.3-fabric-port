@@ -50,9 +50,10 @@
             }
         },
         {
-            "type": "minecraft:random_offset",
-            "y_spread": -3,
-            "xz_spread": 0
+            "type": "minecraft:offset",
+            "y": -3,
+            "x": 0,
+            "z": 0
         }
     ]
 }

@@ -12,6 +12,8 @@ import com.cobblemon.mod.common.CobblemonMemories
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity
 import com.cobblemon.mod.common.util.getMemorySafely
 import net.minecraft.world.entity.PathfinderMob
+import net.minecraft.sounds.SoundEvents
+import net.minecraft.sounds.SoundSource
 import net.minecraft.world.entity.ai.behavior.OneShot
 import net.minecraft.world.entity.ai.behavior.declarative.BehaviorBuilder
 import net.minecraft.world.entity.ai.behavior.declarative.Trigger
@@ -19,6 +21,7 @@ import net.minecraft.world.entity.ai.memory.MemoryModuleType
 import net.minecraft.world.entity.ai.memory.MemoryStatus
 import net.minecraft.world.level.block.BeehiveBlock
 import net.minecraft.world.level.block.entity.BeehiveBlockEntity
+import net.minecraft.world.level.gameevent.GameEvent
 import net.minecraft.world.phys.Vec3
 
 object PlaceHoneyInHiveTask {
@@ -53,7 +56,21 @@ object PlaceHoneyInHiveTask {
                             // Erase Hive memory and give the bee a moment to locate a new hive
                             entity.brain.eraseMemory(CobblemonMemories.HIVE_LOCATION)
                         } else {
-                            blockEntity.addOccupant(entity)
+                            entity.stopRiding()
+                            entity.ejectPassengers()
+                            entity.dropLeash()
+                            blockEntity.storeBee(BeehiveBlockEntity.Occupant.of(entity))
+                            world.playSound(
+                                null,
+                                hiveLocation.x.toDouble(), hiveLocation.y.toDouble(), hiveLocation.z.toDouble(),
+                                SoundEvents.BEEHIVE_ENTER,
+                                SoundSource.BLOCKS,
+                                1.0F,
+                                1.0F
+                            )
+                            world.gameEvent(GameEvent.BLOCK_CHANGE, hiveLocation, GameEvent.Context.of(entity, state))
+                            entity.discard()
+                            blockEntity.setChanged()
                         }
                     }
 
@@ -65,7 +82,7 @@ object PlaceHoneyInHiveTask {
 
     fun wantsToEnterHive( entity: PokemonEntity) : Boolean {
         val result = !entity.brain.checkMemory(CobblemonMemories.HIVE_COOLDOWN, MemoryStatus.VALUE_PRESENT)
-                && (entity.level().isRaining || entity.level().isNight || entity.brain.getMemory(CobblemonMemories.HAS_NECTAR).orElse(false))
+                && (entity.level().isRaining || entity.level().isDarkOutside || entity.brain.getMemory(CobblemonMemories.HAS_NECTAR).orElse(false))
         if (result) {
             val blockPos = entity.brain.getMemorySafely(CobblemonMemories.HIVE_LOCATION).orElse(null)
             val blockEntity = entity.level().getBlockEntity(blockPos)

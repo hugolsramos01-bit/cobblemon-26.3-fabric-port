@@ -22,7 +22,7 @@ import com.cobblemon.mod.common.util.lang
 import java.math.RoundingMode
 import java.text.DecimalFormat
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.network.chat.Component
 
 class MovesWidget(
@@ -77,11 +77,11 @@ class MovesWidget(
     )
 
 
-    override fun renderWidget(context: GuiGraphics, pMouseX: Int, pMouseY: Int, pPartialTicks: Float) {
+    override fun extractWidgetRenderState(context: GuiGraphicsExtractor, pMouseX: Int, pMouseY: Int, pPartialTicks: Float) {
         val matrices = context.pose()
 
         blitk(
-            matrixStack = matrices,
+            context = context,
             texture = movesBaseResource,
             x= x,
             y = y,
@@ -90,12 +90,12 @@ class MovesWidget(
         )
 
         moves.forEach {
-            it.render(context, pMouseX, pMouseY, pPartialTicks)
+            it.extractRenderState(context, pMouseX, pMouseY, pPartialTicks)
         }
 
         // Move icons
         blitk(
-            matrixStack = matrices,
+            context = context,
             texture = movesPowerIconResource,
             x= (x + 7) / SCALE,
             y = (y + 114.5) / SCALE,
@@ -105,7 +105,7 @@ class MovesWidget(
         )
 
         blitk(
-            matrixStack = matrices,
+            context = context,
             texture = movesAccuracyIconResource,
             x= (x + 7) / SCALE,
             y = (y + 125.5) / SCALE,
@@ -115,7 +115,7 @@ class MovesWidget(
         )
 
         blitk(
-            matrixStack = matrices,
+            context = context,
             texture = movesEffectIconResource,
             x= (x + 7) / SCALE,
             y = (y + 136.5) / SCALE,
@@ -182,9 +182,9 @@ class MovesWidget(
             shadow = true
         )
 
-         // Render move description
+        // Render move description
         if (selectedMove != null) {
-            descriptionScrollList.renderWidget(context, pMouseX, pMouseY, pPartialTicks)
+            descriptionScrollList.extractWidgetRenderState(context, pMouseX, pMouseY, pPartialTicks)
         }
     }
 
@@ -218,9 +218,13 @@ class MovesWidget(
         descriptionScrollList.setMoveDescription(selectedMove?.description ?: "".text())
     }
 
-    override fun mouseClicked(mouseX: Double, mouseY: Double, button: Int): Boolean {
-        if (descriptionScrollList.isHovered) descriptionScrollList.mouseClicked(mouseX, mouseY, button)
-        return super.mouseClicked(mouseX, mouseY, button)
+    override fun mouseClicked(event: net.minecraft.client.input.MouseButtonEvent, doubleClick: Boolean): Boolean {
+    val mouseX = event.x()
+    val mouseY = event.y()
+    val button = event.button()
+
+        if (descriptionScrollList.isHovered) descriptionScrollList.mouseClicked(event, doubleClick)
+        return super.mouseClicked(event, doubleClick)
     }
 
     override fun mouseScrolled(mouseX: Double, mouseY: Double, horizontalAmount: Double, verticalAmount: Double): Boolean {
@@ -228,8 +232,12 @@ class MovesWidget(
         return super.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount)
     }
 
-    override fun mouseDragged(mouseX: Double, mouseY: Double, button: Int, deltaX: Double, deltaY: Double): Boolean {
-        if (descriptionScrollList.isHovered) descriptionScrollList.mouseDragged(mouseX, mouseY, button, deltaX, deltaY)
-        return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY)
+    override fun mouseDragged(event: net.minecraft.client.input.MouseButtonEvent, deltaX: Double, deltaY: Double): Boolean {
+    val mouseX = event.x()
+    val mouseY = event.y()
+    val button = event.button()
+
+        if (descriptionScrollList.isHovered) descriptionScrollList.mouseDragged(event, deltaX, deltaY)
+        return super.mouseDragged(event, deltaX, deltaY)
     }
 }

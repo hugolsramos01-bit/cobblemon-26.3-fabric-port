@@ -7,21 +7,18 @@
         {
           "type": "minecraft:item",
           "name": "cobblemon:link_cable",
-          "functions": [
+          "modifier": [
             {
-              "function": "minecraft:set_count",
+              "type": "minecraft:set_count",
               "count": 1
             }
           ]
         }
       ],
-      "conditions": [
-        {
-          "condition": "minecraft:random_chance",
-          "chance": 0.125
-        }
-      ]
+      "condition": {
+        "type": "minecraft:random_chance",
+        "chance": 0.125
+      }
     }
   ]
 }
-

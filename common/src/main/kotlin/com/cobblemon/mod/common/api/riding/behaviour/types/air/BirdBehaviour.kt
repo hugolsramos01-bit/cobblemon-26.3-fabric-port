@@ -27,7 +27,7 @@ import com.cobblemon.mod.common.util.*
 import com.cobblemon.mod.common.util.math.geometry.toRadians
 import net.minecraft.network.FriendlyByteBuf
 import net.minecraft.network.RegistryFriendlyByteBuf
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 import net.minecraft.util.Mth
 import net.minecraft.util.SmoothDouble
 import net.minecraft.world.entity.LivingEntity
@@ -44,9 +44,14 @@ class BirdBehaviour : RidingBehaviour<BirdSettings, BirdState> {
         private const val FLY_POSE_SPEED = 0.1
         private const val GLIDE_ENTRY_SPEED = 0.19
         private const val GLIDE_EXIT_SPEED = 0.13
+        private const val MOUSE_SMOOTHING_RATE = 12.0
+        private const val DIRECT_MOUSE_FRACTION = 0.75
+        private const val CRUISE_MOUSE_YAW_FRACTION = 0.65
+        // Preserve the former per-frame limits at 60 FPS, expressed per second.
+        private const val MAX_MOUSE_INPUT_PER_SECOND = 45.0 * 60.0
     }
 
-    override val key: ResourceLocation = KEY
+    override val key: Identifier = KEY
 
     override fun getRidingStyle(settings: BirdSettings, state: BirdState): RidingStyle {
         return RidingStyle.AIR
@@ -171,7 +176,8 @@ class BirdBehaviour : RidingBehaviour<BirdSettings, BirdState> {
             state.rideVelocity.get().z.toFloat() * -1.0f // Flip the z axis to make this left handed
         )
         // Unrotate preemptively as this vector gets rotatee later down the line in MC logic.
-        var worldVelVec = localVelVec.mul(controller.orientation).toVec3d().yRot(vehicle.yRot.toRadians())
+        val orientation = controller.orientation ?: return Vec3.ZERO
+        var worldVelVec = localVelVec.mul(orientation).toVec3d().yRot(vehicle.yRot.toRadians())
         worldVelVec =  worldVelVec.add(0.0, extraDownwardForce, 0.0) // Add the stamina depletion force to bring the ride down.
 
         return worldVelVec
@@ -294,6 +300,16 @@ class BirdBehaviour : RidingBehaviour<BirdSettings, BirdState> {
 
         val handling = vehicle.runtime.resolveDouble(settings.handlingExpr ?: globalBird.handlingExpr!!)
 
+        // The bird controller used to steer only from its bank angle. A/D is
+        // available on the rider every client tick, so apply a small direct
+        // heading command as well; mouse banking remains available for broad
+        // turns and the two inputs can be combined.
+        val keyboardYaw = -driver.xxa * handling * deltaTime
+        if (keyboardYaw != 0.0) {
+            controller.applyGlobalYaw(keyboardYaw.toFloat())
+            state.noInputTimeRoll.set(0.0)
+        }
+
         val yawDeltaDeg =  deltaTime * handling * sin(Math.toRadians(controller.roll.toDouble()))
         val trueYawDelt = yawDeltaDeg * abs(cos(Math.toRadians(controller.pitch.toDouble()))).coerceIn(-1.0, 1.0)
 
@@ -397,7 +413,10 @@ class BirdBehaviour : RidingBehaviour<BirdSettings, BirdState> {
         val controller = (driver as OrientationControllable).orientationController
         // Begin the roll correction time counter if not enough mouse input
         // is detected
-        if (mouseX < 1 && abs(mouseY) < 1) {
+        // Mouse deltas are per frame: a fixed one-pixel dead zone treats fine input
+        // as idle at high FPS. Use the same small activity rate on both axes/signs.
+        val idleThreshold = max(deltaTime, 0.000001)
+        if (abs(mouseX) < idleThreshold && abs(mouseY) < idleThreshold) {
             state.noInputTimeRoll.set(state.noInputTimeRoll.get() + deltaTime)
         } else if (cos(controller.roll.toRadians()) < 0.1) {
             state.noInputTimeRoll.set(state.noInputTimeRoll.get() + deltaTime * 0.5)
@@ -406,7 +425,7 @@ class BirdBehaviour : RidingBehaviour<BirdSettings, BirdState> {
             state.noInputTimeRoll.set(0.0)
         }
 
-        if (abs(mouseY) < 1) {
+        if (abs(mouseY) < idleThreshold) {
             state.noInputTimePitch.set(state.noInputTimePitch.get() + deltaTime)
         } else {
             state.noInputTimePitch.set(0.0)
@@ -444,24 +463,32 @@ class BirdBehaviour : RidingBehaviour<BirdSettings, BirdState> {
         val topSpeed = vehicle.runtime.resolveDouble(settings.speedExpr ?: globalBird.speedExpr!!) / 20.0
         val mouseInputMult = vehicle.runtime.resolveDouble(settings.mouseInputMult ?: globalBird.mouseInputMult!!)
         // Applied to mouseX to prevent turning upside down when trying to roll hard.
-        val rollDegreeDebuff = if(mouseX.sign.toFloat() == controller.roll.sign) 1 - 0.9f*sqrt(abs(sin(controller.roll.toRadians())))*sqrt(abs(cos(controller.pitch))) else 1.0f
+        val rollDegreeDebuff = if(mouseX.sign.toFloat() == controller.roll.sign) 1 - 0.9f*sqrt(abs(sin(controller.roll.toRadians())))*sqrt(abs(cos(controller.pitch.toRadians()))) else 1.0f
 
         //Smooth out mouse input.
-        val smoothingSpeed = 2.0
-        val mouseXc = (mouseX).coerceIn(-45.0, 45.0) * mouseInputMult * rollDegreeDebuff
+        val frameTime = deltaTime.coerceAtLeast(0.0)
+        val maxMouseDelta = MAX_MOUSE_INPUT_PER_SECOND * frameTime
+        val smoothingAmount = 1.0 - exp(-MOUSE_SMOOTHING_RATE * frameTime)
+        val mouseXc = mouseX.coerceIn(-maxMouseDelta, maxMouseDelta) * mouseInputMult
         // When upside down apply a pitching force to nudge the player towards a dive. This reduces the 'weirdness'
         // of being upside down
-        val rolledOverPitchCorrection = -8*sqrt(abs(min(cos(controller.roll.toRadians()),0.0f))) * (cos(controller.pitch.toRadians())).pow(2)
-        val mouseYc = ((mouseY).coerceIn(-45.0, 45.0) * mouseInputMult) + rolledOverPitchCorrection
-        val xInput = mouseXSmoother.getNewDeltaValue(mouseXc * 0.1, deltaTime * smoothingSpeed)
-        val yInput = mouseYSmoother.getNewDeltaValue(mouseYc * 0.1, deltaTime * smoothingSpeed)
+        val rolledOverPitchCorrection = -8*60*frameTime*sqrt(abs(min(cos(controller.roll.toRadians()),0.0f))) * (cos(controller.pitch.toRadians())).pow(2)
+        val mouseYc = mouseY.coerceIn(-maxMouseDelta, maxMouseDelta) * mouseInputMult + rolledOverPitchCorrection
+        val xInput = mouseXSmoother.getNewDeltaValue(mouseXc * 0.1, smoothingAmount)
+        val yInput = mouseYSmoother.getNewDeltaValue(mouseYc * 0.1, smoothingAmount)
+        // Direction responds immediately; banking follows the filtered input. Do not
+        // weaken direct steering just because the mount is already banked.
+        val responsiveX = lerp(xInput, mouseXc * 0.1, DIRECT_MOUSE_FRACTION)
+        val responsiveY = lerp(yInput, mouseYc * 0.1, DIRECT_MOUSE_FRACTION)
         val currSpeed = state.rideVelocity.get().length()
         val currHorzSpeed = state.rideVelocity.get().horizontalDistance()
         val hoverSpeed = 0.1
         val pitchDamping = abs(cos(controller.pitch.toRadians())).pow(2) // Helper value used when wanting to discard the influence of another value at steep pitches
 
-        // Yaw locally when at or below hoverSpeed but not when pitched up or rolled over
-        val globalYaw = xInput * (1 - sqrt(RidingBehaviour.scaleToRange(currHorzSpeed, hoverSpeed, topSpeed))).coerceIn(0.0, 1.0)
+        // Keep direct heading authority at cruise/glide speed; bank-assisted turning
+        // still contributes through angRollVel and the species' handling statistic.
+        val speedFraction = RidingBehaviour.scaleToRange(currHorzSpeed, hoverSpeed, topSpeed).coerceIn(0.0, 1.0)
+        val globalYaw = responsiveX * (1.0 - (1.0 - CRUISE_MOUSE_YAW_FRACTION) * sqrt(speedFraction))
         controller.applyGlobalYaw(globalYaw.toFloat())
 
         // Pitch locally up or down depending upon a number of factors:
@@ -469,8 +496,8 @@ class BirdBehaviour : RidingBehaviour<BirdSettings, BirdState> {
         // - Do not pitch at all when at or below hover speed
         // - pitch faster at higher speeds
         val p = 1.0 - vehicle.runtime.resolveDouble(settings.horizontalPitchExpr ?: globalBird.horizontalPitchExpr!!)
-        var localPitch = yInput * (1 - abs(sin(controller.roll.toRadians())).pow(2) * p * hypot(controller.forwardVector.x.toDouble(), controller.forwardVector.z.toDouble()).toFloat())
-        localPitch *= if (currSpeed > hoverSpeed || yInput > 0.0) RidingBehaviour.scaleToRange(currSpeed, 0.0, topSpeed).coerceIn(0.2, 1.0)
+        var localPitch = responsiveY * (1 - abs(sin(controller.roll.toRadians())).pow(2) * p * hypot(controller.forwardVector.x.toDouble(), controller.forwardVector.z.toDouble()).toFloat())
+        localPitch *= if (currSpeed > hoverSpeed || responsiveY > 0.0) RidingBehaviour.scaleToRange(currSpeed, 0.0, topSpeed).coerceIn(0.2, 1.0)
             else 0.0
 
         // Roll less when slow and not at all when at hoverSpeed or lower.
@@ -481,7 +508,7 @@ class BirdBehaviour : RidingBehaviour<BirdSettings, BirdState> {
         val isInputtingTowardsRoll = if ( xInput.sign == controller.roll.sign.toDouble()) 1.0 else 0.0
         val inputInRolledDir = if (isInputtingTowardsRoll == 1.0) 1.0 else -cos(controller.roll.toRadians()).coerceIn(-1.0f, 0.0f).toDouble()
         val rollDampen = (1 - howRolledAmI.coerceIn(0.0f, 0.7f) * pitchDamping * inputInRolledDir)
-        val rollForce = if (currHorzSpeed > hoverSpeed) xInput * sqrt(abs(RidingBehaviour.scaleToRange(currHorzSpeed, hoverSpeed, topSpeed)).coerceIn(0.0,1.0)) * rollDampen + pitchInfluencedRollCorrection
+        val rollForce = if (currHorzSpeed > hoverSpeed) xInput * rollDegreeDebuff * sqrt(abs(RidingBehaviour.scaleToRange(currHorzSpeed, hoverSpeed, topSpeed)).coerceIn(0.0,1.0)) * rollDampen + pitchInfluencedRollCorrection
             else 0.0
 
         // When already rolled significantly part of the roll force should turn to local yaw force
@@ -594,7 +621,7 @@ class BirdBehaviour : RidingBehaviour<BirdSettings, BirdState> {
     ): Boolean {
         if (!state.gliding.get()) return false
         val impactSpeed = impactVec.horizontalDistance().toFloat() * 10f
-        return vehicle.causeFallDamage(impactSpeed, 1f, vehicle.damageSources().flyIntoWall())
+        return vehicle.causeFallDamage(impactSpeed.toDouble(), 1f, vehicle.damageSources().flyIntoWall())
     }
 
     override fun getRideSounds(

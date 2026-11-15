@@ -6,8 +6,8 @@
         "items": [
           {
             "items": [
-				"cobblemon:vivichoke"
-			]
+              "cobblemon:vivichoke"
+            ]
           }
         ]
       },
@@ -15,13 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:vivichoke_dip"
-      },
-      "trigger": "minecraft:recipe_unlocked"
-    },
-    "has_cooking_pot_recipe": {
-      "conditions": {
-        "recipe": "cobblemon:cooking_pot/vivichoke_dip_from_cooking_pot"
+        "recipes": "cobblemon:campfire_pot/vivichoke_dip"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -29,13 +23,12 @@
   "requirements": [
     [
       "has_vivichoke",
-      "has_the_recipe",
-	  "has_cooking_pot_recipe"
+      "has_the_recipe"
     ]
   ],
   "rewards": {
     "recipes": [
-      "cobblemon:vivichoke_dip"
+      "cobblemon:campfire_pot/vivichoke_dip"
     ]
   }
 }

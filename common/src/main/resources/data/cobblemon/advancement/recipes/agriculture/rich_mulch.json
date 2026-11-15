@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:rich_mulch"
+        "recipes": "cobblemon:rich_mulch"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

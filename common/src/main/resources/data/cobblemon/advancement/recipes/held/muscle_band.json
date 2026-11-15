@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:muscle_band"
+        "recipes": "cobblemon:muscle_band"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

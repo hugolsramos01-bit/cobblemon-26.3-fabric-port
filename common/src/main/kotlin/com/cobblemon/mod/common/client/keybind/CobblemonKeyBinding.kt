@@ -10,6 +10,7 @@ package com.cobblemon.mod.common.client.keybind
 
 import com.mojang.blaze3d.platform.InputConstants
 import net.minecraft.client.KeyMapping
+import net.minecraft.resources.Identifier
 
 /**
  * An extensions for Minecraft's [KeyBinding]
@@ -20,10 +21,19 @@ import net.minecraft.client.KeyMapping
  */
 abstract class CobblemonKeyBinding(
     name: String,
-    type: InputConstants.Type = InputConstants.Type.KEYSYM,
+    type: InputConstants.Type = InputConstants.Type.KEYBOARD,
     key: Int,
     category: String
-): KeyMapping(name, type, key, category) {
+): KeyMapping(name, type, key, registeredCategory(category)) {
+
+    companion object {
+        private val categories = mutableMapOf<String, KeyMapping.Category>()
+
+        private fun registeredCategory(translationKey: String): KeyMapping.Category = categories.getOrPut(translationKey) {
+            val categoryId = translationKey.removePrefix("key.cobblemon.categories.")
+            KeyMapping.Category.register(Identifier.fromNamespaceAndPath("cobblemon", categoryId))
+        }
+    }
 
     abstract fun onPress()
 

@@ -14,36 +14,39 @@ import com.cobblemon.mod.common.item.PokedexItem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.AbstractClientPlayer;
-import net.minecraft.client.renderer.ItemInHandRenderer;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.FirstPersonHandsAndItemsRenderer;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.state.level.FirstPersonHandsAndItemsRenderState;
+import net.minecraft.client.renderer.state.level.PlayerRenderState;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
-import org.joml.Quaternionf;
+import com.mojang.math.Axis;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(ItemInHandRenderer.class)
+@Mixin(FirstPersonHandsAndItemsRenderer.class)
 public class ItemInHandRendererMixin {
-    @Inject(method = "renderArmWithItem", at = @At(value = "HEAD"), cancellable = true)
-    private void cobblemon$renderArmWithItem(AbstractClientPlayer abstractClientPlayer, float f, float g, InteractionHand interactionHand, float h, ItemStack itemStack, float i, PoseStack poseStack, MultiBufferSource multiBufferSource, int j, CallbackInfo ci) {
-        if (abstractClientPlayer.isUsingItem() && abstractClientPlayer.getUseItem().getItem() instanceof PokedexItem) {
+    @Inject(method = "submitArmWithItem", at = @At(value = "HEAD"), cancellable = true)
+    private void cobblemon$renderArmWithItem(PlayerRenderState playerRenderState, FirstPersonHandsAndItemsRenderState handsState, float partialTick, float swingProgress, InteractionHand interactionHand, float swing, ItemStack itemStack, float equipProgress, PoseStack poseStack, SubmitNodeCollector collector, int packedLight, CallbackInfo ci) {
+        AbstractClientPlayer player = Minecraft.getInstance().player;
+        if (player != null && player.isUsingItem() && player.getUseItem().getItem() instanceof PokedexItem) {
             ci.cancel();
         }
-        else if (interactionHand == InteractionHand.MAIN_HAND && FirstPersonRecallBallRenderer.INSTANCE.render(poseStack, multiBufferSource, j, f)) {
+        else if (interactionHand == InteractionHand.MAIN_HAND && FirstPersonRecallBallRenderer.INSTANCE.render(poseStack, collector, packedLight, partialTick)) {
             ci.cancel();
         }
-        else if (abstractClientPlayer instanceof OrientationControllable controllable && controllable.getOrientationController().isActive()) {
+        else if (player instanceof OrientationControllable controllable && controllable.getOrientationController().isActive()) {
 
         }
     }
 
-    @Redirect(method = "renderHandsWithItems", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack;mulPose(Lorg/joml/Quaternionf;)V"))
-    private void cobblemon$renderHandswithItems(PoseStack instance, Quaternionf quaternion) {
+    @Redirect(method = "submitHandsWithItems", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack;rotateDegrees(Lcom/mojang/math/Axis;F)V"))
+    private void cobblemon$renderHandswithItems(PoseStack instance, Axis axis, float degrees) {
         if (!(Minecraft.getInstance().player != null && Minecraft.getInstance().player.getVehicle() instanceof OrientationControllable controllable && controllable.getOrientationController().isActive())) {
-            instance.mulPose(quaternion);
+            instance.rotateDegrees(axis, degrees);
         }
     }
 }

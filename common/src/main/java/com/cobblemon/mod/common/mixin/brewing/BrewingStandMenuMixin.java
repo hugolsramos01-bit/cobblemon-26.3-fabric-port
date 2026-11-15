@@ -29,9 +29,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class BrewingStandMenuMixin {
 	@Inject(method = "<init>(ILnet/minecraft/world/entity/player/Inventory;Lnet/minecraft/world/Container;Lnet/minecraft/world/inventory/ContainerData;)V", at = @At("TAIL"))
 	private void captureLevel(int containerId, Inventory playerInventory, Container brewingStandContainer, ContainerData brewingStandData, CallbackInfo ci) {
-		var recipeManager = playerInventory.player.level().getRecipeManager();
+		// ClientLevel has no server. Its recipe access is only a ClientRecipeContainer,
+		// so only the authoritative server menu can provide the complete custom recipes.
+		var recipeAccess = playerInventory.player.level().recipeAccess();
+		var recipeManager = recipeAccess instanceof net.minecraft.world.item.crafting.RecipeManager manager ? manager : null;
 		for (Slot slot : ((BrewingStandMenu) (Object) this).slots) {
-			if (slot instanceof RecipeAwareSlot awareSlot) {
+			if (slot instanceof RecipeAwareSlot awareSlot && recipeManager != null) {
 				awareSlot.setRecipeManager(recipeManager);
 			}
 		}

@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:galarica_cuff"
+        "recipes": "cobblemon:galarica_cuff"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

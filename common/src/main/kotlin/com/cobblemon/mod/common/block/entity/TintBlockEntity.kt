@@ -10,6 +10,8 @@ package com.cobblemon.mod.common.block.entity
 
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.nbt.IntTag
+import net.minecraft.world.level.storage.ValueInput
+import net.minecraft.world.level.storage.ValueOutput
 import net.minecraft.world.level.block.Block
 import net.minecraft.world.level.block.entity.BlockEntity
 
@@ -52,6 +54,15 @@ interface TintBlockEntity {
     }
 
     fun loadTint(tag: CompoundTag) {
-        if (tag.contains(TINT)) tint = tag.getInt(TINT)
+        tag.getInt(TINT).ifPresent { tint = it }
     }
+
+    fun saveTint(output: ValueOutput) {
+        tint?.let { output.putInt(TINT, it) }
+    }
+
+    fun loadTint(input: ValueInput) {
+        input.getInt(TINT).ifPresent { tint = it }
+    }
+
 }

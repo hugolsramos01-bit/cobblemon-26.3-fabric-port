@@ -66,7 +66,7 @@ import java.util.UUID
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ConcurrentLinkedDeque
 import net.minecraft.network.chat.Component
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.item.ItemStack
 
@@ -302,8 +302,10 @@ open class PokemonBattle(
             if (actor.itemsUsed.isNotEmpty() && actor.getPlayerUUIDs().count() > 0) {
                 val player = actor.getPlayerUUIDs().first().getPlayer()
                 player?.level()?.itemRegistry.let { registry ->
-                    actor.itemsUsed.mapNotNull { registry?.get(ResourceLocation.tryBySeparator(it.itemName.substringAfter('.'), '.')) }
-                            .forEach { player?.giveOrDropItemStack(ItemStack(it))}
+                    actor.itemsUsed.mapNotNull { usedItem ->
+                        Identifier.tryBySeparator(usedItem.itemName.substringAfter('.'), '.')
+                            ?.let { itemId -> registry?.get(itemId)?.orElse(null)?.let(::ItemStack) }
+                    }.forEach { player?.giveOrDropItemStack(it) }
                 }
             }
 
@@ -501,7 +503,9 @@ open class PokemonBattle(
                 .filterIsInstance<PokemonEntity>()
                 .forEach{it.pokemon.heal()}
             CobblemonEvents.BATTLE_FLED.post(BattleFledEvent(this, actors.asSequence().filterIsInstance<PlayerBattleActor>().iterator().next()))
-            actors.filterIsInstance<EntityBackedBattleActor<*>>().mapNotNull { it.entity }.forEach { it.sendSystemMessage(battleLang("flee").yellow()) }
+            actors.filterIsInstance<EntityBackedBattleActor<*>>().mapNotNull { it.entity }
+                .filterIsInstance<net.minecraft.world.entity.player.Player>()
+                .forEach { it.sendSystemMessage(battleLang("flee").yellow()) }
             stop()
         }
     }

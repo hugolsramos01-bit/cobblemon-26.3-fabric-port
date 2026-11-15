@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:cleanse_tag"
+        "recipes": "cobblemon:cleanse_tag"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

@@ -21,6 +21,7 @@ import com.cobblemon.mod.common.client.render.models.blockbench.repository.Varyi
 import com.cobblemon.mod.common.duck.PlayerDuck;
 import com.cobblemon.mod.common.duck.RidePassenger;
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity;
+import com.llamalad7.mixinextras.sugar.Local;
 import com.cobblemon.mod.common.net.messages.server.orientation.ServerboundUpdateOrientationPacket;
 import com.cobblemon.mod.common.net.messages.server.riding.ServerboundUpdateDriverInputPacket;
 import com.cobblemon.mod.common.net.messages.server.riding.ServerboundUpdatePassengerPositionPacket;
@@ -30,7 +31,7 @@ import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.AbstractClientPlayer;
-import net.minecraft.client.player.Input;
+import net.minecraft.client.player.ClientInput;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
@@ -46,10 +47,12 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.Map;
+import java.util.function.Predicate;
 
 @Mixin(LocalPlayer.class)
 public abstract class LocalPlayerMixin extends AbstractClientPlayer implements OrientationControllable, DoubleJump {
@@ -65,7 +68,7 @@ public abstract class LocalPlayerMixin extends AbstractClientPlayer implements O
     @Shadow
     private float jumpRidingScale;
 
-    @Shadow public Input input;
+    @Shadow public ClientInput input;
 
     @Shadow private int autoJumpTime;
 
@@ -167,6 +170,18 @@ public abstract class LocalPlayerMixin extends AbstractClientPlayer implements O
         );
     }
 
+    @ModifyArg(
+            method = "pick(Lnet/minecraft/world/entity/Entity;DDF)Lnet/minecraft/world/phys/HitResult;",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/world/entity/projectile/ProjectileUtil;getEntityHitResult(Lnet/minecraft/world/entity/Entity;Lnet/minecraft/world/phys/Vec3;Lnet/minecraft/world/phys/Vec3;Lnet/minecraft/world/phys/AABB;Ljava/util/function/Predicate;D)Lnet/minecraft/world/phys/EntityHitResult;"
+            ),
+            index = 4
+    )
+    private static Predicate<Entity> cobblemon$filterPokemonVehicle(Predicate<Entity> original, @Local(argsOnly = true) Entity entity) {
+        return (entityX) -> !(entity.getVehicle() == entityX && entityX instanceof PokemonEntity) && original.test(entityX);
+    }
+
     @Unique
     private boolean cobblemon$shouldUseCustomOrientation(LocalPlayer player) {
         var playerVehicle = player.getVehicle();
@@ -202,12 +217,12 @@ public abstract class LocalPlayerMixin extends AbstractClientPlayer implements O
     @Inject(method = "aiStep", at = @At("HEAD"))
     private void cobblemon$aiStep(CallbackInfo ci) {
         this.cobblemon$isDoubleJumping = false;
-        this.cobblemon$isJumping = this.input.jumping;
+        this.cobblemon$isJumping = this.input.keyPresses.jump();
     }
 
     @Inject(method = "aiStep", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/LocalPlayer;isSprinting()Z", shift = At.Shift.BEFORE))
     private void cobblemon$updateDoubleJumping(CallbackInfo ci) {
-        if (!this.cobblemon$isJumping && this.input.jumping && this.autoJumpTime <= 0 && !this.isSwimming()) {
+        if (!this.cobblemon$isJumping && this.input.keyPresses.jump() && this.autoJumpTime <= 0 && !this.isSwimming()) {
             if (this.cobblemon$survivalJumpTriggerTime != 0) {
                 this.cobblemon$isDoubleJumping = true;
                 this.cobblemon$survivalJumpTriggerTime = 0;

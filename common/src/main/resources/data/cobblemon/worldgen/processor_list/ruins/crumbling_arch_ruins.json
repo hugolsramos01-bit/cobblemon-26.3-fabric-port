@@ -17,7 +17,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:suspicious_gravel"
+                        "id": "minecraft:suspicious_gravel"
                     }
                 },
                 {
@@ -30,7 +30,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:deepslate"
+                        "id": "minecraft:deepslate"
                     }
                 },
                 {
@@ -43,7 +43,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:cracked_stone_bricks"
+                        "id": "minecraft:cracked_stone_bricks"
                     }
                 },
                 {
@@ -56,20 +56,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:andesite_wall"
-                    }
-                },
-                {
-                    "input_predicate": {
-                        "block": "minecraft:stone_bricks",
-                        "predicate_type": "minecraft:random_block_match",
-                        "probability": 0.2
-                    },
-                    "location_predicate": {
-                        "predicate_type": "minecraft:always_true"
-                    },
-                    "output_state": {
-                        "Name": "minecraft:cobblestone"
+                        "id": "minecraft:andesite_wall"
                     }
                 },
                 {
@@ -82,7 +69,20 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:andesite"
+                        "id": "minecraft:cobblestone"
+                    }
+                },
+                {
+                    "input_predicate": {
+                        "block": "minecraft:stone_bricks",
+                        "predicate_type": "minecraft:random_block_match",
+                        "probability": 0.2
+                    },
+                    "location_predicate": {
+                        "predicate_type": "minecraft:always_true"
+                    },
+                    "output_state": {
+                        "id": "minecraft:andesite"
                     }
                 },
                 {
@@ -95,7 +95,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:andesite_wall"
+                        "id": "minecraft:andesite_wall"
                     }
                 },
                 {
@@ -108,7 +108,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:cobblestone_wall"
+                        "id": "minecraft:cobblestone_wall"
                     }
                 },
                 {
@@ -121,7 +121,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:cave_air"
+                        "id": "minecraft:cave_air"
                     }
                 },
                 {
@@ -134,7 +134,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:verdant_froglight"
+                        "id": "minecraft:verdant_froglight"
                     }
                 },
                 {
@@ -147,7 +147,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:ochre_froglight"
+                        "id": "minecraft:ochre_froglight"
                     }
                 }
             ]
@@ -170,7 +170,7 @@
                             "predicate_type": "minecraft:always_true"
                         },
                         "output_state": {
-                            "Name": "minecraft:suspicious_gravel"
+                            "id": "minecraft:suspicious_gravel"
                         }
                     }
                 ]
@@ -196,7 +196,7 @@
                             "predicate_type": "minecraft:always_true"
                         },
                         "output_state": {
-                            "Name": "minecraft:suspicious_gravel"
+                            "id": "minecraft:suspicious_gravel"
                         }
                     }
                 ]
@@ -218,7 +218,7 @@
                             "predicate_type": "minecraft:always_true"
                         },
                         "output_state": {
-                            "Name": "minecraft:air"
+                            "id": "minecraft:air"
                         }
                     }
                 ]
@@ -237,8 +237,8 @@
                         },
                         "input_predicate": {
                             "block_state": {
-                                "Name": "cobblemon:gilded_chest",
-                                "Properties": {
+                                "id": "cobblemon:gilded_chest",
+                                "properties": {
                                     "facing": "north",
                                     "waterlogged": "false"
                                 }
@@ -250,8 +250,8 @@
                             "predicate_type": "minecraft:always_true"
                         },
                         "output_state": {
-                            "Name": "cobblemon:gimmighoul_chest",
-                            "Properties": {
+                            "id": "cobblemon:gimmighoul_chest",
+                            "properties": {
                                 "facing": "north",
                                 "waterlogged": "false"
                             }
@@ -264,8 +264,8 @@
                         },
                         "input_predicate": {
                             "block_state": {
-                                "Name": "cobblemon:gilded_chest",
-                                "Properties": {
+                                "id": "cobblemon:gilded_chest",
+                                "properties": {
                                     "facing": "south",
                                     "waterlogged": "false"
                                 }
@@ -277,8 +277,8 @@
                             "predicate_type": "minecraft:always_true"
                         },
                         "output_state": {
-                            "Name": "cobblemon:gimmighoul_chest",
-                            "Properties": {
+                            "id": "cobblemon:gimmighoul_chest",
+                            "properties": {
                                 "facing": "south",
                                 "waterlogged": "false"
                             }
@@ -291,8 +291,8 @@
                         },
                         "input_predicate": {
                             "block_state": {
-                                "Name": "cobblemon:gilded_chest",
-                                "Properties": {
+                                "id": "cobblemon:gilded_chest",
+                                "properties": {
                                     "facing": "east",
                                     "waterlogged": "false"
                                 }
@@ -304,8 +304,8 @@
                             "predicate_type": "minecraft:always_true"
                         },
                         "output_state": {
-                            "Name": "cobblemon:gimmighoul_chest",
-                            "Properties": {
+                            "id": "cobblemon:gimmighoul_chest",
+                            "properties": {
                                 "facing": "east",
                                 "waterlogged": "false"
                             }
@@ -318,8 +318,8 @@
                         },
                         "input_predicate": {
                             "block_state": {
-                                "Name": "cobblemon:gilded_chest",
-                                "Properties": {
+                                "id": "cobblemon:gilded_chest",
+                                "properties": {
                                     "facing": "west",
                                     "waterlogged": "false"
                                 }
@@ -331,8 +331,8 @@
                             "predicate_type": "minecraft:always_true"
                         },
                         "output_state": {
-                            "Name": "cobblemon:gimmighoul_chest",
-                            "Properties": {
+                            "id": "cobblemon:gimmighoul_chest",
+                            "properties": {
                                 "facing": "west",
                                 "waterlogged": "false"
                             }
@@ -345,8 +345,8 @@
                         },
                         "input_predicate": {
                             "block_state": {
-                                "Name": "cobblemon:gilded_chest",
-                                "Properties": {
+                                "id": "cobblemon:gilded_chest",
+                                "properties": {
                                     "facing": "north",
                                     "waterlogged": "false"
                                 }
@@ -358,8 +358,8 @@
                             "predicate_type": "minecraft:always_true"
                         },
                         "output_state": {
-                            "Name": "cobblemon:gilded_chest",
-                            "Properties": {
+                            "id": "cobblemon:gilded_chest",
+                            "properties": {
                                 "facing": "north",
                                 "waterlogged": "false"
                             }
@@ -372,8 +372,8 @@
                         },
                         "input_predicate": {
                             "block_state": {
-                                "Name": "cobblemon:gilded_chest",
-                                "Properties": {
+                                "id": "cobblemon:gilded_chest",
+                                "properties": {
                                     "facing": "south",
                                     "waterlogged": "false"
                                 }
@@ -385,8 +385,8 @@
                             "predicate_type": "minecraft:always_true"
                         },
                         "output_state": {
-                            "Name": "cobblemon:gilded_chest",
-                            "Properties": {
+                            "id": "cobblemon:gilded_chest",
+                            "properties": {
                                 "facing": "south",
                                 "waterlogged": "false"
                             }
@@ -399,8 +399,8 @@
                         },
                         "input_predicate": {
                             "block_state": {
-                                "Name": "cobblemon:gilded_chest",
-                                "Properties": {
+                                "id": "cobblemon:gilded_chest",
+                                "properties": {
                                     "facing": "east",
                                     "waterlogged": "false"
                                 }
@@ -412,8 +412,8 @@
                             "predicate_type": "minecraft:always_true"
                         },
                         "output_state": {
-                            "Name": "cobblemon:gilded_chest",
-                            "Properties": {
+                            "id": "cobblemon:gilded_chest",
+                            "properties": {
                                 "facing": "east",
                                 "waterlogged": "false"
                             }
@@ -426,8 +426,8 @@
                         },
                         "input_predicate": {
                             "block_state": {
-                                "Name": "cobblemon:gilded_chest",
-                                "Properties": {
+                                "id": "cobblemon:gilded_chest",
+                                "properties": {
                                     "facing": "west",
                                     "waterlogged": "false"
                                 }
@@ -439,8 +439,8 @@
                             "predicate_type": "minecraft:always_true"
                         },
                         "output_state": {
-                            "Name": "cobblemon:gilded_chest",
-                            "Properties": {
+                            "id": "cobblemon:gilded_chest",
+                            "properties": {
                                 "facing": "west",
                                 "waterlogged": "false"
                             }

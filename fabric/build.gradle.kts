@@ -1,3 +1,7 @@
+import net.fabricmc.loom.build.nesting.NestableJarGenerationTask
+import net.fabricmc.loom.task.NestJarsAction
+import net.fabricmc.loom.util.ModPlatform
+
 /*
  *
  *  * Copyright (C) 2023 Cobblemon Contributors
@@ -24,7 +28,44 @@ architectury {
     fabric()
 }
 
+fabricApi {
+    configureTests {
+        createSourceSet = true
+        modId = "cobblemon-gametest"
+        enableGameTests = true
+        enableClientGameTests = true
+        eula = true
+    }
+}
+
+// Client GameTest launch config injects its own identity arguments. The shared
+// client run config supplies AshKetchum's identity for the normal dev launch,
+// so strip those inherited values to avoid duplicate --username/--uuid options.
+loom {
+    runConfigs.getByName("clientGameTest").apply {
+        providers.gradleProperty("cobblemonGameTestFocus").orNull?.let {
+            vmArg("-Dcobblemon.gametest.focus=$it")
+        }
+        programArguments.set(programArguments.get().filterNot {
+            it.startsWith("--username") || it.startsWith("--uuid")
+        })
+    }
+}
+
 val generatedResources = file("src/generated/resources")
+
+// Loom's no-remap plugin nests `include` dependencies in `jar`, while our
+// combined Common/Fabric artifact comes from shadowJar. Build a separate
+// installable artifact, retaining the complete Graal/Mongo dependency graphs.
+val distributionLibraries by configurations.creating {
+    isCanBeConsumed = false
+    isCanBeResolved = true
+}
+val packRuntimeMods by configurations.creating {
+    isCanBeConsumed = false
+    isCanBeResolved = true
+    isTransitive = false
+}
 
 sourceSets.main {
     resources {
@@ -41,24 +82,56 @@ repositories {
 }
 
 dependencies {
-    implementation(project(":common", configuration = "namedElements")) {
+    distributionLibraries(libs.fabric.kotlin) { isTransitive = false }
+    distributionLibraries(libs.fabric.permissions) { isTransitive = false }
+    distributionLibraries(libs.bundles.graal)
+    distributionLibraries(libs.bundles.mongo)
+    packRuntimeMods(libs.fabric.api)
+    packRuntimeMods(libs.jei.fabric)
+    packRuntimeMods(libs.mod.menu)
+    // Flight control GameTests evaluate the same MoLang settings as the live ride.
+    add("gametestCompileOnly", libs.molang)
+    implementation(project(":common")) {
         isTransitive = false
     }
-    bundle(project(path = ":common", configuration = "transformProductionFabric")) {
+    bundle(project(":common")) {
         isTransitive = false
     }
-    modLocalRuntime(libs.fabric.debugutils)
-    modImplementation(libs.fabric.loader)
-    modApi(libs.fabric.api)
-    modApi(libs.bundles.fabric)
+    implementation(libs.fabric.loader)
+    api(libs.fabric.api)
+    api(libs.bundles.fabric)
 
-    modCompileOnly(libs.bundles.common.integrations.compileOnly) {
+    compileOnly(libs.bundles.common.integrations.compileOnly) {
         isTransitive = false
     }
 
-    modImplementation(libs.bundles.fabric.integrations.implementation)
-    modRuntimeOnly(libs.bundles.fabric.integrations.runtimeOnly)
-    modRuntimeOnly(libs.bundles.mongo)
+    // Keep the optional integration APIs available to compile their entrypoints.
+    compileOnly(libs.bundles.fabric.integrations.implementation)
+    // Both integrations have Minecraft 26.3 builds and are useful in the normal dev runtime.
+    runtimeOnly(libs.bundles.fabric.integrations.implementation)
+    runtimeOnly(libs.jei.fabric)
+
+    // These development helpers still target Minecraft 1.21.1 and stay opt-in.
+    if (providers.gradleProperty("enableLegacy1211DevMods").orNull == "true") {
+        runtimeOnly(libs.fabric.debugutils)
+        runtimeOnly(libs.c2me.fabric)
+    }
+    // LambDynamicLights is a client-side optional integration; opt in only for compatibility testing.
+    if (providers.gradleProperty("enableLambDynamicLightsDevMod").orNull == "true") {
+        runtimeOnly(libs.lambDynamicLightsMod)
+    }
+    // Repurposed Structures is an optional Cobbleverse content pilot. Keep it
+    // out of Cobblemon's bundled/release configurations; opt in only to local
+    // dev and GameTest launches with -PenableRepurposedStructuresDevMod=true.
+    if (providers.gradleProperty("enableRepurposedStructuresDevMod").orNull == "true") {
+        val repurposedStructures = "maven.modrinth:muf0XoRe:9jHXeIeI" // 7.8.4+26.3-fabric
+        val midnightLib = "maven.modrinth:codAaoxh:wJeXgIoa" // 1.9.3+26.3-fabric
+        add("runtimeOnly", repurposedStructures)
+        add("runtimeOnly", midnightLib)
+        add("gametestRuntimeOnly", repurposedStructures)
+        add("gametestRuntimeOnly", midnightLib)
+    }
+    runtimeOnly(libs.bundles.mongo)
 
 //    modImplementation(libs.flywheelFabric)
 //    include(libs.flywheelFabric)
@@ -72,7 +145,7 @@ dependencies {
     }
 
     // Added to make graal available in dev
-    modRuntimeOnly(libs.bundles.graal)
+    runtimeOnly(libs.bundles.graal)
 
     include(libs.fabric.kotlin)
 
@@ -83,8 +156,46 @@ dependencies {
         runtimeOnly(it)
     }
 
-    minecraftServerLibraries(libs.icu4j)
+}
 
+val prepareDistributionLibraries by tasks.registering(NestableJarGenerationTask::class) {
+    from(distributionLibraries)
+    outputDirectory.set(layout.buildDirectory.dir("distributionLibraries"))
+    uncompressNestedJars.set(false)
+}
+
+val releaseJar by tasks.registering(Jar::class) {
+    group = "build"
+    description = "Builds the installable Fabric JAR with all nested runtime libraries."
+    dependsOn(tasks.shadowJar, prepareDistributionLibraries)
+    archiveBaseName.set("Cobblemon-fabric")
+    archiveClassifier.set("")
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    from(tasks.shadowJar.flatMap { it.archiveFile }.map { zipTree(it) })
+    val nestedJars = files(prepareDistributionLibraries.flatMap { it.outputDirectory })
+        .asFileTree.matching { include("*.jar") }
+    NestJarsAction.addToTask(this, nestedJars, ModPlatform.FABRIC)
+}
+
+tasks.register<Sync>("prepareMultiplayerDistribution") {
+    group = "distribution"
+    description = "Stages the installable mod and optional client mods for modpacks."
+    dependsOn(releaseJar)
+    into(layout.buildDirectory.dir("multiplayerDistribution"))
+    from(releaseJar.flatMap { it.archiveFile }) { into("shared") }
+    from(packRuntimeMods) {
+        into("runtime-mods")
+    }
+}
+
+tasks.assemble { dependsOn(releaseJar) }
+
+tasks.named<CopyFile>("copyJar") {
+    val productionJar = releaseJar.flatMap { it.archiveFile }
+    fileToCopy.set(productionJar)
+    destination.set(productionJar.flatMap {
+        rootProject.layout.buildDirectory.file("libs/${it.asFile.name}")
+    })
 }
 
 publishing {
@@ -111,10 +222,9 @@ publishing {
 
 tasks {
     // The AW file is needed in :fabric project resources when the game is run.
-    val copyAccessWidener by registering(Copy::class) {
+    val copyAccessWidener = register<Copy>("copyAccessWidener") {
         from(loom.accessWidenerPath)
         into(generatedResources)
-        dependsOn(checkLicenseMain)
     }
 
     processResources {
@@ -124,14 +234,16 @@ tasks {
         inputs.property("fabric_api_version", libs.fabric.api.get().version)
         inputs.property("minecraft_version", rootProject.property("mc_version").toString())
         inputs.property("java_version", rootProject.property("java_version").toString())
+        inputs.property("fabric_kotlin_version", libs.fabric.kotlin.get().version)
 
         filesMatching("fabric.mod.json") {
             expand(
                 "version" to rootProject.version,
-                "fabric_loader_version" to libs.fabric.loader.get().version,
-                "fabric_api_version" to libs.fabric.api.get().version,
+                "fabric_loader_version" to libs.fabric.loader.get().version!!,
+                "fabric_api_version" to libs.fabric.api.get().version!!,
                 "minecraft_version" to rootProject.property("mc_version").toString(),
-                "java_version" to rootProject.property("java_version").toString()
+                "java_version" to rootProject.property("java_version").toString(),
+                "fabric_kotlin_version" to libs.fabric.kotlin.get().version!!
             )
         }
     }

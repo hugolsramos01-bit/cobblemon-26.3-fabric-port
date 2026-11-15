@@ -26,18 +26,19 @@ import net.minecraft.world.level.block.HorizontalDirectionalBlock
 import net.minecraft.world.level.block.LeavesBlock
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.chunk.status.ChunkStatus
+import com.mojang.serialization.MapCodec
+import net.minecraft.world.level.chunk.ChunkGenerator
 import net.minecraft.world.level.levelgen.feature.Feature
-import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext
 import net.minecraft.world.level.levelgen.feature.TreeFeature
-import net.minecraft.world.level.levelgen.feature.configurations.BlockStateConfiguration
 import kotlin.random.Random.Default.nextInt
 
-class ApricornTreeFeature : Feature<BlockStateConfiguration>(BlockStateConfiguration.CODEC) {
+class ApricornTreeFeature(val state: BlockState) : Feature {
+    companion object {
+        val CODEC: MapCodec<ApricornTreeFeature> = BlockState.CODEC.fieldOf("state").xmap(::ApricornTreeFeature, { it.state })
+    }
+    override fun codec() = CODEC
 
-    override fun place(context: FeaturePlaceContext<BlockStateConfiguration>) : Boolean {
-        val worldGenLevel: WorldGenLevel = context.level()
-        val random = context.random()
-        val origin = context.origin()
+    override fun place(worldGenLevel: WorldGenLevel, chunkGenerator: ChunkGenerator, random: RandomSource, origin: BlockPos): Boolean {
 
         val isGenerating = worldGenLevel.getChunk(origin).persistedStatus != ChunkStatus.FULL
 
@@ -164,7 +165,7 @@ class ApricornTreeFeature : Feature<BlockStateConfiguration>(BlockStateConfigura
                         setBlockIfClear(
                             worldGenLevel,
                             it.second,
-                            context.config().state
+                            state
                                 .setValue(HorizontalDirectionalBlock.FACING, it.first)
                                 .setValue(
                                     ApricornBlock.AGE,
@@ -225,7 +226,7 @@ class ApricornTreeFeature : Feature<BlockStateConfiguration>(BlockStateConfigura
         return variationList
     }
 
-    private fun isAir(testableWorld: LevelSimulatedReader, blockPos: BlockPos?): Boolean {
+    private fun isAir(testableWorld: LevelSimulatedReader, blockPos: BlockPos): Boolean {
         return testableWorld.isStateAtPosition(blockPos) { blockState: BlockState ->
             blockState.`is`(Blocks.AIR)
         }

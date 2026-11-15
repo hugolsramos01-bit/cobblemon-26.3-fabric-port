@@ -3,7 +3,7 @@
   "criteria": {
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:campfire_pot/suspicious_stew_from_wither_rose_in_campfire_pot"
+        "recipes": "cobblemon:campfire_pot/suspicious_stew_from_wither_rose_in_campfire_pot"
       },
       "trigger": "minecraft:recipe_unlocked"
     },

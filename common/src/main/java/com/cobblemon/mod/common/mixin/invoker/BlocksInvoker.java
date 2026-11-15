@@ -8,10 +8,9 @@
 
 package com.cobblemon.mod.common.mixin.invoker;
 
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.SoundType;
-import net.minecraft.world.level.block.state.properties.BlockSetType;
 import net.minecraft.world.level.material.MapColor;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Invoker;
@@ -20,23 +19,23 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 @Mixin(Blocks.class)
 public interface BlocksInvoker {
 
-    @Invoker("log")
-    static Block createLogBlock(MapColor topMapColor, MapColor sideMapColor) {
+    @Invoker("logProperties")
+    static BlockBehaviour.Properties createLogProperties(MapColor topMapColor, MapColor sideMapColor, SoundType sound) {
         throw new UnsupportedOperationException();
     }
 
-    @Invoker("leaves")
-    static Block createLeavesBlock(SoundType soundGroup) {
+    @Invoker("leavesProperties")
+    static BlockBehaviour.Properties createLeavesProperties(SoundType soundGroup) {
         throw new UnsupportedOperationException();
     }
 
-    @Invoker("woodenButton")
-    static Block createWoodenButtonBlock(BlockSetType blockSetType) {
+    @Invoker("buttonProperties")
+    static BlockBehaviour.Properties createButtonProperties() {
         throw new UnsupportedOperationException();
     }
 
-    @Invoker("flowerPot")
-    static Block createFlowerPotBlock(Block flower) {
+    @Invoker("flowerPotProperties")
+    static BlockBehaviour.Properties createFlowerPotProperties() {
         throw new UnsupportedOperationException();
     }
 

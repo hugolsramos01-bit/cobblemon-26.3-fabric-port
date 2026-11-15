@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:red_dye_from_lobaila"
+        "recipes": "cobblemon:red_dye_from_lobaila"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

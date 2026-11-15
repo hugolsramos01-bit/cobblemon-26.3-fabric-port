@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:room_service"
+        "recipes": "cobblemon:room_service"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

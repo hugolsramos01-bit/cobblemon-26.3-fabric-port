@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:campfire_pot/dire_hit"
+        "recipes": "cobblemon:campfire_pot/dire_hit"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

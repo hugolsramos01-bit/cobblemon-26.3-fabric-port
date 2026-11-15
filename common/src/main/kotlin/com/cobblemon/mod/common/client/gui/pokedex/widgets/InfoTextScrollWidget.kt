@@ -18,7 +18,7 @@ import com.cobblemon.mod.common.client.gui.pokedex.PokedexGUIConstants.POKEMON_D
 import com.cobblemon.mod.common.client.gui.pokedex.PokedexGUIConstants.SCALE
 import com.cobblemon.mod.common.util.cobblemonResource
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.Style
 import net.minecraft.util.Mth
@@ -38,11 +38,11 @@ abstract class InfoTextScrollWidget(val pX: Int, val pY: Int): ScrollingWidget<I
         private val scrollBorder = cobblemonResource("textures/gui/pokedex/info_scroll_border.png")
     }
 
-    override fun renderWidget(context: GuiGraphics, mouseX: Int, mouseY: Int, delta: Float) {
-        super.renderWidget(context, mouseX, mouseY, delta)
+    override fun extractWidgetRenderState(context: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, delta: Float) {
+        super.extractWidgetRenderState(context, mouseX, mouseY, delta)
 
         blitk(
-            matrixStack = context.pose(),
+            context = context,
             texture = scrollBorder,
             x = (pX + 1) / SCALE,
             y = (pY + 40) / SCALE,
@@ -71,22 +71,28 @@ abstract class InfoTextScrollWidget(val pX: Int, val pY: Int): ScrollingWidget<I
         scrollAmount = 0.0
     }
 
-    override fun renderScrollbar(context: GuiGraphics, mouseX: Int, mouseY: Int, delta: Float) {
-        val xLeft = this.scrollbarPosition
+    override fun renderScrollbar(context: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, delta: Float) {
+        val xLeft = this.scrollBarX()
         val yMargin = 1
         val yStart = y + yMargin
 
         val barHeight = this.bottom - yMargin - yStart
 
-        var yBottom = ((barHeight * barHeight).toFloat() / this.maxPosition.toFloat()).toInt()
-        yBottom = Mth.clamp(yBottom, 32, barHeight - 8)
-        var yTop = scrollAmount.toInt() * (barHeight - yBottom) / this.maxScroll + yStart
+        if (barHeight <= 0) return
+        val minThumbHeight = minOf(32, barHeight)
+        val maxThumbHeight = maxOf(minThumbHeight, barHeight - 8)
+        val yBottom = Mth.clamp(
+            (barHeight.toLong() * barHeight / maxPosition.coerceAtLeast(1)).toInt(),
+            minThumbHeight,
+            maxThumbHeight
+        )
+        var yTop = scrollAmount.toInt() * (barHeight - yBottom) / this.getMaxScroll() + yStart
         if (yTop < yStart) yTop = yStart
 
         // Scroll Track
         blitk(
             texture = scrollbarTrack,
-            matrixStack = context.pose(),
+            context = context,
             x = xLeft + 1,
             y = yStart,
             width = SCROLL_TRACK_WIDTH,
@@ -96,7 +102,7 @@ abstract class InfoTextScrollWidget(val pX: Int, val pY: Int): ScrollingWidget<I
         // Scroll Slide
         blitk(
             texture = scrollbarSlide,
-            matrixStack = context.pose(),
+            context = context,
             x = xLeft,
             y = yTop,
             width = SCROLL_SLIDE_WIDTH,
@@ -104,13 +110,13 @@ abstract class InfoTextScrollWidget(val pX: Int, val pY: Int): ScrollingWidget<I
         )
     }
 
-    override fun getScrollbarPosition(): Int {
+    override fun scrollBarX(): Int {
         return left + width - scrollBarWidth
     }
 
     class TextSlot(val text : String) : Slot<TextSlot>() {
         override fun render(
-            context: GuiGraphics,
+            context: GuiGraphicsExtractor,
             index: Int,
             y: Int,
             x: Int,
@@ -121,9 +127,6 @@ abstract class InfoTextScrollWidget(val pX: Int, val pY: Int): ScrollingWidget<I
             hovered: Boolean,
             tickDelta: Float
         ) {
-            val matrices = context.pose()
-
-            matrices.pushPose()
             MultiLineLabelK.create(
                 component = text.text(),
                 width = (139 - SCROLL_SLIDE_WIDTH - (POKEMON_DESCRIPTION_PADDING * 2)) / SCALE,
@@ -138,7 +141,6 @@ abstract class InfoTextScrollWidget(val pX: Int, val pY: Int): ScrollingWidget<I
                 scale = SCALE,
                 shadow = false
             )
-            matrices.popPose()
         }
 
         override fun getNarration(): Component {

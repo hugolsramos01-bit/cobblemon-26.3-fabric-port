@@ -9,9 +9,9 @@
 package com.cobblemon.mod.common.client.tooltips
 
 import com.cobblemon.mod.common.CobblemonItemComponents
-import com.cobblemon.mod.common.CobblemonRecipeTypes
 import com.cobblemon.mod.common.api.cooking.Flavour
 import com.cobblemon.mod.common.api.cooking.Seasonings
+import com.cobblemon.mod.common.client.recipe.ClientCobblemonRecipeSnapshot
 import com.cobblemon.mod.common.api.fishing.SpawnBait
 import com.cobblemon.mod.common.api.fishing.SpawnBaitEffects
 import com.cobblemon.mod.common.api.fishing.SpawnBaitUtils
@@ -22,7 +22,6 @@ import com.cobblemon.mod.common.item.interactive.PokerodItem
 import com.cobblemon.mod.common.pokemon.Gender
 import com.cobblemon.mod.common.util.lang
 import net.minecraft.ChatFormatting
-import net.minecraft.client.Minecraft
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.Style
 import net.minecraft.world.effect.MobEffectInstance
@@ -45,17 +44,10 @@ val mobEffectHeader by lazy { lang("seasoning_mob_effect_header").gray() }
 val rideBoostSeasoningHeader by lazy { lang("seasoning_ride_boosts_info_header").blue() }
 
 private fun recipeUsesProcessor(stack: ItemStack, processorType: String): Boolean {
-    val level = Minecraft.getInstance().level ?: return false
-    val recipeManager = level.recipeManager
-
-    val allCookingRecipes = recipeManager.getAllRecipesFor(CobblemonRecipeTypes.COOKING_POT_COOKING) +
-            recipeManager.getAllRecipesFor(CobblemonRecipeTypes.COOKING_POT_SHAPELESS)
-
-    return allCookingRecipes
-        .any { recipe ->
-            stack.item == recipe.value.result.item &&
-                    recipe.value.seasoningProcessors.any { it.type == processorType }
-        }
+    return ClientCobblemonRecipeSnapshot.snapshot().cookingPotRecipes.any { recipe ->
+        recipe.result.item == stack.item &&
+                recipe.seasoningProcessors.any { it.type == processorType }
+    }
 }
 
 fun itemTakesSeasoningData(stack: ItemStack): Boolean {

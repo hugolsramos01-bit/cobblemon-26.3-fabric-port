@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:choice_band"
+        "recipes": "cobblemon:choice_band"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

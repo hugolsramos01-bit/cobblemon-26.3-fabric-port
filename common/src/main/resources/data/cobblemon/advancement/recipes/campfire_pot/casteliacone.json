@@ -3,7 +3,7 @@
   "criteria": {
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:campfire_pot/casteliacone"
+        "recipes": "cobblemon:campfire_pot/casteliacone"
       },
       "trigger": "minecraft:recipe_unlocked"
     },

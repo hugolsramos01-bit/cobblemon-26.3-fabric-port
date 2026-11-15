@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:focus_sash"
+        "recipes": "cobblemon:focus_sash"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

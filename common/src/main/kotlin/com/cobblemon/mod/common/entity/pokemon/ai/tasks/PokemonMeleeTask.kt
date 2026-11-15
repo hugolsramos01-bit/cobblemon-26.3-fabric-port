@@ -15,6 +15,7 @@ import net.minecraft.world.entity.ai.behavior.OneShot
 import net.minecraft.world.entity.ai.behavior.declarative.BehaviorBuilder
 import net.minecraft.world.entity.ai.behavior.declarative.Trigger
 import net.minecraft.world.entity.ai.memory.MemoryModuleType
+import net.minecraft.world.item.component.SwingAnimation
 
 object PokemonMeleeTask {
     fun create(cooldownBetweenAttacks: Int): OneShot<PokemonEntity> {
@@ -29,8 +30,8 @@ object PokemonMeleeTask {
                     val livingEntity = context.get(attackTarget)
                     if (entity.isWithinMeleeAttackRange(livingEntity) && context.get(visibleMobs).contains(livingEntity)) {
                         lookTarget.set(EntityTracker(livingEntity, true))
-                        entity.swing(InteractionHand.MAIN_HAND)
-                        entity.doHurtTarget(livingEntity)
+                        entity.swing(InteractionHand.MAIN_HAND, SwingAnimation.DEFAULT, true)
+                        entity.doHurtTarget(world, livingEntity)
                         attackCooldown.setWithExpiry(true, cooldownBetweenAttacks.toLong())
                         return@Trigger true
                     } else {

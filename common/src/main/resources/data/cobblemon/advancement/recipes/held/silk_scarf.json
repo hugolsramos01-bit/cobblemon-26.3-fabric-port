@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:silk_scarf"
+        "recipes": "cobblemon:silk_scarf"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

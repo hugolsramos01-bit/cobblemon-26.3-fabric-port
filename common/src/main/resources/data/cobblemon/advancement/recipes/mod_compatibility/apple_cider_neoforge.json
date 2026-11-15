@@ -1,7 +1,10 @@
 {
   "fabric:load_conditions": [
-    { "condition": "fabric:not",
-      "value": { "condition": "fabric:true" }
+    {
+      "condition": "fabric:not",
+      "value": {
+        "condition": "fabric:true"
+      }
     }
   ],
   "neoforge:conditions": [
@@ -24,7 +27,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:mod_compatibility/farmersdelight/cooking/apple_cider_neoforge"
+        "recipes": "cobblemon:mod_compatibility/farmersdelight/cooking/apple_cider_neoforge"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

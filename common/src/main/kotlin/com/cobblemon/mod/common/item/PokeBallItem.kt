@@ -17,14 +17,15 @@ import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.ItemStack
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.InteractionHand
-import net.minecraft.world.InteractionResultHolder
+import com.cobblemon.mod.common.util.CobblemonInteractionResults
+import net.minecraft.world.InteractionResult
 import net.minecraft.world.item.Rarity
 import net.minecraft.world.level.Level
 import kotlin.math.cos
 
-class PokeBallItem(
+class PokeBallItem(properties: net.minecraft.world.item.Item.Properties,
         val pokeBall: PokeBall
-) : CobblemonItem(Properties().apply {
+) : CobblemonItem(properties.apply {
     when (pokeBall.name) {
         // Master balls are a netherite product and should be fire immune
         PokeBalls.MASTER_BALL.name -> fireResistant().rarity(Rarity.EPIC)
@@ -34,13 +35,13 @@ class PokeBallItem(
     }
 }) {
 
-    override fun use(world: Level, player: Player, usedHand: InteractionHand): InteractionResultHolder<ItemStack> {
+    override fun use(world: Level, player: Player, usedHand: InteractionHand): InteractionResult {
         val itemStack = player.getItemInHand(usedHand)
         if (world.isServerSide()) {
             throwPokeBall(world, player as ServerPlayer)
         }
         itemStack.consume(1, player)
-        return InteractionResultHolder.sidedSuccess(itemStack, world.isClientSide)
+        return CobblemonInteractionResults.sidedSuccess(itemStack, world.isClientSide)
     }
 
     private fun throwPokeBall(world: Level, player: ServerPlayer) {

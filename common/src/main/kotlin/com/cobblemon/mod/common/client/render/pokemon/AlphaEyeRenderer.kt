@@ -10,6 +10,7 @@ package com.cobblemon.mod.common.client.render.pokemon
 
 import com.cobblemon.mod.common.client.entity.PokemonClientDelegate
 import com.cobblemon.mod.common.client.render.MatrixWrapper
+import com.cobblemon.mod.common.client.render.block.ModelGeometryCapture
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity
 import com.cobblemon.mod.common.util.toVec3d
 import com.mojang.blaze3d.vertex.PoseStack
@@ -20,8 +21,10 @@ import kotlin.math.pow
 import kotlin.math.sin
 import kotlin.math.sqrt
 import net.minecraft.client.Minecraft
-import net.minecraft.client.renderer.MultiBufferSource
-import net.minecraft.client.renderer.RenderType
+import net.minecraft.client.renderer.SubmitNodeCollector
+import net.minecraft.client.renderer.rendertype.RenderType
+import net.minecraft.client.renderer.rendertype.RenderTypes
+import net.minecraft.client.renderer.state.level.CameraRenderState
 import net.minecraft.world.phys.Vec3
 import org.joml.Vector3f
 
@@ -77,8 +80,9 @@ fun renderAlphaEyeBloom(
     entity: PokemonEntity,
     partialTicks: Float,
     camPos: Vec3,
+    camUp: Vec3,
     poseStack: PoseStack,
-    bufferSource: MultiBufferSource
+    collector: SubmitNodeCollector
 ) {
     val clientDelegate = entity.delegate as PokemonClientDelegate
     if ("alpha_eyes" !in clientDelegate.currentAspects) return
@@ -95,11 +99,9 @@ fun renderAlphaEyeBloom(
         val eyeForward = wrapper.matrix.transformDirection(Vector3f(0f, 0f, -1f)).toVec3d()
 
         // Gather eye position and camera position vectors for the bloom calculation
-        val matrix = poseStack.last().pose()
         val eyeLocalPos = wrapper.matrix.getTranslation(Vector3f()).toVec3d()
         val eyeWorldPos = entityPos.add(eyeLocalPos)
         val toCam = camPos.subtract(eyeWorldPos).normalize()
-        val camUp = Minecraft.getInstance().gameRenderer.mainCamera.upVector.toVec3d()
         val camPerp = camUp.cross(toCam).normalize()
 
         // Have the bloom shrink depending upon if you're looking at the eye from the side or behind.
@@ -122,7 +124,7 @@ fun renderAlphaEyeBloom(
 
         // Render bloom using concentric "rings" (its all just triangle pizza in the end)
         val rings = 5 //TODO: is this too many?
-        val consumer = bufferSource.getBuffer(RenderType.dragonRays()) // rgba flat color triangle rendering
+        val geometry = ModelGeometryCapture()
 
         for (ring in 0 until rings) {
             val t0 = ring.toFloat() / rings
@@ -158,19 +160,25 @@ fun renderAlphaEyeBloom(
                 val p11 = bloomCenter.add(dir1.scale(r1))
 
                 // Two triangles per quad: p00, p10, p11 and p00, p11, p01
-                consumer.addVertex(matrix, p00.x.toFloat(), p00.y.toFloat(), p00.z.toFloat())
+                geometry.addVertex(p00.x.toFloat(), p00.y.toFloat(), p00.z.toFloat())
                     .setColor(r, g, b, a0)
-                consumer.addVertex(matrix, p10.x.toFloat(), p10.y.toFloat(), p10.z.toFloat())
+                geometry.addVertex(p10.x.toFloat(), p10.y.toFloat(), p10.z.toFloat())
                     .setColor(r, g, b, a1)
-                consumer.addVertex(matrix, p11.x.toFloat(), p11.y.toFloat(), p11.z.toFloat())
+                geometry.addVertex(p11.x.toFloat(), p11.y.toFloat(), p11.z.toFloat())
                     .setColor(r, g, b, a1)
 
-                consumer.addVertex(matrix, p00.x.toFloat(), p00.y.toFloat(), p00.z.toFloat())
+                geometry.addVertex(p00.x.toFloat(), p00.y.toFloat(), p00.z.toFloat())
                     .setColor(r, g, b, a0)
-                consumer.addVertex(matrix, p11.x.toFloat(), p11.y.toFloat(), p11.z.toFloat())
+                geometry.addVertex(p11.x.toFloat(), p11.y.toFloat(), p11.z.toFloat())
                     .setColor(r, g, b, a1)
-                consumer.addVertex(matrix, p01.x.toFloat(), p01.y.toFloat(), p01.z.toFloat())
+                geometry.addVertex(p01.x.toFloat(), p01.y.toFloat(), p01.z.toFloat())
                     .setColor(r, g, b, a0)
+            }
+        }
+        val frozenGeometry = geometry.freeze()
+        if (!frozenGeometry.isEmpty()) {
+            collector.submitCustomGeometry(poseStack, RenderTypes.dragonRays()) { pose, consumer ->
+                frozenGeometry.draw(pose, consumer)
             }
         }
     }
@@ -182,13 +190,12 @@ fun renderEyeTrail(
     entity: PokemonEntity,
     camPos: Vec3,
     poseStack: PoseStack,
-    bufferSource: MultiBufferSource
+    collector: SubmitNodeCollector
 ) {
     if (positions.size < 2) return
 
-    val consumer = bufferSource.getBuffer(RenderType.lightning())
+    val geometry = ModelGeometryCapture()
     val entityPos = entity.getPosition(partialTicks)
-    val matrix = poseStack.last().pose()
     val n = positions.size
     val targetSize = TRAIL_MAX_WIDTH * getHitboxScaling(entity)
 
@@ -220,29 +227,35 @@ fun renderEyeTrail(
         val g = TRAIL_COLOR.y
         val b = TRAIL_COLOR.z
 
-        consumer.addVertex(matrix,
+        geometry.addVertex(
             (localCurr.x - px * wCurr).toFloat(),
             (localCurr.y - py * wCurr).toFloat(),
             (localCurr.z - pz * wCurr).toFloat()
         ).setColor(r, g, b, aCurr)
 
-        consumer.addVertex(matrix,
+        geometry.addVertex(
             (localCurr.x + px * wCurr).toFloat(),
             (localCurr.y + py * wCurr).toFloat(),
             (localCurr.z + pz * wCurr).toFloat()
         ).setColor(r, g, b, aCurr)
 
-        consumer.addVertex(matrix,
+        geometry.addVertex(
             (localNext.x + px * wNext).toFloat(),
             (localNext.y + py * wNext).toFloat(),
             (localNext.z + pz * wNext).toFloat()
         ).setColor(r, g, b, aNext)
 
-        consumer.addVertex(matrix,
+        geometry.addVertex(
             (localNext.x - px * wNext).toFloat(),
             (localNext.y - py * wNext).toFloat(),
             (localNext.z - pz * wNext).toFloat()
         ).setColor(r, g, b, aNext)
+    }
+    val frozenGeometry = geometry.freeze()
+    if (!frozenGeometry.isEmpty()) {
+        collector.submitCustomGeometry(poseStack, RenderTypes.lightning()) { pose, consumer ->
+            frozenGeometry.draw(pose, consumer)
+        }
     }
 }
 
@@ -251,11 +264,14 @@ fun doAlphaEyeRendering(
     entity: PokemonEntity,
     partialTicks: Float,
     poseStack: PoseStack,
-    bufferSource: MultiBufferSource
+    collector: SubmitNodeCollector,
+    camera: CameraRenderState
 ) {
 
     val clientDelegate = entity.delegate as PokemonClientDelegate
-    val camPos = Minecraft.getInstance().gameRenderer.mainCamera.position
+    val camPos = camera.pos
+    val up = org.joml.Vector3f(0f, 1f, 0f).rotate(camera.orientation)
+    val camUp = Vec3(up.x.toDouble(), up.y.toDouble(), up.z.toDouble())
 
     val visibleLocators = clientDelegate.locatorStates.filter { (locator, _) -> clientDelegate.isLocatorVisible(locator) }
 
@@ -269,8 +285,9 @@ fun doAlphaEyeRendering(
         entity = entity,
         partialTicks = partialTicks,
         camPos = camPos,
+        camUp = camUp,
         poseStack = poseStack,
-        bufferSource = bufferSource
+        collector = collector
     )
     if (clientDelegate.eyeTrailPositions.isNotEmpty()) {
         for ((_, positions) in clientDelegate.eyeTrailPositions) {
@@ -280,7 +297,7 @@ fun doAlphaEyeRendering(
                 entity = entity,
                 camPos = camPos,
                 poseStack = poseStack,
-                bufferSource = bufferSource
+                collector = collector
             )
         }
     }

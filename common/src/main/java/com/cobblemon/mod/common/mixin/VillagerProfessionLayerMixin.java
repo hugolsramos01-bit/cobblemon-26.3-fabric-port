@@ -11,20 +11,18 @@ package com.cobblemon.mod.common.mixin;
 import com.cobblemon.mod.common.Cobblemon;
 import com.cobblemon.mod.common.CobblemonVillagerProfessions;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import kotlin.Pair;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.model.EntityModel;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.entity.LivingEntityRenderer;
+import net.minecraft.client.model.Model;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
+import net.minecraft.client.renderer.entity.state.VillagerRenderState;
+import net.minecraft.client.renderer.entity.state.ZombieVillagerRenderState;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.monster.ZombieVillager;
-import net.minecraft.world.entity.npc.Villager;
-import net.minecraft.world.entity.npc.VillagerProfession;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.entity.npc.villager.VillagerProfession;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.gen.Invoker;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -32,37 +30,46 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(RenderLayer.class)
 public abstract class VillagerProfessionLayerMixin {
     @Inject(method = "renderColoredCutoutModel", at = @At(value = "HEAD"), cancellable = true)
-    private static <T extends LivingEntity> void cobblemon$renderVillagerProfessionLayer(EntityModel<T> entityModel, ResourceLocation resourceLocation, PoseStack poseStack, MultiBufferSource multiBufferSource, int i, T livingEntity, int j, CallbackInfo ci) {
+    private static <S extends LivingEntityRenderState> void cobblemon$renderVillagerProfessionLayer(Model<? super S> entityModel, Identifier resourceLocation, PoseStack poseStack, SubmitNodeCollector collector, int light, S state, int overlay, int color, CallbackInfo ci) {
         if (resourceLocation.getNamespace().equals(Cobblemon.MODID)) {
             VillagerProfession profession = null;
+            String professionKey = null;
             boolean isZombie = false;
 
-            if (livingEntity instanceof Villager) profession = ((Villager) livingEntity).getVillagerData().getProfession();
-            if (livingEntity instanceof ZombieVillager) {
-                profession = ((ZombieVillager) livingEntity).getVillagerData().getProfession();
+            if (state instanceof VillagerRenderState villager) {
+                profession = villager.getVillagerData().profession().value();
+                professionKey = villager.getVillagerData().profession().unwrapKey().map(key -> key.identifier().getPath()).orElse(null);
+            }
+            if (state instanceof ZombieVillagerRenderState zombieVillager) {
+                profession = zombieVillager.getVillagerData().profession().value();
+                professionKey = zombieVillager.getVillagerData().profession().unwrapKey().map(key -> key.identifier().getPath()).orElse(null);
                 isZombie = true;
             }
 
             Pair<String, String[]> override = CobblemonVillagerProfessions.INSTANCE.getNameTagOverride(profession);
-            if (profession != null && override != null) {
-                String entityName = ChatFormatting.stripFormatting(livingEntity.getName().getString());
+            if (profession != null && override != null && state.nameTag != null) {
+                String entityName = ChatFormatting.stripFormatting(state.nameTag.getString());
                 boolean nameMatches = false;
                 for (String name: override.getSecond())
                     if (entityName.endsWith(name)) {
                         nameMatches = true;
                         break;
-                    }
-                if (nameMatches && resourceLocation.equals(getProfessionResourceLocation(resourceLocation.getNamespace(), ResourceLocation.parse(profession.name()).getPath(), isZombie))) {
-                    ResourceLocation textureLocation = getProfessionResourceLocation(resourceLocation.getNamespace(), override.getFirst(), isZombie);
-                    VertexConsumer vertexConsumer = multiBufferSource.getBuffer(RenderType.entityCutoutNoCull(textureLocation));
-                    entityModel.renderToBuffer(poseStack, vertexConsumer, i, LivingEntityRenderer.getOverlayCoords(livingEntity, 0.0F), j);
+                }
+                if (nameMatches && professionKey != null && resourceLocation.equals(getProfessionResourceLocation(resourceLocation.getNamespace(), professionKey, isZombie))) {
+                    Identifier textureLocation = getProfessionResourceLocation(resourceLocation.getNamespace(), override.getFirst(), isZombie);
+                    cobblemon$invokeRenderColoredCutoutModel(entityModel, textureLocation, poseStack, collector, light, state, overlay, color);
                     ci.cancel();
                 }
             }
         }
     }
 
-    private static ResourceLocation getProfessionResourceLocation(String namespace, String profession, Boolean isZombie) {
-        return ResourceLocation.fromNamespaceAndPath(namespace, "textures/entity/" + (isZombie ? "zombie_villager" : "villager") + "/profession/" + profession + ".png");
+    private static Identifier getProfessionResourceLocation(String namespace, String profession, Boolean isZombie) {
+        return Identifier.fromNamespaceAndPath(namespace, "textures/entity/" + (isZombie ? "zombie_villager" : "villager") + "/profession/" + profession + ".png");
+    }
+
+    @Invoker("renderColoredCutoutModel")
+    private static <S extends LivingEntityRenderState> void cobblemon$invokeRenderColoredCutoutModel(Model<? super S> model, Identifier texture, PoseStack poseStack, SubmitNodeCollector collector, int light, S state, int overlay, int color) {
+        throw new AssertionError();
     }
 }

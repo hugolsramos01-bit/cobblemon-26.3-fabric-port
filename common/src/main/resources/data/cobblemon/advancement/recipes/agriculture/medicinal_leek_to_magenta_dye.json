@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:medicinal_leek_to_magenta_dye"
+        "recipes": "cobblemon:medicinal_leek_to_magenta_dye"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

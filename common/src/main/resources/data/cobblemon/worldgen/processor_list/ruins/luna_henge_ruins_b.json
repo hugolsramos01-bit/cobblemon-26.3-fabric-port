@@ -23,7 +23,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:suspicious_gravel"
+                        "id": "minecraft:suspicious_gravel"
                     }
                 },
                 {
@@ -36,14 +36,14 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:cobblestone"
+                        "id": "minecraft:cobblestone"
                     }
                 },
                 {
                     "input_predicate": {
                         "block_state": {
-                            "Name": "minecraft:cobblestone_stairs",
-                            "Properties": {
+                            "id": "minecraft:cobblestone_stairs",
+                            "properties": {
                                 "facing": "west",
                                 "half": "bottom",
                                 "shape": "straight",
@@ -57,8 +57,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:cobbled_deepslate_stairs",
-                        "Properties": {
+                        "id": "minecraft:cobbled_deepslate_stairs",
+                        "properties": {
                             "facing": "west",
                             "half": "bottom",
                             "shape": "straight",
@@ -69,8 +69,8 @@
                 {
                     "input_predicate": {
                         "block_state": {
-                            "Name": "minecraft:cobblestone_stairs",
-                            "Properties": {
+                            "id": "minecraft:cobblestone_stairs",
+                            "properties": {
                                 "facing": "east",
                                 "half": "bottom",
                                 "shape": "straight",
@@ -84,8 +84,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:cobbled_deepslate_stairs",
-                        "Properties": {
+                        "id": "minecraft:cobbled_deepslate_stairs",
+                        "properties": {
                             "facing": "east",
                             "half": "bottom",
                             "shape": "straight",
@@ -96,8 +96,8 @@
                 {
                     "input_predicate": {
                         "block_state": {
-                            "Name": "minecraft:cobblestone_stairs",
-                            "Properties": {
+                            "id": "minecraft:cobblestone_stairs",
+                            "properties": {
                                 "facing": "south",
                                 "half": "bottom",
                                 "shape": "straight",
@@ -111,8 +111,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:cobbled_deepslate_stairs",
-                        "Properties": {
+                        "id": "minecraft:cobbled_deepslate_stairs",
+                        "properties": {
                             "facing": "south",
                             "half": "bottom",
                             "shape": "straight",
@@ -123,8 +123,8 @@
                 {
                     "input_predicate": {
                         "block_state": {
-                            "Name": "minecraft:cobblestone_stairs",
-                            "Properties": {
+                            "id": "minecraft:cobblestone_stairs",
+                            "properties": {
                                 "facing": "north",
                                 "half": "bottom",
                                 "shape": "straight",
@@ -138,8 +138,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:cobbled_deepslate_stairs",
-                        "Properties": {
+                        "id": "minecraft:cobbled_deepslate_stairs",
+                        "properties": {
                             "facing": "north",
                             "half": "bottom",
                             "shape": "straight",
@@ -150,8 +150,8 @@
                 {
                     "input_predicate": {
                         "block_state": {
-                            "Name": "minecraft:cobblestone_stairs",
-                            "Properties": {
+                            "id": "minecraft:cobblestone_stairs",
+                            "properties": {
                                 "facing": "west",
                                 "half": "top",
                                 "shape": "straight",
@@ -165,8 +165,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:cobbled_deepslate_stairs",
-                        "Properties": {
+                        "id": "minecraft:cobbled_deepslate_stairs",
+                        "properties": {
                             "facing": "west",
                             "half": "top",
                             "shape": "straight",
@@ -177,8 +177,8 @@
                 {
                     "input_predicate": {
                         "block_state": {
-                            "Name": "minecraft:cobblestone_stairs",
-                            "Properties": {
+                            "id": "minecraft:cobblestone_stairs",
+                            "properties": {
                                 "facing": "east",
                                 "half": "top",
                                 "shape": "straight",
@@ -192,8 +192,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:cobbled_deepslate_stairs",
-                        "Properties": {
+                        "id": "minecraft:cobbled_deepslate_stairs",
+                        "properties": {
                             "facing": "east",
                             "half": "top",
                             "shape": "straight",
@@ -204,8 +204,8 @@
                 {
                     "input_predicate": {
                         "block_state": {
-                            "Name": "minecraft:cobblestone_stairs",
-                            "Properties": {
+                            "id": "minecraft:cobblestone_stairs",
+                            "properties": {
                                 "facing": "north",
                                 "half": "top",
                                 "shape": "straight",
@@ -219,8 +219,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:cobbled_deepslate_stairs",
-                        "Properties": {
+                        "id": "minecraft:cobbled_deepslate_stairs",
+                        "properties": {
                             "facing": "north",
                             "half": "top",
                             "shape": "straight",
@@ -231,8 +231,8 @@
                 {
                     "input_predicate": {
                         "block_state": {
-                            "Name": "minecraft:cobblestone_stairs",
-                            "Properties": {
+                            "id": "minecraft:cobblestone_stairs",
+                            "properties": {
                                 "facing": "south",
                                 "half": "top",
                                 "shape": "straight",
@@ -246,8 +246,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:cobbled_deepslate_stairs",
-                        "Properties": {
+                        "id": "minecraft:cobbled_deepslate_stairs",
+                        "properties": {
                             "facing": "south",
                             "half": "top",
                             "shape": "straight",
@@ -258,8 +258,8 @@
                 {
                     "input_predicate": {
                         "block_state": {
-                            "Name": "minecraft:cobblestone_stairs",
-                            "Properties": {
+                            "id": "minecraft:cobblestone_stairs",
+                            "properties": {
                                 "facing": "south",
                                 "half": "top",
                                 "shape": "outer_left",
@@ -273,8 +273,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:cobbled_deepslate_stairs",
-                        "Properties": {
+                        "id": "minecraft:cobbled_deepslate_stairs",
+                        "properties": {
                             "facing": "south",
                             "half": "top",
                             "shape": "outer_left",
@@ -285,8 +285,8 @@
                 {
                     "input_predicate": {
                         "block_state": {
-                            "Name": "minecraft:cobblestone_stairs",
-                            "Properties": {
+                            "id": "minecraft:cobblestone_stairs",
+                            "properties": {
                                 "facing": "north",
                                 "half": "top",
                                 "shape": "outer_left",
@@ -300,8 +300,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:cobbled_deepslate_stairs",
-                        "Properties": {
+                        "id": "minecraft:cobbled_deepslate_stairs",
+                        "properties": {
                             "facing": "north",
                             "half": "top",
                             "shape": "outer_left",
@@ -312,8 +312,8 @@
                 {
                     "input_predicate": {
                         "block_state": {
-                            "Name": "minecraft:cobblestone_stairs",
-                            "Properties": {
+                            "id": "minecraft:cobblestone_stairs",
+                            "properties": {
                                 "facing": "east",
                                 "half": "top",
                                 "shape": "outer_left",
@@ -327,8 +327,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:cobbled_deepslate_stairs",
-                        "Properties": {
+                        "id": "minecraft:cobbled_deepslate_stairs",
+                        "properties": {
                             "facing": "east",
                             "half": "top",
                             "shape": "outer_left",
@@ -339,8 +339,8 @@
                 {
                     "input_predicate": {
                         "block_state": {
-                            "Name": "minecraft:cobblestone_stairs",
-                            "Properties": {
+                            "id": "minecraft:cobblestone_stairs",
+                            "properties": {
                                 "facing": "west",
                                 "half": "top",
                                 "shape": "outer_left",
@@ -354,8 +354,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:cobbled_deepslate_stairs",
-                        "Properties": {
+                        "id": "minecraft:cobbled_deepslate_stairs",
+                        "properties": {
                             "facing": "west",
                             "half": "top",
                             "shape": "outer_left",
@@ -366,8 +366,8 @@
                 {
                     "input_predicate": {
                         "block_state": {
-                            "Name": "minecraft:cobblestone_stairs",
-                            "Properties": {
+                            "id": "minecraft:cobblestone_stairs",
+                            "properties": {
                                 "facing": "south",
                                 "half": "top",
                                 "shape": "outer_right",
@@ -381,8 +381,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:cobbled_deepslate_stairs",
-                        "Properties": {
+                        "id": "minecraft:cobbled_deepslate_stairs",
+                        "properties": {
                             "facing": "south",
                             "half": "top",
                             "shape": "outer_right",
@@ -393,8 +393,8 @@
                 {
                     "input_predicate": {
                         "block_state": {
-                            "Name": "minecraft:cobblestone_stairs",
-                            "Properties": {
+                            "id": "minecraft:cobblestone_stairs",
+                            "properties": {
                                 "facing": "north",
                                 "half": "top",
                                 "shape": "outer_right",
@@ -408,8 +408,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:cobbled_deepslate_stairs",
-                        "Properties": {
+                        "id": "minecraft:cobbled_deepslate_stairs",
+                        "properties": {
                             "facing": "north",
                             "half": "top",
                             "shape": "outer_right",
@@ -420,8 +420,8 @@
                 {
                     "input_predicate": {
                         "block_state": {
-                            "Name": "minecraft:cobblestone_stairs",
-                            "Properties": {
+                            "id": "minecraft:cobblestone_stairs",
+                            "properties": {
                                 "facing": "east",
                                 "half": "top",
                                 "shape": "outer_right",
@@ -435,8 +435,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:cobbled_deepslate_stairs",
-                        "Properties": {
+                        "id": "minecraft:cobbled_deepslate_stairs",
+                        "properties": {
                             "facing": "east",
                             "half": "top",
                             "shape": "outer_right",
@@ -447,8 +447,8 @@
                 {
                     "input_predicate": {
                         "block_state": {
-                            "Name": "minecraft:cobblestone_stairs",
-                            "Properties": {
+                            "id": "minecraft:cobblestone_stairs",
+                            "properties": {
                                 "facing": "west",
                                 "half": "top",
                                 "shape": "outer_right",
@@ -462,8 +462,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:cobbled_deepslate_stairs",
-                        "Properties": {
+                        "id": "minecraft:cobbled_deepslate_stairs",
+                        "properties": {
                             "facing": "west",
                             "half": "top",
                             "shape": "outer_right",
@@ -474,8 +474,8 @@
                 {
                     "input_predicate": {
                         "block_state": {
-                            "Name": "minecraft:cobblestone_stairs",
-                            "Properties": {
+                            "id": "minecraft:cobblestone_stairs",
+                            "properties": {
                                 "facing": "south",
                                 "half": "bottom",
                                 "shape": "outer_left",
@@ -489,8 +489,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:cobbled_deepslate_stairs",
-                        "Properties": {
+                        "id": "minecraft:cobbled_deepslate_stairs",
+                        "properties": {
                             "facing": "south",
                             "half": "bottom",
                             "shape": "outer_left",
@@ -501,8 +501,8 @@
                 {
                     "input_predicate": {
                         "block_state": {
-                            "Name": "minecraft:cobblestone_stairs",
-                            "Properties": {
+                            "id": "minecraft:cobblestone_stairs",
+                            "properties": {
                                 "facing": "north",
                                 "half": "bottom",
                                 "shape": "outer_left",
@@ -516,8 +516,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:cobbled_deepslate_stairs",
-                        "Properties": {
+                        "id": "minecraft:cobbled_deepslate_stairs",
+                        "properties": {
                             "facing": "north",
                             "half": "bottom",
                             "shape": "outer_left",
@@ -528,8 +528,8 @@
                 {
                     "input_predicate": {
                         "block_state": {
-                            "Name": "minecraft:cobblestone_stairs",
-                            "Properties": {
+                            "id": "minecraft:cobblestone_stairs",
+                            "properties": {
                                 "facing": "east",
                                 "half": "bottom",
                                 "shape": "outer_left",
@@ -543,8 +543,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:cobbled_deepslate_stairs",
-                        "Properties": {
+                        "id": "minecraft:cobbled_deepslate_stairs",
+                        "properties": {
                             "facing": "east",
                             "half": "bottom",
                             "shape": "outer_left",
@@ -555,8 +555,8 @@
                 {
                     "input_predicate": {
                         "block_state": {
-                            "Name": "minecraft:cobblestone_stairs",
-                            "Properties": {
+                            "id": "minecraft:cobblestone_stairs",
+                            "properties": {
                                 "facing": "west",
                                 "half": "bottom",
                                 "shape": "outer_left",
@@ -570,8 +570,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:cobbled_deepslate_stairs",
-                        "Properties": {
+                        "id": "minecraft:cobbled_deepslate_stairs",
+                        "properties": {
                             "facing": "west",
                             "half": "bottom",
                             "shape": "outer_left",
@@ -582,8 +582,8 @@
                 {
                     "input_predicate": {
                         "block_state": {
-                            "Name": "minecraft:cobblestone_stairs",
-                            "Properties": {
+                            "id": "minecraft:cobblestone_stairs",
+                            "properties": {
                                 "facing": "north",
                                 "half": "bottom",
                                 "shape": "outer_right",
@@ -597,8 +597,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:cobbled_deepslate_stairs",
-                        "Properties": {
+                        "id": "minecraft:cobbled_deepslate_stairs",
+                        "properties": {
                             "facing": "north",
                             "half": "bottom",
                             "shape": "outer_right",
@@ -609,8 +609,8 @@
                 {
                     "input_predicate": {
                         "block_state": {
-                            "Name": "minecraft:cobblestone_stairs",
-                            "Properties": {
+                            "id": "minecraft:cobblestone_stairs",
+                            "properties": {
                                 "facing": "south",
                                 "half": "bottom",
                                 "shape": "outer_right",
@@ -624,8 +624,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:cobbled_deepslate_stairs",
-                        "Properties": {
+                        "id": "minecraft:cobbled_deepslate_stairs",
+                        "properties": {
                             "facing": "south",
                             "half": "bottom",
                             "shape": "outer_right",
@@ -636,8 +636,8 @@
                 {
                     "input_predicate": {
                         "block_state": {
-                            "Name": "minecraft:cobblestone_stairs",
-                            "Properties": {
+                            "id": "minecraft:cobblestone_stairs",
+                            "properties": {
                                 "facing": "east",
                                 "half": "bottom",
                                 "shape": "outer_right",
@@ -651,8 +651,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:cobbled_deepslate_stairs",
-                        "Properties": {
+                        "id": "minecraft:cobbled_deepslate_stairs",
+                        "properties": {
                             "facing": "east",
                             "half": "bottom",
                             "shape": "outer_right",
@@ -663,8 +663,8 @@
                 {
                     "input_predicate": {
                         "block_state": {
-                            "Name": "minecraft:cobblestone_stairs",
-                            "Properties": {
+                            "id": "minecraft:cobblestone_stairs",
+                            "properties": {
                                 "facing": "west",
                                 "half": "bottom",
                                 "shape": "outer_right",
@@ -678,8 +678,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:cobbled_deepslate_stairs",
-                        "Properties": {
+                        "id": "minecraft:cobbled_deepslate_stairs",
+                        "properties": {
                             "facing": "west",
                             "half": "bottom",
                             "shape": "outer_right",
@@ -690,8 +690,8 @@
                 {
                     "input_predicate": {
                         "block_state": {
-                            "Name": "minecraft:cobblestone_slab",
-                            "Properties": {
+                            "id": "minecraft:cobblestone_slab",
+                            "properties": {
                                 "type": "bottom",
                                 "waterlogged": "false"
                             }
@@ -703,8 +703,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:cobbled_deepslate_slab",
-                        "Properties": {
+                        "id": "minecraft:cobbled_deepslate_slab",
+                        "properties": {
                             "type": "bottom",
                             "waterlogged": "false"
                         }
@@ -713,8 +713,8 @@
                 {
                     "input_predicate": {
                         "block_state": {
-                            "Name": "minecraft:cobblestone_slab",
-                            "Properties": {
+                            "id": "minecraft:cobblestone_slab",
+                            "properties": {
                                 "type": "top",
                                 "waterlogged": "false"
                             }
@@ -726,8 +726,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:cobbled_deepslate_slab",
-                        "Properties": {
+                        "id": "minecraft:cobbled_deepslate_slab",
+                        "properties": {
                             "type": "top",
                             "waterlogged": "false"
                         }
@@ -736,8 +736,8 @@
                 {
                     "input_predicate": {
                         "block_state": {
-                            "Name": "minecraft:cobblestone_wall",
-                            "Properties": {
+                            "id": "minecraft:cobblestone_wall",
+                            "properties": {
                                 "east": "none",
                                 "north": "none",
                                 "south": "none",
@@ -753,8 +753,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:cobbled_deepslate_wall",
-                        "Properties": {
+                        "id": "minecraft:cobbled_deepslate_wall",
+                        "properties": {
                             "east": "none",
                             "north": "none",
                             "south": "none",
@@ -767,8 +767,8 @@
                 {
                     "input_predicate": {
                         "block_state": {
-                            "Name": "minecraft:cobblestone_wall",
-                            "Properties": {
+                            "id": "minecraft:cobblestone_wall",
+                            "properties": {
                                 "east": "low",
                                 "north": "none",
                                 "south": "none",
@@ -784,8 +784,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:cobbled_deepslate_wall",
-                        "Properties": {
+                        "id": "minecraft:cobbled_deepslate_wall",
+                        "properties": {
                             "east": "low",
                             "north": "none",
                             "south": "none",
@@ -798,8 +798,8 @@
                 {
                     "input_predicate": {
                         "block_state": {
-                            "Name": "minecraft:cobblestone_wall",
-                            "Properties": {
+                            "id": "minecraft:cobblestone_wall",
+                            "properties": {
                                 "east": "none",
                                 "north": "low",
                                 "south": "none",
@@ -815,9 +815,102 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:cobbled_deepslate_wall",
-                        "Properties": {
+                        "id": "minecraft:cobbled_deepslate_wall",
+                        "properties": {
                             "east": "none",
+                            "north": "low",
+                            "south": "none",
+                            "west": "none",
+                            "up": "true",
+                            "waterlogged": "false"
+                        }
+                    }
+                },
+                {
+                    "input_predicate": {
+                        "block_state": {
+                            "id": "minecraft:cobblestone_wall",
+                            "properties": {
+                                "east": "none",
+                                "north": "none",
+                                "south": "low",
+                                "west": "none",
+                                "up": "true",
+                                "waterlogged": "false"
+                            }
+                        },
+                        "predicate_type": "minecraft:random_blockstate_match",
+                        "probability": 0.5
+                    },
+                    "location_predicate": {
+                        "predicate_type": "minecraft:always_true"
+                    },
+                    "output_state": {
+                        "id": "minecraft:cobbled_deepslate_wall",
+                        "properties": {
+                            "east": "none",
+                            "north": "none",
+                            "south": "low",
+                            "west": "none",
+                            "up": "true",
+                            "waterlogged": "false"
+                        }
+                    }
+                },
+                {
+                    "input_predicate": {
+                        "block_state": {
+                            "id": "minecraft:cobblestone_wall",
+                            "properties": {
+                                "east": "none",
+                                "north": "none",
+                                "south": "none",
+                                "west": "low",
+                                "up": "true",
+                                "waterlogged": "false"
+                            }
+                        },
+                        "predicate_type": "minecraft:random_blockstate_match",
+                        "probability": 0.5
+                    },
+                    "location_predicate": {
+                        "predicate_type": "minecraft:always_true"
+                    },
+                    "output_state": {
+                        "id": "minecraft:cobbled_deepslate_wall",
+                        "properties": {
+                            "east": "none",
+                            "north": "none",
+                            "south": "none",
+                            "west": "low",
+                            "up": "true",
+                            "waterlogged": "false"
+                        }
+                    }
+                },
+                {
+                    "input_predicate": {
+                        "block_state": {
+                            "id": "minecraft:cobblestone_wall",
+                            "properties": {
+                                "east": "low",
+                                "north": "low",
+                                "south": "none",
+                                "west": "none",
+                                "up": "true",
+                                "waterlogged": "false"
+                            }
+                        },
+                        "predicate_type": "minecraft:random_blockstate_match",
+                        "probability": 0.5
+                    },
+                    "location_predicate": {
+                        "predicate_type": "minecraft:always_true"
+                    },
+                    "output_state": {
+                        "id": "minecraft:cobbled_deepslate_wall",
+                        "properties": {
+                            "east": "low",
                             "north": "low",
                             "south": "none",
                             "west": "none",
@@ -829,101 +922,8 @@
                 {
                     "input_predicate": {
                         "block_state": {
-                            "Name": "minecraft:cobblestone_wall",
-                            "Properties": {
-                                "east": "none",
-                                "north": "none",
-                                "south": "low",
-                                "west": "none",
-                                "up": "true",
-                                "waterlogged": "false"
-                            }
-                        },
-                        "predicate_type": "minecraft:random_blockstate_match",
-                        "probability": 0.5
-                    },
-                    "location_predicate": {
-                        "predicate_type": "minecraft:always_true"
-                    },
-                    "output_state": {
-                        "Name": "minecraft:cobbled_deepslate_wall",
-                        "Properties": {
-                            "east": "none",
-                            "north": "none",
-                            "south": "low",
-                            "west": "none",
-                            "up": "true",
-                            "waterlogged": "false"
-                        }
-                    }
-                },
-                {
-                    "input_predicate": {
-                        "block_state": {
-                            "Name": "minecraft:cobblestone_wall",
-                            "Properties": {
-                                "east": "none",
-                                "north": "none",
-                                "south": "none",
-                                "west": "low",
-                                "up": "true",
-                                "waterlogged": "false"
-                            }
-                        },
-                        "predicate_type": "minecraft:random_blockstate_match",
-                        "probability": 0.5
-                    },
-                    "location_predicate": {
-                        "predicate_type": "minecraft:always_true"
-                    },
-                    "output_state": {
-                        "Name": "minecraft:cobbled_deepslate_wall",
-                        "Properties": {
-                            "east": "none",
-                            "north": "none",
-                            "south": "none",
-                            "west": "low",
-                            "up": "true",
-                            "waterlogged": "false"
-                        }
-                    }
-                },
-                {
-                    "input_predicate": {
-                        "block_state": {
-                            "Name": "minecraft:cobblestone_wall",
-                            "Properties": {
-                                "east": "low",
-                                "north": "low",
-                                "south": "none",
-                                "west": "none",
-                                "up": "true",
-                                "waterlogged": "false"
-                            }
-                        },
-                        "predicate_type": "minecraft:random_blockstate_match",
-                        "probability": 0.5
-                    },
-                    "location_predicate": {
-                        "predicate_type": "minecraft:always_true"
-                    },
-                    "output_state": {
-                        "Name": "minecraft:cobbled_deepslate_wall",
-                        "Properties": {
-                            "east": "low",
-                            "north": "low",
-                            "south": "none",
-                            "west": "none",
-                            "up": "true",
-                            "waterlogged": "false"
-                        }
-                    }
-                },
-                {
-                    "input_predicate": {
-                        "block_state": {
-                            "Name": "minecraft:cobblestone_wall",
-                            "Properties": {
+                            "id": "minecraft:cobblestone_wall",
+                            "properties": {
                                 "east": "low",
                                 "north": "none",
                                 "south": "low",
@@ -939,8 +939,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:cobbled_deepslate_wall",
-                        "Properties": {
+                        "id": "minecraft:cobbled_deepslate_wall",
+                        "properties": {
                             "east": "low",
                             "north": "none",
                             "south": "low",
@@ -953,8 +953,8 @@
                 {
                     "input_predicate": {
                         "block_state": {
-                            "Name": "minecraft:cobblestone_wall",
-                            "Properties": {
+                            "id": "minecraft:cobblestone_wall",
+                            "properties": {
                                 "east": "low",
                                 "north": "none",
                                 "south": "none",
@@ -970,8 +970,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:cobbled_deepslate_wall",
-                        "Properties": {
+                        "id": "minecraft:cobbled_deepslate_wall",
+                        "properties": {
                             "east": "low",
                             "north": "none",
                             "south": "none",
@@ -984,8 +984,8 @@
                 {
                     "input_predicate": {
                         "block_state": {
-                            "Name": "minecraft:cobblestone_wall",
-                            "Properties": {
+                            "id": "minecraft:cobblestone_wall",
+                            "properties": {
                                 "east": "none",
                                 "north": "low",
                                 "south": "low",
@@ -1001,8 +1001,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:cobbled_deepslate_wall",
-                        "Properties": {
+                        "id": "minecraft:cobbled_deepslate_wall",
+                        "properties": {
                             "east": "none",
                             "north": "low",
                             "south": "low",
@@ -1015,8 +1015,8 @@
                 {
                     "input_predicate": {
                         "block_state": {
-                            "Name": "minecraft:cobblestone_wall",
-                            "Properties": {
+                            "id": "minecraft:cobblestone_wall",
+                            "properties": {
                                 "east": "none",
                                 "north": "low",
                                 "south": "none",
@@ -1032,8 +1032,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:cobbled_deepslate_wall",
-                        "Properties": {
+                        "id": "minecraft:cobbled_deepslate_wall",
+                        "properties": {
                             "east": "none",
                             "north": "low",
                             "south": "none",
@@ -1046,8 +1046,8 @@
                 {
                     "input_predicate": {
                         "block_state": {
-                            "Name": "minecraft:cobblestone_wall",
-                            "Properties": {
+                            "id": "minecraft:cobblestone_wall",
+                            "properties": {
                                 "east": "none",
                                 "north": "none",
                                 "south": "low",
@@ -1063,8 +1063,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:cobbled_deepslate_wall",
-                        "Properties": {
+                        "id": "minecraft:cobbled_deepslate_wall",
+                        "properties": {
                             "east": "none",
                             "north": "none",
                             "south": "low",
@@ -1077,8 +1077,8 @@
                 {
                     "input_predicate": {
                         "block_state": {
-                            "Name": "minecraft:cobblestone_wall",
-                            "Properties": {
+                            "id": "minecraft:cobblestone_wall",
+                            "properties": {
                                 "east": "low",
                                 "north": "low",
                                 "south": "low",
@@ -1094,8 +1094,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:cobbled_deepslate_wall",
-                        "Properties": {
+                        "id": "minecraft:cobbled_deepslate_wall",
+                        "properties": {
                             "east": "low",
                             "north": "low",
                             "south": "low",
@@ -1108,8 +1108,8 @@
                 {
                     "input_predicate": {
                         "block_state": {
-                            "Name": "minecraft:cobblestone_wall",
-                            "Properties": {
+                            "id": "minecraft:cobblestone_wall",
+                            "properties": {
                                 "east": "low",
                                 "north": "low",
                                 "south": "none",
@@ -1125,8 +1125,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:cobbled_deepslate_wall",
-                        "Properties": {
+                        "id": "minecraft:cobbled_deepslate_wall",
+                        "properties": {
                             "east": "low",
                             "north": "none",
                             "south": "low",
@@ -1139,8 +1139,8 @@
                 {
                     "input_predicate": {
                         "block_state": {
-                            "Name": "minecraft:cobblestone_wall",
-                            "Properties": {
+                            "id": "minecraft:cobblestone_wall",
+                            "properties": {
                                 "east": "low",
                                 "north": "none",
                                 "south": "low",
@@ -1156,8 +1156,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:cobbled_deepslate_wall",
-                        "Properties": {
+                        "id": "minecraft:cobbled_deepslate_wall",
+                        "properties": {
                             "east": "low",
                             "north": "none",
                             "south": "low",
@@ -1170,8 +1170,8 @@
                 {
                     "input_predicate": {
                         "block_state": {
-                            "Name": "minecraft:cobblestone_wall",
-                            "Properties": {
+                            "id": "minecraft:cobblestone_wall",
+                            "properties": {
                                 "east": "none",
                                 "north": "low",
                                 "south": "low",
@@ -1187,8 +1187,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:cobbled_deepslate_wall",
-                        "Properties": {
+                        "id": "minecraft:cobbled_deepslate_wall",
+                        "properties": {
                             "east": "none",
                             "north": "low",
                             "south": "low",
@@ -1208,7 +1208,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:air"
+                        "id": "minecraft:air"
                     }
                 },
                 {
@@ -1221,7 +1221,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:cobblestone"
+                        "id": "minecraft:cobblestone"
                     }
                 },
                 {
@@ -1234,7 +1234,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:tuff"
+                        "id": "minecraft:tuff"
                     }
                 },
                 {
@@ -1247,7 +1247,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:cobbled_deepslate"
+                        "id": "minecraft:cobbled_deepslate"
                     }
                 },
                 {
@@ -1260,7 +1260,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:rooted_dirt"
+                        "id": "minecraft:rooted_dirt"
                     }
                 }
             ]
@@ -1283,7 +1283,7 @@
                             "predicate_type": "minecraft:always_true"
                         },
                         "output_state": {
-                            "Name": "minecraft:suspicious_gravel"
+                            "id": "minecraft:suspicious_gravel"
                         }
                     }
                 ]

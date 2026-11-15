@@ -31,6 +31,7 @@ import com.cobblemon.mod.common.util.*
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.MutableComponent
 import net.minecraft.server.level.ServerPlayer
+import net.minecraft.world.entity.player.Player
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.phys.Vec3
 import kotlin.collections.HashMap
@@ -536,7 +537,9 @@ open class ErroredBattleStart(
     }
 
     fun sendTo(entity: Entity, transformer: (MutableComponent) -> (MutableComponent) = { it }) {
-        errors.forEach { entity.sendSystemMessage(transformer(it.getMessageFor(entity))) }
+        if (entity is Player) {
+            errors.forEach { entity.sendSystemMessage(transformer(it.getMessageFor(entity))) }
+        }
     }
 
     inline fun <reified T : BattleStartError> ifHasError(action: () -> Unit): ErroredBattleStart {

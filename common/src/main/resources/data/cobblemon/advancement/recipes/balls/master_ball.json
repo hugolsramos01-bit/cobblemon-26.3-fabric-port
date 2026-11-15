@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:master_ball"
+        "recipes": "cobblemon:master_ball"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

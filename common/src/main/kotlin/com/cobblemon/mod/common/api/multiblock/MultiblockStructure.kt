@@ -11,6 +11,9 @@ package com.cobblemon.mod.common.api.multiblock
 import net.minecraft.core.BlockPos
 import net.minecraft.core.HolderLookup
 import net.minecraft.nbt.CompoundTag
+import net.minecraft.world.level.storage.ValueOutput
+import net.minecraft.world.level.storage.TagValueOutput
+import net.minecraft.util.ProblemReporter
 import net.minecraft.world.entity.player.Player
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.util.RandomSource
@@ -37,7 +40,13 @@ interface MultiblockStructure {
     fun syncToClient(world: Level)
 
     fun markDirty(world: Level)
-    fun writeToNbt(registryLookup: HolderLookup.Provider): CompoundTag
+    fun save(output: ValueOutput)
+
+    fun writeToNbt(registryLookup: HolderLookup.Provider): CompoundTag {
+        val output = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, registryLookup)
+        save(output)
+        return output.buildResult()
+    }
     fun getAnalogOutputSignal(state: BlockState, world: Level?, pos: BlockPos?): Int {
         return 0
     }

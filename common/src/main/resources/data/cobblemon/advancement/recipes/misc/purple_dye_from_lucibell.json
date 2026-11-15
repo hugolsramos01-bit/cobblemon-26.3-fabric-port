@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:purple_dye_from_lucibell"
+        "recipes": "cobblemon:purple_dye_from_lucibell"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

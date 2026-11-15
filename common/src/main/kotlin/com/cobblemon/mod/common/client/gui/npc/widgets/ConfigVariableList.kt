@@ -18,7 +18,7 @@ import com.cobblemon.mod.common.client.gui.npc.widgets.ConfigVariableList.Config
 import com.cobblemon.mod.common.client.render.drawScaledText
 import com.cobblemon.mod.common.util.cobblemonResource
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.components.ContainerObjectSelectionList
 import net.minecraft.client.gui.components.EditBox
 import net.minecraft.client.gui.components.Tooltip
@@ -56,56 +56,60 @@ class ConfigVariableList(
         this.x = listX
         this.y = listY
         correctSize()
-        setRenderHeader(false, 0)
         parent.dto.registeredVariables.sortedBy { it.category.string }.forEach { variable ->
             val value = parent.dto.variables[variable.variableName] ?: variable.defaultValue
             addEntry(ConfigVariable(variable, value, this))
         }
     }
 
-    override fun getScrollbarPosition() = x + width - 3
+    override fun scrollBarX() = x + width - 3
 
     public override fun addEntry(entry: ConfigVariable) = super.addEntry(entry)
     public override fun removeEntry(entry: ConfigVariable) = super.removeEntry(entry)
 
-    override fun renderListSeparators(guiGraphics: GuiGraphics) {}
+    override fun extractListSeparators(guiGraphics: GuiGraphicsExtractor) {}
 
-    override fun renderWidget(context: GuiGraphics, mouseX: Int, mouseY: Int, partialTicks: Float) {
+    override fun extractWidgetRenderState(context: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, partialTicks: Float) {
         correctSize()
 
-        super.renderWidget(context, mouseX, mouseY, partialTicks)
+        super.extractWidgetRenderState(context, mouseX, mouseY, partialTicks)
     }
 
-    override fun mouseClicked(mouseX: Double, mouseY: Double, button: Int): Boolean {
+    override fun mouseClicked(event: net.minecraft.client.input.MouseButtonEvent, doubleClick: Boolean): Boolean {
+        val mouseX = event.x()
+        val mouseY = event.y()
+
         updateScrollingState(mouseX, mouseY)
         if (scrolling) {
             focused = getEntryAtPosition(mouseX, mouseY)
             isDragging = true
         }
-        return super.mouseClicked(mouseX, mouseY, button)
+        return super.mouseClicked(event, doubleClick)
     }
 
-    override fun mouseDragged(mouseX: Double, mouseY: Double, button: Int, deltaX: Double, deltaY: Double): Boolean {
+    override fun mouseDragged(event: net.minecraft.client.input.MouseButtonEvent, deltaX: Double, deltaY: Double): Boolean {
+        val mouseY = event.y()
+
         if (scrolling) {
             if (mouseY < this.listY) {
-                scrollAmount = 0.0
+                setScrollAmount(0.0)
             } else if (mouseY > bottom) {
-                scrollAmount = maxScroll.toDouble()
+                setScrollAmount(maxScrollAmount().toDouble())
             } else {
-                scrollAmount += deltaY
+                setScrollAmount(scrollAmount() + deltaY)
             }
         }
-        return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY)
+        return super.mouseDragged(event, deltaX, deltaY)
     }
 
     private fun updateScrollingState(mouseX: Double, mouseY: Double) {
-        scrolling = mouseX >= this.scrollbarPosition.toDouble()
-                && mouseX < (this.scrollbarPosition + 3).toDouble()
+        scrolling = mouseX >= this.scrollBarX().toDouble()
+                && mouseX < (this.scrollBarX() + 3).toDouble()
                 && mouseY >= listY
                 && mouseY < bottom
     }
 
-    override fun renderListBackground(context: GuiGraphics) {}
+    override fun extractListBackground(context: GuiGraphicsExtractor) {}
 
     private fun correctSize() {
         setRectangle(WIDTH, HEIGHT, listX, (listY - 4))
@@ -124,24 +128,41 @@ class ConfigVariableList(
         val tooltip = Tooltip.create(variable.description)
         val tooltipHolder = WidgetTooltipHolder().also { it.set(tooltip) }
 
-        val editBox = EditBox(
+        val editBox = object : EditBox(
             client.font,
             parent.listX,
             parent.listY + 8,
             SLOT_WIDTH - 8,
             SLOT_HEIGHT - 8,
             variable.displayName,
-        ).also {
-            it.isBordered = false
-            it.height = SLOT_HEIGHT - 16
-            it.setMaxLength(250)
-            it.value = value
-            it.setResponder {
-                textValue = it
-                parent.parent.dto.variables[variable.variableName] = it
+        ) {
+            override fun insertText(input: String) {
+                if (variable.type == MoLangVariableType.NUMBER) {
+                    val currentValue = getValue()
+                    val selected = getHighlighted()
+                    val cursor = getCursorPosition().coerceIn(0, currentValue.length)
+                    val beforeCursorStart = cursor - selected.length
+                    val selectedStart = if (selected.isNotEmpty() && beforeCursorStart >= 0 &&
+                        currentValue.regionMatches(beforeCursorStart, selected, 0, selected.length)) {
+                        beforeCursorStart
+                    } else {
+                        cursor
+                    }
+                    val selectedEnd = (selectedStart + selected.length).coerceAtMost(currentValue.length)
+                    val resultingValue = currentValue.substring(0, selectedStart) + input + currentValue.substring(selectedEnd)
+                    val isAllowedNumber = resultingValue.toDoubleOrNull() != null || resultingValue.isBlank() || resultingValue == "." || resultingValue == "-"
+                    if (!isAllowedNumber) return
+                }
+                super.insertText(input)
             }
-            if (variable.type == MoLangVariableType.NUMBER) {
-                it.setFilter { value -> value.toDoubleOrNull() != null || value.isBlank() || value == "." || value == "-" }
+        }.also { editBox ->
+            editBox.isBordered = false
+            editBox.height = SLOT_HEIGHT - 16
+            editBox.setMaxLength(250)
+            editBox.value = value
+            editBox.setResponder { input ->
+                textValue = input
+                parent.parent.dto.variables[variable.variableName] = input
             }
         }
 
@@ -156,7 +177,7 @@ class ConfigVariableList(
             parent.parent.dto.variables[variable.variableName] = if (booleanValue) "1" else "0"
             (it as NPCEditorButton).cycleButtonState = booleanValue
         }.also {
-            it.tooltip = tooltip
+            it.setTooltip(tooltip)
         }
 
         init {
@@ -177,24 +198,13 @@ class ConfigVariableList(
             return children.filterIsInstance<NarratableEntry>()
         }
 
-        override fun render(
-            context: GuiGraphics,
-            index: Int,
-            rowTop: Int,
-            rowLeft: Int,
-            rowWidth: Int,
-            rowHeight: Int,
-            mouseX: Int,
-            mouseY: Int,
-            isHovered: Boolean,
-            partialTicks: Float
-        ) {
-            val x = rowLeft - 4
-            val y = rowTop
+        override fun extractContent(context: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, isHovered: Boolean, partialTicks: Float) {
+            val x = this.x - 4
+            val y = this.y
             if (variable.type == MoLangVariableType.BOOLEAN) {
                 toggleButton.x = x
                 toggleButton.y = y + 9
-                toggleButton.render(context, mouseX, mouseY, partialTicks)
+                toggleButton.extractRenderState(context, mouseX, mouseY, partialTicks)
             } else {
                 drawScaledText(
                     context = context,
@@ -204,17 +214,24 @@ class ConfigVariableList(
                     shadow = true
                 )
 
-                blitk(matrixStack = context.pose(), texture = textInputBackground, x = x, y = y + 16, height = 12, width = 1)
-                blitk(matrixStack = context.pose(), texture = textInputBackground, x = x + 1, y = y + 15, height = 14, width = SLOT_WIDTH - 2)
-                blitk(matrixStack = context.pose(), texture = textInputBackground, x = x + SLOT_WIDTH - 1, y = y + 16, height = 12, width = 1)
+                blitk(context = context, texture = textInputBackground, x = x, y = y + 16, height = 12, width = 1)
+                blitk(context = context, texture = textInputBackground, x = x + 1, y = y + 15, height = 14, width = SLOT_WIDTH - 2)
+                blitk(context = context, texture = textInputBackground, x = x + SLOT_WIDTH - 1, y = y + 16, height = 12, width = 1)
 
                 editBox.x = x + 4
                 editBox.y = y + 18
-                editBox.render(context, mouseX, mouseY, partialTicks)
+                editBox.extractRenderState(context, mouseX, mouseY, partialTicks)
 
                 // Manually renders the tooltip for the edit box because disabling its border messes everything up
                 val isEditBoxHovered = mouseX >= x && mouseX <= x + SLOT_WIDTH - 1 && mouseY >= y + 15 && mouseY <= y + 15 + 14
-                tooltipHolder.refreshTooltipForNextRenderPass(isEditBoxHovered, editBox.isFocused, editBox.rectangle)
+                tooltipHolder.refreshTooltipForNextRenderPass(
+                    context,
+                    mouseX,
+                    mouseY,
+                    isEditBoxHovered,
+                    editBox.isFocused,
+                    editBox.rectangle
+                )
             }
         }
     }

@@ -17,7 +17,7 @@ import com.cobblemon.mod.common.util.adapters.IntRangesAdapter
 import com.cobblemon.mod.common.util.lang
 import java.awt.Color
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.components.AbstractWidget
 import net.minecraft.client.gui.components.Button
 import net.minecraft.client.gui.screens.Screen
@@ -110,7 +110,7 @@ class HabitatPoolEditorGUI(
             if (editable) {
                 addOptionWidget(
                     Button.builder("E".text()) {
-                        Minecraft.getInstance().setScreen(HabitatSpawnEditorGUI(spawn, maxPokemonLevel, buckets, spawnablePositionTypes, this))
+                        Minecraft.getInstance().setScreenAndShow(HabitatSpawnEditorGUI(spawn, maxPokemonLevel, buckets, spawnablePositionTypes, this))
                     }.bounds(getScaledWidth() - 55, rowY, 20, 20).build()
                 )
 
@@ -149,7 +149,7 @@ class HabitatPoolEditorGUI(
 
         addFooterWidget(
             Button.builder(lang("ui.edit.habitat.pool.back")) {
-                Minecraft.getInstance().setScreen(parentScreen)
+                Minecraft.getInstance().setScreenAndShow(parentScreen)
             }.bounds(10, getScaledHeight() - (actionButtonHeight + actionButtonBottomMargin), buttonWidth, actionButtonHeight).build()
         )
         updateOptionWidgetInteractivity()
@@ -164,11 +164,11 @@ class HabitatPoolEditorGUI(
         return true
     }
 
-    override fun render(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {
+    override fun extractRenderState(guiGraphics: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, partialTick: Float) {
         guiGraphics.fill(0, 0, width, height, Color(0, 0, 0, 100).rgb)
         guiGraphics.fill(0, 0, width, headerHeight, Color(0, 0, 0, 150).rgb)
         guiGraphics.fill(0, getFooterTop(), width, height, Color(0, 0, 0, 150).rgb)
-        guiGraphics.drawCenteredString(font, title, width / 2, 8, 0xFFFFFF)
+        guiGraphics.centeredText(font, title, width / 2, 8, -1)
         
         val buttonWidth = getScaledWidth() - 20
         val colWidth = buttonWidth / 6
@@ -181,7 +181,7 @@ class HabitatPoolEditorGUI(
         headers.forEach { (header, x) ->
             val y = optionsTop + 5 + scrollOffset.toInt()
             if (y >= optionsTop && y + font.lineHeight <= optionsBottom) {
-                guiGraphics.drawString(font, header, x, y, 0xFFFFFF)
+                guiGraphics.text(font, header, x, y, -1)
             }
         }
         
@@ -189,29 +189,29 @@ class HabitatPoolEditorGUI(
         spawnRows.forEach { row ->
             if (row.y < optionsTop || row.y + 20 > optionsBottom) return@forEach
             var x = 10
-            guiGraphics.drawString(font, row.species, x, row.y + 5, 0xFFFFFF)
+            guiGraphics.text(font, row.species, x, row.y + 5, -1)
             x += colWidth
-            guiGraphics.drawString(font, row.levels, x, row.y + 5, 0xFFFFFF)
+            guiGraphics.text(font, row.levels, x, row.y + 5, -1)
             x += colWidth
-            guiGraphics.drawString(font, row.phases, x, row.y + 5, 0xFFFFFF)
+            guiGraphics.text(font, row.phases, x, row.y + 5, -1)
             x += colWidth
-            guiGraphics.drawString(font, row.position, x, row.y + 5, 0xFFFFFF)
+            guiGraphics.text(font, row.position, x, row.y + 5, -1)
             x += colWidth
-            guiGraphics.drawString(font, row.weight, x, row.y + 5, 0xFFFFFF)
+            guiGraphics.text(font, row.weight, x, row.y + 5, -1)
             if (row.bucket != null) {
                 x += colWidth - 10
-                guiGraphics.drawString(font, row.bucket, x, row.y + 5, 0xFFFFFF)
+                guiGraphics.text(font, row.bucket, x, row.y + 5, -1)
             }
         }
 
         optionWidgets.forEach { widget ->
-            widget.render(guiGraphics, mouseX, mouseY, partialTick)
+            widget.extractRenderState(guiGraphics, mouseX, mouseY, partialTick)
         }
 
         guiGraphics.disableScissor()
 
         footerWidgets.forEach { widget ->
-            widget.render(guiGraphics, mouseX, mouseY, partialTick)
+            widget.extractRenderState(guiGraphics, mouseX, mouseY, partialTick)
         }
     }
 

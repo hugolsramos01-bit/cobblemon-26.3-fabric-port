@@ -2,9 +2,7 @@
     "type": "minecraft:smelting",
     "category": "misc",
     "group": "berry_dyes",
-    "ingredient": {
-        "item": "cobblemon:figy_berry"
-    },
+    "ingredient": "cobblemon:figy_berry",
     "result": {
         "id": "minecraft:orange_dye"
     },

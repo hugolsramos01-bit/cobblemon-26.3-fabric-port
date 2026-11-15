@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:masterpiece_teacup"
+        "recipes": "cobblemon:masterpiece_teacup"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

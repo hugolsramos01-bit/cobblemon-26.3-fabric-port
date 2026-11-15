@@ -27,7 +27,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:dive_ball"
+        "recipes": "cobblemon:dive_ball"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -37,7 +37,7 @@
       "has_blue_apricorn",
       "has_the_recipe"
     ],
-	[
+    [
       "has_white_apricorn",
       "has_the_recipe"
     ]

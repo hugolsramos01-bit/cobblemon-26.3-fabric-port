@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:eject_pack"
+        "recipes": "cobblemon:eject_pack"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

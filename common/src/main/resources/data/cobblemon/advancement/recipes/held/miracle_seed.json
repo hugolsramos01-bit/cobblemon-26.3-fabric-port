@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:miracle_seed"
+        "recipes": "cobblemon:miracle_seed"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

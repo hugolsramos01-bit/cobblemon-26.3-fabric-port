@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:black_glasses"
+        "recipes": "cobblemon:black_glasses"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

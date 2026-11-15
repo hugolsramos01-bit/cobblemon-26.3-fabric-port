@@ -8,6 +8,8 @@
 
 package com.cobblemon.mod.common.block
 
+import net.minecraft.util.RandomSource
+import net.minecraft.world.level.ScheduledTickAccess
 import com.cobblemon.mod.common.Cobblemon
 import com.cobblemon.mod.common.CobblemonBlockEntities
 import com.cobblemon.mod.common.CobblemonSounds
@@ -46,13 +48,14 @@ import net.minecraft.world.level.material.FluidState
 import net.minecraft.world.level.material.Fluids
 import net.minecraft.world.level.pathfinder.PathComputationType
 import net.minecraft.world.phys.BlockHitResult
+import net.minecraft.world.phys.Vec3
 import net.minecraft.world.phys.shapes.CollisionContext
 import net.minecraft.world.phys.shapes.Shapes
 import net.minecraft.world.phys.shapes.VoxelShape
 
 class PCBlock(properties: Properties): BaseEntityBlock(properties), SimpleWaterloggedBlock {
     companion object {
-        val CODEC = simpleCodec(::PCBlock)
+
         val PART = EnumProperty.create("part", PCPart::class.java)
         val ON = BooleanProperty.create("on")
         val NATURAL = BooleanProperty.create("natural")
@@ -193,7 +196,7 @@ class PCBlock(properties: Properties): BaseEntityBlock(properties), SimpleWaterl
             .setValue(PART, PCPart.TOP)
             .setValue(WATERLOGGED, world.getFluidState((pos.above())).type == Fluids.WATER)
             , 3)
-        world.blockUpdated(pos, Blocks.AIR)
+        world.updateNeighborsAt(pos, Blocks.AIR, null)
         state.updateNeighbourShapes(world, pos, 3)
     }
 
@@ -230,7 +233,6 @@ class PCBlock(properties: Properties): BaseEntityBlock(properties), SimpleWaterl
         return super.playerWillDestroy(world, pos, state, player)
     }
 
-    override fun codec() = CODEC
 
     @Deprecated("Deprecated in Java")
     override fun isPathfindable(
@@ -254,10 +256,6 @@ class PCBlock(properties: Properties): BaseEntityBlock(properties), SimpleWaterl
     @Deprecated("Deprecated in Java")
     override fun mirror(blockState: BlockState, mirror: Mirror): BlockState {
         return blockState.rotate(mirror.getRotation(blockState.getValue(HorizontalDirectionalBlock.FACING)))
-    }
-
-    override fun onRemove(state: BlockState, world: Level, pos: BlockPos, newState: BlockState, moved: Boolean) {
-        if (!state.`is`(newState.block)) super.onRemove(state, world, pos, newState, moved)
     }
 
     override fun useWithoutItem(
@@ -287,7 +285,7 @@ class PCBlock(properties: Properties): BaseEntityBlock(properties), SimpleWaterl
         PCLinkManager.addLink(ProximityPCLink(pc, player.uuid, baseEntity))
         OpenPCPacket(pc).sendToPlayer(player)
         world.playSoundServer(
-            position = blockPos.bottomCenter,
+            position = Vec3.atBottomCenterOf(blockPos),
             sound = CobblemonSounds.PC_ON,
             volume = 0.5F,
             pitch = 1F
@@ -303,22 +301,15 @@ class PCBlock(properties: Properties): BaseEntityBlock(properties), SimpleWaterl
         return RenderShape.MODEL
     }
 
-    override fun getFluidState(state: BlockState): FluidState? {
+    override fun getFluidState(state: BlockState): FluidState {
         return if (state.getValue(WATERLOGGED)) {
             Fluids.WATER.getSource(false)
         } else super.getFluidState(state)
     }
 
-    override fun updateShape(
-        state: BlockState,
-        direction: Direction,
-        neighborState: BlockState,
-        world: LevelAccessor,
-        pos: BlockPos,
-        neighborPos: BlockPos
-    ): BlockState {
+    override fun updateShape(state: BlockState, world: LevelReader, tickAccess: ScheduledTickAccess, pos: BlockPos, direction: Direction, neighborPos: BlockPos, neighborState: BlockState, random: RandomSource): BlockState {
         if (state.getValue(WATERLOGGED)) {
-            world.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(world))
+            tickAccess.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(world))
         }
 
         val isPC = neighborState.`is`(this)

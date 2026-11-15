@@ -3,9 +3,7 @@
     "category": "misc",
     "group": "white_dye",
     "ingredients": [
-        {
-            "item": "cobblemon:pep_up_flower"
-        }
+        "cobblemon:pep_up_flower"
     ],
     "result": {
         "id": "minecraft:white_dye"

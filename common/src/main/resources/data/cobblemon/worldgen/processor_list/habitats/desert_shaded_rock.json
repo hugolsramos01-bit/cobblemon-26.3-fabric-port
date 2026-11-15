@@ -19,7 +19,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:air"
+                        "id": "minecraft:air"
                     }
                 },
                 {
@@ -32,7 +32,7 @@
                         "predicate_type": "minecraft:block_match"
                     },
                     "output_state": {
-                        "Name": "minecraft:coarse_dirt"
+                        "id": "minecraft:coarse_dirt"
                     }
                 },
                 {
@@ -45,7 +45,7 @@
                         "predicate_type": "minecraft:block_match"
                     },
                     "output_state": {
-                        "Name": "minecraft:grass_block"
+                        "id": "minecraft:grass_block"
                     }
                 },
                 {
@@ -58,7 +58,7 @@
                         "predicate_type": "minecraft:block_match"
                     },
                     "output_state": {
-                        "Name": "minecraft:dirt"
+                        "id": "minecraft:dirt"
                     }
                 },
                 {
@@ -71,7 +71,7 @@
                         "predicate_type": "minecraft:block_match"
                     },
                     "output_state": {
-                        "Name": "minecraft:red_sand"
+                        "id": "minecraft:red_sand"
                     }
                 },
                 {
@@ -84,7 +84,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:sandstone"
+                        "id": "minecraft:sandstone"
                     }
                 }
             ]

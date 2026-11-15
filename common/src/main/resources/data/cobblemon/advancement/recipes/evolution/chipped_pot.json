@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:chipped_pot"
+        "recipes": "cobblemon:chipped_pot"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

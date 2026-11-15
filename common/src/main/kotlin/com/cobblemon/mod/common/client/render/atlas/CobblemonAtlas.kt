@@ -9,15 +9,16 @@
 package com.cobblemon.mod.common.client.render.atlas
 
 import net.minecraft.client.renderer.texture.TextureManager
-import net.minecraft.client.resources.TextureAtlasHolder
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.client.renderer.texture.TextureAtlas
+import net.minecraft.client.renderer.texture.TextureAtlasSprite
+import net.minecraft.client.Minecraft
+import net.minecraft.resources.Identifier
 
-class CobblemonAtlas(
-    textureManager: TextureManager,
-    atlasId: ResourceLocation,
-    sourcePath: ResourceLocation
-) : TextureAtlasHolder(
-    textureManager,
-    atlasId,
-    sourcePath
-)
+class CobblemonAtlas(val textureAtlas: TextureAtlas) {
+    @Suppress("UNUSED_PARAMETER")
+    constructor(textureManager: TextureManager, atlasId: Identifier, sourcePath: Identifier) : this(
+        Minecraft.getInstance().atlasManager.getAtlasOrThrow(atlasId)
+    )
+
+    fun getSprite(identifier: Identifier): TextureAtlasSprite = textureAtlas.getSprite(identifier)
+}

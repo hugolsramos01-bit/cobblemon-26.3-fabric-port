@@ -20,7 +20,7 @@
             "predicate": {
                 "type": "minecraft:would_survive",
                 "state": {
-                    "Name": "cobblemon:saccharine_sapling"
+                    "id": "cobblemon:saccharine_sapling"
                 }
             }
         }

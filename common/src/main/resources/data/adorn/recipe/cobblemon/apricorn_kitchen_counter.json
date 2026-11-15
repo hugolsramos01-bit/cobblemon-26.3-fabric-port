@@ -6,12 +6,8 @@
     "PP"
   ],
   "key": {
-    "S": {
-      "item": "minecraft:polished_andesite_slab"
-    },
-    "P": {
-      "item": "cobblemon:apricorn_planks"
-    }
+    "S": "minecraft:polished_andesite_slab",
+    "P": "cobblemon:apricorn_planks"
   },
   "result": {
     "id": "adorn:cobblemon/apricorn_kitchen_counter",

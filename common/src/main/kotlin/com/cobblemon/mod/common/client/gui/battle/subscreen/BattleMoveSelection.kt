@@ -26,7 +26,7 @@ import com.cobblemon.mod.common.util.battleLang
 import com.cobblemon.mod.common.util.cobblemonResource
 import com.cobblemon.mod.common.util.math.toRGB
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.resources.sounds.SimpleSoundInstance
 import net.minecraft.client.sounds.SoundManager
 import net.minecraft.network.chat.Component
@@ -40,8 +40,8 @@ class BattleMoveSelection(
     request = request,
     x = 20,
     y = Minecraft.getInstance().window.guiScaledHeight - 84,
-    width = 100,
-    height = 100,
+    width = 2 * MOVE_WIDTH + MOVE_HORIZONTAL_SPACING.toInt(),
+    height = 84,
     battleLang("ui.select_move")
 ) {
     companion object {
@@ -75,6 +75,13 @@ class BattleMoveSelection(
     }
 
     val shiftButton = BattleShiftButton(x + 22.5F, Minecraft.getInstance().window.guiScaledHeight - 22F )
+    private val canShift = request.activePokemon.getFormat().battleType.slotsPerActor == 3 &&
+        request.activePokemon.getPNX()[2] in charArrayOf('a', 'c')
+
+    // The moves and auxiliary buttons are drawn outside the old 100px widget bounds.
+    // Screen dispatch in 26.3 filters widgets by isMouseOver before delivering clicks.
+    override fun isMouseOver(mouseX: Double, mouseY: Double): Boolean =
+        mouseX >= backButton.x && mouseX <= x + width && mouseY >= y && mouseY <= y + height
 
     open class MoveTile(
         val moveSelection: BattleMoveSelection,
@@ -99,12 +106,12 @@ class BattleMoveSelection(
             }
         }
 
-        fun render(context: GuiGraphics, mouseX: Int, mouseY: Int, delta: Float) {
+        fun render(context: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, delta: Float) {
 
             val selectConditionOpacity = moveSelection.opacity * if (!selectable) 0.5F else 1F
 
             blitk(
-                matrixStack = context.pose(),
+                context = context,
                 texture = moveTexture,
                 x = x,
                 y = y,
@@ -119,7 +126,7 @@ class BattleMoveSelection(
             )
 
             blitk(
-                matrixStack = context.pose(),
+                context = context,
                 texture = moveOverlayTexture,
                 x = x,
                 y = y,
@@ -184,15 +191,15 @@ class BattleMoveSelection(
         }
     }
 
-    override fun renderWidget(context: GuiGraphics, mouseX: Int, mouseY: Int, delta: Float) {
+    override fun extractWidgetRenderState(context: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, delta: Float) {
         moveTiles.forEach {
             it.render(context, mouseX, mouseY, delta)
         }
-        backButton.render(context, mouseX, mouseY, delta)
+        backButton.extractRenderState(context, mouseX, mouseY, delta)
         gimmickButtons.forEach {
-            it.render(context.pose(), mouseX, mouseY, delta)
+            it.render(context, mouseX, mouseY, delta)
         }
-        if(this.request.activePokemon.getFormat().battleType.slotsPerActor == 3 && (request.activePokemon.getPNX()[2] == 'a' || request.activePokemon.getPNX()[2] == 'c')) {
+        if (canShift) {
             shiftButton.render(context, mouseX, mouseY, delta)
         }
     }
@@ -201,6 +208,7 @@ class BattleMoveSelection(
         val move = moveTiles.find { it.isHovered(mouseX, mouseY) }
         val gimmick = gimmickButtons.find { it.isHovered(mouseX, mouseY) }
         if (move != null) {
+            if (!move.selectable) return false
             if(request.activePokemon.getFormat().battleType.pokemonPerSide == 1) {
                 move.onClick()
             } else {
@@ -214,7 +222,7 @@ class BattleMoveSelection(
         } else if (gimmick != null) {
             gimmickButtons.filter { it != gimmick }.forEach { it.toggled = false }
             moveTiles = if (gimmick.toggle()) gimmick.tiles else baseTiles
-        } else if(shiftButton.isHovered(mouseX,mouseY)) {
+        } else if (canShift && shiftButton.isHovered(mouseX,mouseY)) {
             playDownSound(Minecraft.getInstance().soundManager)
             battleGUI.selectAction(request, ShiftActionResponse())
         }

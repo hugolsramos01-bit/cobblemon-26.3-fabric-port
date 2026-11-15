@@ -1,5 +1,40 @@
 {
-  "variants": {
-    "": { "model": "cobblemon:block/green_gilded_chest" }
-  }
+  "multipart": [
+    {
+      "when": {
+        "facing": "north"
+      },
+      "apply": {
+        "model": "cobblemon:block/green_gilded_chest",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "east"
+      },
+      "apply": {
+        "model": "cobblemon:block/green_gilded_chest",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "south"
+      },
+      "apply": {
+        "model": "cobblemon:block/green_gilded_chest",
+        "y": 0
+      }
+    },
+    {
+      "when": {
+        "facing": "west"
+      },
+      "apply": {
+        "model": "cobblemon:block/green_gilded_chest",
+        "y": 90
+      }
+    }
+  ]
 }

@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:power_weight"
+        "recipes": "cobblemon:power_weight"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

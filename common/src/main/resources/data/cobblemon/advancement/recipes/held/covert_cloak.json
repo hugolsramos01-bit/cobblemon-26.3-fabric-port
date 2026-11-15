@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:covert_cloak"
+        "recipes": "cobblemon:covert_cloak"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

@@ -11,19 +11,22 @@ package com.cobblemon.mod.common.client.render.block
 import com.cobblemon.mod.common.CobblemonBlocks
 import com.cobblemon.mod.common.block.entity.HealingMachineBlockEntity
 import com.mojang.blaze3d.vertex.PoseStack
-import com.mojang.math.Axis
-import net.minecraft.client.Minecraft
-import net.minecraft.client.renderer.MultiBufferSource
+import net.minecraft.client.renderer.SubmitNodeCollector
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider
+import net.minecraft.client.renderer.feature.ModelFeatureRenderer
+import net.minecraft.client.renderer.item.ItemStackRenderState
+import net.minecraft.client.renderer.state.level.CameraRenderState
+import net.minecraft.client.renderer.texture.OverlayTexture
 import net.minecraft.core.Direction
 import net.minecraft.world.item.ItemDisplayContext
 import net.minecraft.world.level.block.HorizontalDirectionalBlock
 import net.minecraft.world.level.block.entity.BlockEntity
-import net.minecraft.world.level.block.state.BlockState
+import net.minecraft.world.phys.Vec3
 
-@Suppress("UNUSED_PARAMETER")
-class HealingMachineRenderer<T: BlockEntity>(ctx: BlockEntityRendererProvider.Context): BlockEntityRenderer<T> {
+class HealingMachineRenderer<T: BlockEntity>(ctx: BlockEntityRendererProvider.Context): BlockEntityRenderer<T, HealingMachineRenderState> {
+    private val itemModelResolver = ctx.itemModelResolver()
+
     companion object {
         private val offsets = listOf(
             0.2 to 0.385,
@@ -35,26 +38,30 @@ class HealingMachineRenderer<T: BlockEntity>(ctx: BlockEntityRendererProvider.Co
         )
     }
 
-    override fun render(blockEntity: T, tickDelta: Float, poseStack: PoseStack, multiBufferSource: MultiBufferSource, light: Int, overlay: Int) {
+    override fun createRenderState() = HealingMachineRenderState()
+
+    override fun extractRenderState(blockEntity: T, state: HealingMachineRenderState, tickDelta: Float, cameraPosition: Vec3, breakProgress: ModelFeatureRenderer.CrumblingOverlay?) {
+        super.extractRenderState(blockEntity, state, tickDelta, cameraPosition, breakProgress)
+        state.pokeBalls = emptyList()
         if (blockEntity !is HealingMachineBlockEntity) return
-
-        poseStack.pushPose()
-
         val blockState = if (blockEntity.level != null) blockEntity.blockState
-            else (CobblemonBlocks.HEALING_MACHINE.defaultBlockState().setValue(HorizontalDirectionalBlock.FACING, Direction.SOUTH) as BlockState)
-        val yRot = blockState.getValue(HorizontalDirectionalBlock.FACING).toYRot()
+            else CobblemonBlocks.HEALING_MACHINE.defaultBlockState().setValue(HorizontalDirectionalBlock.FACING, Direction.SOUTH)
+        state.yRotation = blockState.getValue(HorizontalDirectionalBlock.FACING).toYRot()
+        state.pokeBalls = blockEntity.pokeBalls().map { (index, pokeBall) ->
+            val itemState = ItemStackRenderState()
+            itemModelResolver.updateForTopItem(itemState, pokeBall.stack(), ItemDisplayContext.GROUND, blockEntity.level, null, 0)
+            index to itemState
+        }
+    }
 
-        // Position Poké Balls
-        poseStack.translate(0.5, 0.5, 0.5)
-
-        poseStack.mulPose(Axis.YP.rotationDegrees(-yRot))
-        poseStack.scale(0.65F, 0.65F, 0.65F)
-
-        blockEntity.pokeBalls().forEach { (index, pokeBall) ->
+    override fun submit(state: HealingMachineRenderState, poseStack: PoseStack, collector: SubmitNodeCollector, cameraState: CameraRenderState) {
+        poseStack.pushPose()
+        applyHealingMachineFrame(poseStack, state.yRotation)
+        for ((index, itemState) in state.pokeBalls) {
             poseStack.pushPose()
             val offset = offsets[index]
             poseStack.translate(offset.first, 0.4, offset.second)
-            Minecraft.getInstance().itemRenderer.renderStatic(pokeBall.stack(), ItemDisplayContext.GROUND, light, overlay, poseStack, multiBufferSource, blockEntity.level, 0)
+            itemState.submit(poseStack, collector, state.lightCoords, OverlayTexture.NO_OVERLAY, 0)
             poseStack.popPose()
         }
         poseStack.popPose()

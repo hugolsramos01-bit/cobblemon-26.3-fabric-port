@@ -21,7 +21,8 @@ import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.ItemStack
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.InteractionHand
-import net.minecraft.world.InteractionResultHolder
+import com.cobblemon.mod.common.util.CobblemonInteractionResults
+import net.minecraft.world.InteractionResult
 import net.minecraft.world.item.Items
 import net.minecraft.world.level.Level
 
@@ -31,7 +32,7 @@ import net.minecraft.world.level.Level
  * @author Hiroku
  * @since August 4th, 2023
  */
-class StatusCuringBerryItem(block: BerryBlock, vararg val status: Status): BerryItem(block), PokemonSelectingItem {
+class StatusCuringBerryItem(properties: net.minecraft.world.item.Item.Properties, block: BerryBlock, vararg val status: Status): BerryItem(properties, block), PokemonSelectingItem {
     override val bagItem = object : BagItem {
         override val itemName: String get() = "item.cobblemon.${this@StatusCuringBerryItem.berry()!!.identifier.path}"
         override val returnItem = Items.AIR
@@ -57,14 +58,14 @@ class StatusCuringBerryItem(block: BerryBlock, vararg val status: Status): Berry
         player: ServerPlayer,
         stack: ItemStack,
         pokemon: Pokemon
-    ): InteractionResultHolder<ItemStack>? {
+    ): InteractionResult? {
         return if (canUseOnPokemon(stack, pokemon)) {
             pokemon.feedPokemon(1)
             pokemon.status = null
             stack.consume(1, player)
-            InteractionResultHolder.success(stack)
+            CobblemonInteractionResults.success(stack)
         } else {
-            InteractionResultHolder.fail(stack)
+            CobblemonInteractionResults.fail(stack)
         }
     }
 
@@ -73,7 +74,7 @@ class StatusCuringBerryItem(block: BerryBlock, vararg val status: Status): Berry
         battlePokemon.originalPokemon.feedPokemon(1)
     }
 
-    override fun use(world: Level, user: Player, hand: InteractionHand): InteractionResultHolder<ItemStack> {
+    override fun use(world: Level, user: Player, hand: InteractionHand): InteractionResult {
         if (user is ServerPlayer) {
             return use(user, user.getItemInHand(hand))
         }

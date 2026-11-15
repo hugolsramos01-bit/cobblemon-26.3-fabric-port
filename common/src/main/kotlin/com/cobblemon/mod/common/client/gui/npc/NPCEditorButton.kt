@@ -15,12 +15,12 @@ import com.cobblemon.mod.common.client.render.drawScaledText
 import com.cobblemon.mod.common.util.asTranslated
 import com.cobblemon.mod.common.util.cobblemonResource
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.components.Button
 import net.minecraft.client.resources.sounds.SimpleSoundInstance
 import net.minecraft.client.sounds.SoundManager
 import net.minecraft.network.chat.MutableComponent
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 
 class NPCEditorButton(
     var buttonX: Float,
@@ -28,8 +28,8 @@ class NPCEditorButton(
     var label: MutableComponent? = null,
     var cycleButtonState: Boolean? = null,
     var buttonWidth: Int = label?.let { Minecraft.getInstance().font.width(it) + (BUTTON_PADDING * 2) } ?: 0,
-    var buttonResource: ResourceLocation = cobblemonResource("textures/gui/npc/button_base.png"),
-    var buttonBorderResource: ResourceLocation = cobblemonResource("textures/gui/npc/button_border.png"),
+    var buttonResource: Identifier = cobblemonResource("textures/gui/npc/button_base.png"),
+    var buttonBorderResource: Identifier = cobblemonResource("textures/gui/npc/button_border.png"),
     val silent: Boolean = false,
     val alignRight: Boolean = false,
     val clickAction: OnPress
@@ -44,12 +44,12 @@ class NPCEditorButton(
     var isWidgetActive = false
     var startHoverX = -1
 
-    override fun renderWidget(context: GuiGraphics, mouseX: Int, mouseY: Int, partialTicks: Float) {
+    override fun extractContents(context: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, partialTicks: Float) {
         val matrices = context.pose()
 
         // Left border
         blitk(
-            matrixStack = matrices,
+            context = context,
             texture = buttonBorderResource,
             x = x,
             y = y,
@@ -61,7 +61,7 @@ class NPCEditorButton(
         )
         // Base
         blitk(
-            matrixStack = matrices,
+            context = context,
             texture = buttonResource,
             x = x + BORDER_WIDTH,
             y = y,
@@ -72,7 +72,7 @@ class NPCEditorButton(
         )
         // Right border
         blitk(
-            matrixStack = matrices,
+            context = context,
             texture = buttonBorderResource,
             x = x + (buttonWidth - BORDER_WIDTH),
             y = y,
@@ -122,9 +122,13 @@ class NPCEditorButton(
         }
     }
 
-    override fun mouseClicked(mouseX: Double, mouseY: Double, button: Int): Boolean {
+    override fun mouseClicked(event: net.minecraft.client.input.MouseButtonEvent, doubleClick: Boolean): Boolean {
+    val mouseX = event.x()
+    val mouseY = event.y()
+    val button = event.button()
+
         if (active && isMouseOver(mouseX, mouseY)) {
-            super.mouseClicked(mouseX, mouseY, button)
+            super.mouseClicked(event, doubleClick)
         }
         return false
     }

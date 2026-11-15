@@ -35,6 +35,8 @@ class PokemonWanderControlTaskConfig : SingleTaskConfig {
         behaviourConfigurationContext.addMemories(CobblemonMemories.WANDER_CONTROL)
 
         return object : OneShot<LivingEntity>() {
+            override fun getRequiredMemories() = setOf(CobblemonMemories.WANDER_CONTROL)
+
             override fun trigger(serverLevel: ServerLevel, livingEntity: LivingEntity, l: Long): Boolean {
                 if (entity !is PokemonEntity) {
                     return false
@@ -45,9 +47,9 @@ class PokemonWanderControlTaskConfig : SingleTaskConfig {
 
                 wanderControl.reset()
 
-                wanderControl.allowLand = (entity.behaviour.moving.walk.canWalk && !entity.behaviour.moving.walk.avoidsLand) || entity.behaviour.moving.fly.canFly
+                wanderControl.allowLand = entity.behaviour.moving.walk.canWalk && !entity.behaviour.moving.walk.avoidsLand
                 wanderControl.allowWater = entity.behaviour.moving.swim.canSwimInWater && !entity.behaviour.moving.swim.avoidsWater
-                wanderControl.allowAir = entity.behaviour.moving.fly.canFly && !entity.behaviour.moving.walk.canWalk
+                wanderControl.allowAir = entity.behaviour.moving.fly.canFly
 
                 wanderControl.wanderSpeed = 0.35F
 

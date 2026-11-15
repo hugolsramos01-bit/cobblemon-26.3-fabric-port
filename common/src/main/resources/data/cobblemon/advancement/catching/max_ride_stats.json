@@ -3,7 +3,11 @@
     "icon": {
       "id": "cobblemon:aprijuice_white",
       "components": {
-        "cobblemon:ride_boosts": {"boosts":{"STAMINA":69}}
+        "cobblemon:ride_boosts": {
+          "boosts": {
+            "STAMINA": 69
+          }
+        }
       }
     },
     "title": {
@@ -12,7 +16,7 @@
     "description": {
       "translate": "advancements.cobblemon.max_ride_stats.description"
     },
-	"frame": "challenge"
+    "frame": "challenge"
   },
   "parent": "cobblemon:catching/ride_pokemon",
   "criteria": {
@@ -25,7 +29,11 @@
       }
     }
   },
-  "requirements": [[ "max_stats" ]],
+  "requirements": [
+    [
+      "max_stats"
+    ]
+  ],
   "rewards": {
     "experience": 100
   },

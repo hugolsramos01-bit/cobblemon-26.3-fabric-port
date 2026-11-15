@@ -12,7 +12,7 @@
                 "wild"
             ],
             "type": "pokemon",
-            "spawnablePositionType": "grounded",
+            "spawnablePositionType": "airborne",
             "bucket": "uncommon",
             "level": "54-59",
             "weight": 4.8,
@@ -41,7 +41,7 @@
                 "wild"
             ],
             "type": "pokemon",
-            "spawnablePositionType": "grounded",
+            "spawnablePositionType": "airborne",
             "bucket": "common",
             "level": "54-59",
             "weight": 3.0,
@@ -69,7 +69,7 @@
                 "wild"
             ],
             "type": "pokemon",
-            "spawnablePositionType": "grounded",
+            "spawnablePositionType": "airborne",
             "bucket": "uncommon",
             "level": "54-59",
             "weight": 4.8,
@@ -111,7 +111,7 @@
                 "wild"
             ],
             "type": "pokemon",
-            "spawnablePositionType": "grounded",
+            "spawnablePositionType": "airborne",
             "bucket": "common",
             "level": "54-59",
             "weight": 3.0,

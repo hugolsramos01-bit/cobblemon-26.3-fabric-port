@@ -3,13 +3,13 @@
   "criteria": {
     "has_original_recipe": {
       "conditions": {
-        "recipe": "minecraft:golden_apple"
+        "recipes": "minecraft:golden_apple"
       },
       "trigger": "minecraft:recipe_unlocked"
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:golden_apple_using_applins"
+        "recipes": "cobblemon:golden_apple_using_applins"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

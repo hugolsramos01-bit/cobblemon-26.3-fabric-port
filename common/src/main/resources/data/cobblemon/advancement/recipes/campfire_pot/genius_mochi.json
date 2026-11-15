@@ -3,7 +3,7 @@
   "criteria": {
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:campfire_pot/genius_mochi"
+        "recipes": "cobblemon:campfire_pot/genius_mochi"
       },
       "trigger": "minecraft:recipe_unlocked"
     },
@@ -31,11 +31,11 @@
   "requirements": [
     [
       "has_the_recipe",
-	  "has_grain"
+      "has_grain"
     ],
-	[
+    [
       "has_the_recipe",
-	  "has_berry"
+      "has_berry"
     ]
   ],
   "rewards": {

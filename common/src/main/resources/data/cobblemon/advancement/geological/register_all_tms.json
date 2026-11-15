@@ -17,7 +17,6 @@
       "trigger": "cobblemon:has_learn_all_tm",
       "conditions": {}
     }
-
   },
   "requirements": [
     [

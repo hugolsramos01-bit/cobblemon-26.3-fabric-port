@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:terrain_extender"
+        "recipes": "cobblemon:terrain_extender"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

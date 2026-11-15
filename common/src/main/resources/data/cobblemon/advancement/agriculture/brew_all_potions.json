@@ -25,7 +25,7 @@
         ]
       }
     },
-	"obtain_super_potion": {
+    "obtain_super_potion": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
@@ -37,7 +37,7 @@
         ]
       }
     },
-	"obtain_hyper_potion": {
+    "obtain_hyper_potion": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
@@ -49,7 +49,7 @@
         ]
       }
     },
-	"obtain_max_potion": {
+    "obtain_max_potion": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
@@ -61,7 +61,7 @@
         ]
       }
     },
-	"obtain_full_restore": {
+    "obtain_full_restore": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
@@ -73,7 +73,7 @@
         ]
       }
     },
-	"obtain_ether": {
+    "obtain_ether": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
@@ -85,7 +85,7 @@
         ]
       }
     },
-	"obtain_elixir": {
+    "obtain_elixir": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
@@ -97,7 +97,7 @@
         ]
       }
     },
-	"obtain_max_ether": {
+    "obtain_max_ether": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
@@ -109,7 +109,7 @@
         ]
       }
     },
-	"obtain_max_elixir": {
+    "obtain_max_elixir": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
@@ -121,7 +121,7 @@
         ]
       }
     },
-	"obtain_ability_capsule": {
+    "obtain_ability_capsule": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
@@ -133,7 +133,7 @@
         ]
       }
     },
-	"obtain_hp_up": {
+    "obtain_hp_up": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
@@ -145,7 +145,7 @@
         ]
       }
     },
-	"obtain_protein": {
+    "obtain_protein": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
@@ -157,7 +157,7 @@
         ]
       }
     },
-	"obtain_iron": {
+    "obtain_iron": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
@@ -169,7 +169,7 @@
         ]
       }
     },
-	"obtain_calcium": {
+    "obtain_calcium": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
@@ -181,7 +181,7 @@
         ]
       }
     },
-	"obtain_zinc": {
+    "obtain_zinc": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
@@ -193,7 +193,7 @@
         ]
       }
     },
-	"obtain_carbos": {
+    "obtain_carbos": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
@@ -205,7 +205,7 @@
         ]
       }
     },
-	"obtain_pp_up": {
+    "obtain_pp_up": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
@@ -217,7 +217,7 @@
         ]
       }
     },
-	"obtain_pp_max": {
+    "obtain_pp_max": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
@@ -231,24 +231,60 @@
     }
   },
   "requirements": [
-    [ "obtain_potion" ],
-	[ "obtain_super_potion" ],
-	[ "obtain_hyper_potion" ],
-	[ "obtain_max_potion" ],
-	[ "obtain_full_restore" ],
-	[ "obtain_ether" ],
-	[ "obtain_elixir" ],
-	[ "obtain_max_ether" ],
-	[ "obtain_max_elixir" ],
-	[ "obtain_ability_capsule" ],
-	[ "obtain_hp_up" ],
-	[ "obtain_protein" ],
-	[ "obtain_iron" ],
-	[ "obtain_calcium" ],
-	[ "obtain_zinc" ],
-	[ "obtain_carbos" ],
-	[ "obtain_pp_up" ],
-	[ "obtain_pp_max" ]
+    [
+      "obtain_potion"
+    ],
+    [
+      "obtain_super_potion"
+    ],
+    [
+      "obtain_hyper_potion"
+    ],
+    [
+      "obtain_max_potion"
+    ],
+    [
+      "obtain_full_restore"
+    ],
+    [
+      "obtain_ether"
+    ],
+    [
+      "obtain_elixir"
+    ],
+    [
+      "obtain_max_ether"
+    ],
+    [
+      "obtain_max_elixir"
+    ],
+    [
+      "obtain_ability_capsule"
+    ],
+    [
+      "obtain_hp_up"
+    ],
+    [
+      "obtain_protein"
+    ],
+    [
+      "obtain_iron"
+    ],
+    [
+      "obtain_calcium"
+    ],
+    [
+      "obtain_zinc"
+    ],
+    [
+      "obtain_carbos"
+    ],
+    [
+      "obtain_pp_up"
+    ],
+    [
+      "obtain_pp_max"
+    ]
   ],
   "rewards": {
     "experience": 100

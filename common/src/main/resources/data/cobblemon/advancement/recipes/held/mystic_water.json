@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:mystic_water"
+        "recipes": "cobblemon:mystic_water"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

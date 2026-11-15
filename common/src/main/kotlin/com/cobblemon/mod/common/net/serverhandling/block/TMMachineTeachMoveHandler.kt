@@ -18,6 +18,7 @@ import com.cobblemon.mod.common.item.components.TMMoveComponent
 import com.cobblemon.mod.common.net.messages.server.block.TMMachineTeachMovePacket
 import com.cobblemon.mod.common.util.party
 import com.cobblemon.mod.common.util.pc
+import com.cobblemon.mod.common.util.playNotifySound
 import net.minecraft.server.MinecraftServer
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.sounds.SoundSource

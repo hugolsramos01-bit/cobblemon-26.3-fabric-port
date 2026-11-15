@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:black_belt"
+        "recipes": "cobblemon:black_belt"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

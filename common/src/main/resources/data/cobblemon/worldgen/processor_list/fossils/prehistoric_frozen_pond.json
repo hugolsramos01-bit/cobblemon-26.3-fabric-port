@@ -17,7 +17,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:suspicious_gravel"
+                        "id": "minecraft:suspicious_gravel"
                     }
                 },
                 {
@@ -30,7 +30,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:ice"
+                        "id": "minecraft:ice"
                     }
                 },
                 {
@@ -43,7 +43,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:snow_block"
+                        "id": "minecraft:snow_block"
                     }
                 },
                 {
@@ -56,7 +56,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:packed_ice"
+                        "id": "minecraft:packed_ice"
                     }
                 },
                 {
@@ -69,7 +69,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:ice"
+                        "id": "minecraft:ice"
                     }
                 }
             ]
@@ -88,8 +88,8 @@
                             "predicate_type": "minecraft:always_true"
                         },
                         "output_state": {
-                            "Name": "minecraft:dead_fire_coral",
-                            "Properties": {
+                            "id": "minecraft:dead_fire_coral",
+                            "properties": {
                                 "waterlogged": "false"
                             }
                         }
@@ -113,7 +113,7 @@
                             "predicate_type": "minecraft:always_true"
                         },
                         "output_state": {
-                            "Name": "minecraft:air"
+                            "id": "minecraft:air"
                         }
                     }
                 ]
@@ -139,7 +139,7 @@
                             "predicate_type": "minecraft:always_true"
                         },
                         "output_state": {
-                            "Name": "minecraft:suspicious_gravel"
+                            "id": "minecraft:suspicious_gravel"
                         }
                     }
                 ]
@@ -165,7 +165,7 @@
                             "predicate_type": "minecraft:always_true"
                         },
                         "output_state": {
-                            "Name": "minecraft:suspicious_gravel"
+                            "id": "minecraft:suspicious_gravel"
                         }
                     }
                 ]

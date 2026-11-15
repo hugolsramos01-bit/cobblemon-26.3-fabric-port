@@ -8,6 +8,10 @@
 
 package com.cobblemon.mod.common.client.render.item
 
+import com.cobblemon.mod.common.client.render.block.FrozenModelGeometry
+import com.cobblemon.mod.common.client.render.block.FrozenModelLayer
+import com.cobblemon.mod.common.client.render.block.LayerGeometryCapture
+import com.cobblemon.mod.common.client.render.block.ModelGeometryCapture
 import com.cobblemon.mod.common.client.render.models.blockbench.FloatingState
 import com.cobblemon.mod.common.client.render.models.blockbench.repository.RenderContext
 import com.cobblemon.mod.common.client.render.models.blockbench.repository.VaryingModelRepository
@@ -17,12 +21,12 @@ import com.cobblemon.mod.common.util.math.fromEulerXYZDegrees
 import com.mojang.blaze3d.platform.Lighting
 import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.blaze3d.vertex.VertexConsumer
-import com.mojang.blaze3d.vertex.VertexMultiConsumer
-import net.minecraft.client.renderer.LightTexture
-import net.minecraft.client.renderer.MultiBufferSource
-import net.minecraft.client.renderer.RenderType
+import net.minecraft.client.renderer.SubmitNodeCollector
+import net.minecraft.client.renderer.rendertype.RenderTypes
 import net.minecraft.client.renderer.texture.OverlayTexture
 import net.minecraft.core.component.DataComponents
+import net.minecraft.resources.Identifier
+import net.minecraft.client.Minecraft
 import net.minecraft.world.item.ItemDisplayContext
 import net.minecraft.world.item.ItemStack
 import org.joml.Quaternionf
@@ -34,12 +38,12 @@ class PokemonItemRenderer : CobblemonBuiltinItemRenderer {
         it.put(RenderContext.DO_QUIRKS, false)
     }
 
-    override fun render(stack: ItemStack, mode: ItemDisplayContext, matrices: PoseStack, vertexConsumers: MultiBufferSource, light: Int, overlay: Int) {
-        val pokemonItem = stack.item as? PokemonItem ?: return
-        val (species, aspects) = pokemonItem.getSpeciesAndAspects(stack) ?: return
+    override fun extract(stack: ItemStack, mode: ItemDisplayContext): Any? {
+        val pokemonItem = stack.item as? PokemonItem ?: return null
+        val (species, aspects) = pokemonItem.getSpeciesAndAspects(stack) ?: return null
+        val transformations = positions[mode] ?: return null
         val state = FloatingState()
         state.currentAspects = aspects
-        matrices.pushPose()
         val model = VaryingModelRepository.getPoser(species.resourceIdentifier, state)
         model.context = context
         context.put(RenderContext.RENDER_STATE, RenderContext.RenderState.PROFILE)
@@ -48,63 +52,104 @@ class PokemonItemRenderer : CobblemonBuiltinItemRenderer {
         context.put(RenderContext.POSABLE_STATE, state)
         state.currentModel = model
 
-        val transformations = positions[mode]!!
-
-        if (mode == ItemDisplayContext.GUI) {
-            Lighting.setupForFlatItems()
-        }
-
-        matrices.scale(transformations.scale.x, transformations.scale.y, transformations.scale.z)
-        matrices.translate(transformations.translation.x, transformations.translation.y, transformations.translation.z)
         state.setPoseToFirstSuitable(PoseType.PORTRAIT)
         model.applyAnimations(null, state, 0F, 0F, 0F, 0F, 0F)
 
-        matrices.scale(model.profileScale, model.profileScale, 0.15F)
-
-        val rotation = Quaternionf().fromEulerXYZDegrees(Vector3f(transformations.rotation.x, transformations.rotation.y, transformations.rotation.z))
-        matrices.mulPose(rotation)
-        rotation.conjugate()
-
-        val renderLayer = RenderType.entityCutout(VaryingModelRepository.getTexture(species.resourceIdentifier, state))
-        val isEnchanted = stack.get(DataComponents.ENCHANTMENTS)?.isEmpty == false
-        val vertexConsumer: VertexConsumer =
-            if (isEnchanted) {
-                VertexMultiConsumer.create(
-                    vertexConsumers.getBuffer(RenderType.entityGlintDirect()),
-                    vertexConsumers.getBuffer(renderLayer),
-                )
-            } else {
-                vertexConsumers.getBuffer(renderLayer)
-            }
-
-        matrices.pushPose()
-        val packedLight = if (mode == ItemDisplayContext.GUI) {
-            LightTexture.pack(13, 13)
-        } else {
-            light
-        }
-
-        // x = red, y = green, z = blue, w = alpha
         val tint = pokemonItem.tint(stack)
-        model.withLayerContext(vertexConsumers, state, VaryingModelRepository.getLayers(species.resourceIdentifier, state)) {
-            val tintRed = (tint.x * 255).toInt()
-            val tintGreen = (tint.y * 255).toInt()
-            val tintBlue = (tint.z * 255).toInt()
-            val tintAlpha = (tint.w * 255).toInt()
-            val color = (tintAlpha shl 24) or (tintRed shl 16) or (tintGreen shl 8) or tintBlue
-            model.render(context, matrices, vertexConsumer, packedLight, OverlayTexture.NO_OVERLAY, color)
-        }
+        val tintRed = (tint.x * 255).toInt()
+        val tintGreen = (tint.y * 255).toInt()
+        val tintBlue = (tint.z * 255).toInt()
+        val tintAlpha = (tint.w * 255).toInt()
+        val color = (tintAlpha shl 24) or (tintRed shl 16) or (tintGreen shl 8) or tintBlue
 
+        val baseCapture = ModelGeometryCapture()
+        val layerCapture = LayerGeometryCapture()
+        model.withLayerContext(layerCapture, state, VaryingModelRepository.getLayers(species.resourceIdentifier, state)) {
+            model.render(context, PoseStack(), baseCapture, 0, OverlayTexture.NO_OVERLAY, color)
+        }
+        val baseGeometry = baseCapture.freeze()
+        val layers = layerCapture.freeze()
+        val texture = VaryingModelRepository.getTexture(species.resourceIdentifier, state)
+        val profileScale = model.profileScale
         model.setDefault()
-        matrices.popPose()
-        matrices.popPose()
 
-        if (mode == ItemDisplayContext.GUI) {
-            Lighting.setupFor3DItems()
-        }
+        return PokemonRenderData(
+            transformations.translation.x,
+            transformations.translation.y,
+            transformations.translation.z,
+            transformations.scale.x,
+            transformations.scale.y,
+            transformations.scale.z,
+            transformations.rotation.x,
+            transformations.rotation.y,
+            transformations.rotation.z,
+            profileScale,
+            texture,
+            baseGeometry,
+            layers,
+            stack.get(DataComponents.ENCHANTMENTS)?.isEmpty == false,
+            mode == ItemDisplayContext.GUI
+        )
     }
 
+    override fun submitExtracted(
+        state: Any,
+        matrices: PoseStack,
+        collector: SubmitNodeCollector,
+        light: Int,
+        overlay: Int,
+        hasFoil: Boolean,
+        outlineColor: Int
+    ) {
+        val data = state as? PokemonRenderData ?: return
+        val isGui = data.modeIsGui
+        if (isGui) Minecraft.getInstance().gameRenderer.lighting().setupFor(Lighting.Entry.ITEMS_FLAT)
+
+        matrices.pushPose()
+        matrices.scale(data.scaleX, data.scaleY, data.scaleZ)
+        matrices.translate(data.translateX, data.translateY, data.translateZ)
+        matrices.scale(data.profileScale, data.profileScale, 0.15F)
+        val rotation = Quaternionf().fromEulerXYZDegrees(Vector3f(data.rotationX, data.rotationY, data.rotationZ))
+        matrices.rotate(rotation)
+
+        val packedLight = if (isGui) GUI_LIGHT else light
+        collector.submitCustomGeometry(matrices, RenderTypes.entityCutout(data.texture)) { pose, consumer ->
+            data.baseGeometry.draw(pose, LightOverrideVertexConsumer(consumer, packedLight))
+        }
+        if (hasFoil || data.wasEnchanted) {
+            collector.submitCustomGeometry(matrices, RenderTypes.itemCutoutGlint(data.texture)) { pose, consumer ->
+                data.baseGeometry.draw(pose, LightOverrideVertexConsumer(consumer, packedLight))
+            }
+        }
+        data.layers.forEach { layer ->
+            collector.submitCustomGeometry(matrices, layer.renderType) { pose, consumer ->
+                layer.geometry.draw(pose, LightOverrideVertexConsumer(consumer, packedLight))
+            }
+        }
+        matrices.popPose()
+
+    }
+
+    private data class PokemonRenderData(
+        val translateX: Double,
+        val translateY: Double,
+        val translateZ: Double,
+        val scaleX: Float,
+        val scaleY: Float,
+        val scaleZ: Float,
+        val rotationX: Float,
+        val rotationY: Float,
+        val rotationZ: Float,
+        val profileScale: Float,
+        val texture: Identifier,
+        val baseGeometry: FrozenModelGeometry,
+        val layers: List<FrozenModelLayer>,
+        val wasEnchanted: Boolean,
+        val modeIsGui: Boolean = false
+    )
+
     companion object {
+        private const val GUI_LIGHT = (13 shl 20) or (13 shl 4)
         val positions: MutableMap<ItemDisplayContext, Transformations> = mutableMapOf()
 
         init {
@@ -158,4 +203,26 @@ class PokemonItemRenderer : CobblemonBuiltinItemRenderer {
 
     inner class Transformations(val translation: Transformation<Double>, val scale: Transformation<Float>, val rotation: Transformation<Float>)
     inner class Transformation<T>(val x: T, val y: T, val z: T)
+}
+
+/** Keeps the extraction-time light out of captured vertices so submit-time lighting stays current. */
+private class LightOverrideVertexConsumer(private val delegate: VertexConsumer, private val packedLight: Int) : VertexConsumer by delegate {
+    override fun addVertex(pose: PoseStack.Pose, x: Float, y: Float, z: Float): VertexConsumer {
+        delegate.addVertex(pose, x, y, z)
+        return this
+    }
+
+    override fun addVertex(x: Float, y: Float, z: Float): VertexConsumer {
+        delegate.addVertex(x, y, z)
+        return this
+    }
+
+    override fun setColor(color: Int): VertexConsumer { delegate.setColor(color); return this }
+    override fun setColor(red: Int, green: Int, blue: Int, alpha: Int): VertexConsumer { delegate.setColor(red, green, blue, alpha); return this }
+    override fun setUv(u: Float, v: Float): VertexConsumer { delegate.setUv(u, v); return this }
+    override fun setOverlay(overlay: Int): VertexConsumer { delegate.setOverlay(overlay); return this }
+    override fun setLight(light: Int): VertexConsumer { delegate.setLight(packedLight); return this }
+    override fun setUv3(u: Float, v: Float): VertexConsumer { delegate.setUv3(u, v); return this }
+    override fun setNormal(pose: PoseStack.Pose, x: Float, y: Float, z: Float): VertexConsumer { delegate.setNormal(pose, x, y, z); return this }
+    override fun setLineWidth(width: Float): VertexConsumer { delegate.setLineWidth(width); return this }
 }

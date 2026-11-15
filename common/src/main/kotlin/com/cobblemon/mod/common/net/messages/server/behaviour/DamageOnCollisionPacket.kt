@@ -19,12 +19,12 @@ class DamageOnCollisionPacket(
     companion object {
         val ID = cobblemonResource("c2s_on_collision_damage")
         fun decode(buffer: RegistryFriendlyByteBuf): DamageOnCollisionPacket = DamageOnCollisionPacket(
-            impactVec = buffer.readVec3()
+            impactVec = Vec3.STREAM_CODEC.decode(buffer)
         )
     }
 
     override val id = ID
     override fun encode(buffer: RegistryFriendlyByteBuf) {
-        buffer.writeVec3(impactVec)
+        Vec3.STREAM_CODEC.encode(buffer, impactVec)
     }
 }

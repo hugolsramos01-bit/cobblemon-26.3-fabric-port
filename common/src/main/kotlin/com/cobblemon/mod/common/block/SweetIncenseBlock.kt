@@ -8,7 +8,7 @@
 
 package com.cobblemon.mod.common.block
 
-import com.cobblemon.mod.common.block.entity.SweetIncenseBlockEntity
+import com.cobblemon.mod.common.util.CobblemonInteractionResults
 import com.mojang.serialization.Codec
 import com.mojang.serialization.MapCodec
 import com.mojang.serialization.codecs.RecordCodecBuilder
@@ -31,7 +31,6 @@ import net.minecraft.world.level.block.state.properties.BooleanProperty
 import net.minecraft.world.level.material.Fluids
 import net.minecraft.world.level.block.state.properties.BlockStateProperties
 import net.minecraft.core.particles.ParticleTypes
-import net.minecraft.world.ItemInteractionResult
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.context.BlockPlaceContext
 import net.minecraft.world.level.BlockGetter
@@ -59,34 +58,15 @@ class SweetIncenseBlock(properties: Properties) : BaseEntityBlock(properties), S
         builder.add(LIT, WATERLOGGED)
     }
 
-    override fun getLightBlock(state: BlockState, level: BlockGetter, pos: BlockPos): Int {
-        return super.getLightBlock(state, level, pos)
-    }
-
     override fun getStateForPlacement(context: BlockPlaceContext): BlockState {
         return this.defaultBlockState()
                 .setValue(LIT, false)
                 .setValue(WATERLOGGED, context.level.getFluidState(context.clickedPos).type === Fluids.WATER)
     }
 
-    override fun newBlockEntity(pos: BlockPos, state: BlockState): BlockEntity {
-        return SweetIncenseBlockEntity(pos, state)
-    }
+    override fun newBlockEntity(pos: BlockPos, state: BlockState): BlockEntity? = null
 
-    val CODEC: MapCodec<SweetIncenseBlock> = RecordCodecBuilder.mapCodec { instance ->
-        instance.group(
-                Codec.BOOL.fieldOf("lit").forGetter { it.defaultBlockState().getValue(LIT) },
-                propertiesCodec()
-        ).apply(instance) { lit, properties ->
-            SweetIncenseBlock(properties).apply {
-                registerDefaultState(this.defaultBlockState().setValue(LIT, lit))
-            }
-        }
-    }
 
-    override fun codec(): MapCodec<out SweetIncenseBlock> {
-        return CODEC
-    }
 
     override fun getRenderShape(state: BlockState) = RenderShape.MODEL
 
@@ -98,18 +78,18 @@ class SweetIncenseBlock(properties: Properties) : BaseEntityBlock(properties), S
             player: Player,
             hand: InteractionHand,
             hit: BlockHitResult
-    ): ItemInteractionResult {
+    ): InteractionResult {
         val heldItem = player.getItemInHand(hand)
 
         return if (!state.getValue(LIT) && (heldItem.`is`(Items.FLINT_AND_STEEL) || heldItem.`is`(Items.FIRE_CHARGE))) {
             level.setBlock(pos, state.setValue(LIT, true), 3)
             level.playSound(null, pos, SoundEvents.FLINTANDSTEEL_USE, SoundSource.BLOCKS, 1.0f, 1.0f)
-            ItemInteractionResult.sidedSuccess(level.isClientSide)
+            CobblemonInteractionResults.sidedSuccess(level.isClientSide)
         } else if (state.getValue(LIT)) {
             level.setBlock(pos, state.setValue(LIT, false), 3)
-            ItemInteractionResult.sidedSuccess(level.isClientSide)
+            CobblemonInteractionResults.sidedSuccess(level.isClientSide)
         } else {
-            ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION
+            InteractionResult.TRY_WITH_EMPTY_HAND
         }
     }
 

@@ -15,7 +15,7 @@ import com.cobblemon.mod.common.client.gui.pokedex.PokedexGUIConstants
 import com.cobblemon.mod.common.client.render.drawScaledText
 import com.cobblemon.mod.common.pokemon.FormData
 import com.cobblemon.mod.common.util.cobblemonResource
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.network.chat.Component
 import kotlin.math.max
 
@@ -40,11 +40,11 @@ class FormsWidget (val pX: Int, val pY: Int, val setFormData : (String) -> (Unit
         }
     }
 
-    override fun getScrollbarPosition(): Int {
+    override fun scrollBarX(): Int {
         return left + width - scrollBarWidth
     }
 
-    override fun getMaxScroll() = max(this.height.toDouble(), (this.maxPosition - (this.bottom - this.y - 4)).toDouble()).toInt()
+    override fun getMaxScroll() = max(this.height, this.maxPosition - (this.bottom - this.y - 4))
 
     class FormSlot(val form : String, val setFormData: (String) -> Unit) : Slot<FormSlot>() {
 
@@ -53,7 +53,7 @@ class FormsWidget (val pX: Int, val pY: Int, val setFormData : (String) -> (Unit
         }
 
         override fun render(
-            context: GuiGraphics,
+            context: GuiGraphicsExtractor,
             index: Int,
             y: Int,
             x: Int,
@@ -67,7 +67,7 @@ class FormsWidget (val pX: Int, val pY: Int, val setFormData : (String) -> (Unit
 
             val textScale = 1F
             blitk(
-                matrixStack = context.pose(),
+                context = context,
                 texture = scrollSlotResource,
                 x = x,
                 y = y,
@@ -89,7 +89,11 @@ class FormsWidget (val pX: Int, val pY: Int, val setFormData : (String) -> (Unit
             return Component.literal(form)
         }
 
-        override fun mouseClicked(mouseX: Double, mouseY: Double, button: Int): Boolean {
+        override fun mouseClicked(event: net.minecraft.client.input.MouseButtonEvent, doubleClick: Boolean): Boolean {
+    val mouseX = event.x()
+    val mouseY = event.y()
+    val button = event.button()
+
             setFormData.invoke(form)
             return true
         }

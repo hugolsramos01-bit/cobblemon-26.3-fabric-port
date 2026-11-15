@@ -17,7 +17,7 @@ import net.minecraft.server.level.ServerPlayer
 
 class FabricPermissionValidator : PermissionValidator {
     override fun initialize() {
-        Cobblemon.LOGGER.info("Booting FabricPermissionValidator, permissions will be checked using fabric-permissions-api, see https://github.com/lucko/fabric-permissions-api")
+        Cobblemon.LOGGER.info("Booting FabricPermissionValidator, permissions will be checked using fabric-permissions-api")
     }
 
     override fun hasPermission(player: ServerPlayer, permission: Permission) = Permissions.check(player, permission.literal, permission.level.numericalValue)

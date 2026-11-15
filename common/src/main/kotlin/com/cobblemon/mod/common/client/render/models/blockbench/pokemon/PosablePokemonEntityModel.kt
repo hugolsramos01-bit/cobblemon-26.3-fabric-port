@@ -15,11 +15,25 @@ import com.cobblemon.mod.common.client.render.models.blockbench.PosableState
 import com.cobblemon.mod.common.client.render.models.blockbench.repository.RenderContext
 import com.cobblemon.mod.common.client.render.models.blockbench.repository.VaryingModelRepository
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity
+import net.minecraft.client.renderer.rendertype.RenderTypes
 import net.minecraft.util.Mth
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.phys.Vec3
+import net.minecraft.client.renderer.entity.state.LivingEntityRenderState
 
-class PosablePokemonEntityModel : PosableEntityModel<PokemonEntity>() {
+class PokemonRenderState : LivingEntityRenderState() {
+    /** The live entity is used only while this renderer submits this frame's immutable geometry. */
+    var pokemonEntity: PokemonEntity? = null
+    var texture: net.minecraft.resources.Identifier? = null
+    /** Render interpolation fraction captured during extraction for frame-stable Bedrock animation time. */
+    var partialTicks: Float = 0F
+    /** Base shadow radius before EntityRenderer applies the render-state scale and age scale. */
+    var pokemonShadowRadius: Float = 0F
+}
+
+// Preserve back-face culling for Bedrock boxes. Signed Solosis shell dimensions create
+// intentionally inward-facing surfaces, and thin Ponyta planes have coplanar opposite faces.
+class PosablePokemonEntityModel : PosableEntityModel<PokemonEntity>(RenderTypes::entityCutoutCull) {
     override fun setupEntityTypeContext(entity: Entity?) {
         super.setupEntityTypeContext(entity)
         (entity as? PokemonEntity)?.let {

@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:punching_glove"
+        "recipes": "cobblemon:punching_glove"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

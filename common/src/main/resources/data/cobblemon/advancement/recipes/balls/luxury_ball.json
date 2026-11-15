@@ -39,7 +39,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:luxury_ball"
+        "recipes": "cobblemon:luxury_ball"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -49,14 +49,14 @@
       "has_black_apricorn",
       "has_the_recipe"
     ],
-	[
+    [
       "has_yellow_apricorn",
       "has_the_recipe"
     ],
-	[
+    [
       "has_red_apricorn",
       "has_the_recipe"
-	]
+    ]
   ],
   "rewards": {
     "recipes": [

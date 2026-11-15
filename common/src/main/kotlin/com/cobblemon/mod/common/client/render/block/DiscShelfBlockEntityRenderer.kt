@@ -9,178 +9,64 @@
 package com.cobblemon.mod.common.client.render.block
 
 import com.cobblemon.mod.common.CobblemonItemComponents
-import com.cobblemon.mod.common.block.entity.DiscShelfBlockEntity
 import com.cobblemon.mod.common.CobblemonItems
+import com.cobblemon.mod.common.block.entity.DiscShelfBlockEntity
 import com.cobblemon.mod.common.util.cobblemonResource
 import com.mojang.blaze3d.vertex.PoseStack
-import com.mojang.blaze3d.vertex.VertexConsumer
-import com.mojang.math.Axis
 import net.minecraft.client.Minecraft
-import net.minecraft.client.renderer.LevelRenderer
-import net.minecraft.client.renderer.MultiBufferSource
-import net.minecraft.client.renderer.RenderType
+import net.minecraft.client.renderer.SubmitNodeCollector
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider
-import net.minecraft.core.Direction
+import net.minecraft.client.renderer.feature.ModelFeatureRenderer
+import net.minecraft.client.renderer.rendertype.RenderTypes
+import net.minecraft.client.renderer.state.level.CameraRenderState
 import net.minecraft.core.registries.BuiltInRegistries
-import net.minecraft.resources.ResourceLocation
-import net.minecraft.util.FastColor
+import net.minecraft.resources.Identifier
+import net.minecraft.util.LightCoordsUtil
 import net.minecraft.world.item.ItemStack
-import net.minecraft.world.level.BlockAndTintGetter
 import net.minecraft.world.level.block.HorizontalDirectionalBlock
-import org.joml.Matrix4f
+import net.minecraft.world.phys.Vec3
 
-class DiscShelfBlockEntityRenderer(ctx: BlockEntityRendererProvider.Context) :
-        BlockEntityRenderer<DiscShelfBlockEntity> {
+class DiscShelfBlockEntityRenderer(ctx: BlockEntityRendererProvider.Context) : BlockEntityRenderer<DiscShelfBlockEntity, DiscShelfRenderState> {
+    private val unknownTexture = cobblemonResource("textures/block/disc_shelf/music_disc_unknown.png")
 
-    private val slotWidthPixels = 6
-    private val slotHeightPixels = 2
-    private val textureSize = 16f
+    override fun createRenderState() = DiscShelfRenderState()
 
-    private val slotUMax = slotWidthPixels / textureSize
-    private val slotVMax = slotHeightPixels / textureSize
-
-    private val leftMargin = 1f
-    private val rightMargin = 1f
-    private val topMargin = 1f
-    private val interRowSpacing = 0f
-    private val slotBrightnessMultiplier = 0.65f
-
-    private val musicDiscUnknownTexture = cobblemonResource("textures/block/disc_shelf/music_disc_unknown.png")
-
-    override fun render(
-        entity: DiscShelfBlockEntity,
-        partialTicks: Float,
-        poseStack: PoseStack,
-        buffer: MultiBufferSource,
-        light: Int,
-        overlay: Int
-    ) {
+    override fun extractRenderState(entity: DiscShelfBlockEntity, state: DiscShelfRenderState, tickDelta: Float, cameraPosition: Vec3, breakProgress: ModelFeatureRenderer.CrumblingOverlay?) {
+        super.extractRenderState(entity, state, tickDelta, cameraPosition, breakProgress)
         val facing = entity.blockState.getValue(HorizontalDirectionalBlock.FACING)
-        val rotation = when (facing) {
-            Direction.NORTH -> 0f
-            Direction.SOUTH -> 180f
-            Direction.WEST -> 90f
-            Direction.EAST -> -90f
-            else -> 0f
-        }
-
-        val lightGetter = entity.level as? BlockAndTintGetter
-        val packedLight = lightGetter?.let {
-            LevelRenderer.getLightColor(it, entity.blockPos.relative(facing))
-        } ?: if (light != 0) light else 0xF000F0
-
-        poseStack.pushPose()
-        poseStack.translate(0.5, 0.5, 0.5)
-        poseStack.mulPose(Axis.YP.rotationDegrees(rotation))
-        poseStack.translate(-0.5, -0.5, -0.5)
-
-        val slotWidth = slotWidthPixels / textureSize
-        val slotHeight = slotHeightPixels / textureSize
-        val verticalSpacing = (slotHeightPixels + interRowSpacing) / textureSize
-        val startY = topMargin / textureSize
-
-        for ((index, item) in entity.items.withIndex()) {
-            if (!item.isEmpty) {
-                val row = index / 2
-                val col = index % 2
-                val visualCol = 1 - col
-
-                val isLeftColumn = visualCol == 0
-                val posX = if (isLeftColumn)
-                    leftMargin / textureSize
-                else
-                    (16f - rightMargin - slotWidthPixels) / textureSize
-
-                val posY = startY + (6 - row) * verticalSpacing
-
-                poseStack.pushPose()
-                poseStack.translate(posX, posY, -0.001f)
-
-                if (item.item == CobblemonItems.TECHNICAL_MACHINE) {
-                    val elementId = item.components.get(CobblemonItemComponents.TM_MOVE)!!.move.elementalType.showdownId
-                    val texture = cobblemonResource("textures/block/disc_shelf/${elementId}_tm.png")
-                    renderSlotQuad(
-                            poseStack,
-                            buffer,
-                            texture,
-                            0xFFFFFF,
-                            packedLight,
-                            slotWidth,
-                            slotHeight,
-                            tint = true,
-                            useTextRenderType = true
-                    )
-                } else {
-                    val tex = getItemTexture(item)
-                    renderSlotQuad(
-                            poseStack,
-                            buffer,
-                            tex,
-                            0xFFFFFF,
-                            packedLight,
-                            slotWidth,
-                            slotHeight,
-                            tint = false,
-                            useTextRenderType = true
-                    )
-                }
-
-                poseStack.popPose()
+        state.facing = facing
+        state.lightCoords = entity.level?.let { LightCoordsUtil.getLightCoords(it, entity.blockPos.relative(facing)) }
+            ?: state.lightCoords.takeIf { it != 0 } ?: LightCoordsUtil.FULL_BRIGHT
+        state.slots = entity.items.mapIndexedNotNull { index, item ->
+            if (item.isEmpty) null else {
+                val texture = if (item.item == CobblemonItems.TECHNICAL_MACHINE) {
+                    item.components.get(CobblemonItemComponents.TM_MOVE)?.move?.elementalType?.showdownId
+                        ?.let { cobblemonResource("textures/block/disc_shelf/${it}_tm.png") } ?: unknownTexture
+                } else getItemTexture(item)
+                DiscShelfSlot(index, texture)
             }
         }
-
-        poseStack.popPose()
     }
 
-    private fun renderSlotQuad(
-            poseStack: PoseStack,
-            buffer: MultiBufferSource,
-            texture: ResourceLocation,
-            color: Int,
-            light: Int,
-            width: Float,
-            height: Float,
-            tint: Boolean,
-            useTextRenderType: Boolean
-    ) {
-        val renderType = if (useTextRenderType) RenderType.text(texture) else RenderType.entityCutout(texture)
-        val consumer: VertexConsumer = buffer.getBuffer(renderType)
-        val matrix: Matrix4f = poseStack.last().pose()
-
-        val (rBase, gBase, bBase, a) = if (tint) {
-            listOf(
-                    FastColor.ARGB32.red(color) / 255f,
-                    FastColor.ARGB32.green(color) / 255f,
-                    FastColor.ARGB32.blue(color) / 255f,
-                    1.0f
-            )
-        } else listOf(1f, 1f, 1f, 1f)
-        val r = (rBase * slotBrightnessMultiplier).coerceIn(0f, 1f)
-        val g = (gBase * slotBrightnessMultiplier).coerceIn(0f, 1f)
-        val b = (bBase * slotBrightnessMultiplier).coerceIn(0f, 1f)
-
-        // The quad faces -Z, so a viewer looking at it sees +X on their left.
-        // U runs from slotUMax at x = 0 to 0 at x = width so the art is not mirrored.
-        consumer.addVertex(matrix, 0f, 0f, 0f).setColor(r, g, b, a).setUv(slotUMax, slotVMax)
-                .setUv1(0, 0).setUv2(light and 0xFFFF, light shr 16).setNormal(0f, 0f, -1f)
-        consumer.addVertex(matrix, 0f, height, 0f).setColor(r, g, b, a).setUv(slotUMax, 0f)
-                .setUv1(0, 0).setUv2(light and 0xFFFF, light shr 16).setNormal(0f, 0f, -1f)
-        consumer.addVertex(matrix, width, height, 0f).setColor(r, g, b, a).setUv(0f, 0f)
-                .setUv1(0, 0).setUv2(light and 0xFFFF, light shr 16).setNormal(0f, 0f, -1f)
-        consumer.addVertex(matrix, width, 0f, 0f).setColor(r, g, b, a).setUv(0f, slotVMax)
-                .setUv1(0, 0).setUv2(light and 0xFFFF, light shr 16).setNormal(0f, 0f, -1f)
-    }
-
-    private fun getItemTexture(itemStack: ItemStack): ResourceLocation {
-        val id = BuiltInRegistries.ITEM.getKey(itemStack.item)
-        val resource = cobblemonResource("textures/block/disc_shelf/${id.path}.png")
-
-        val resourceManager = Minecraft.getInstance().resourceManager
-        if (resourceManager.getResource(resource).isEmpty) {
-            return musicDiscUnknownTexture
+    override fun submit(state: DiscShelfRenderState, pose: PoseStack, collector: SubmitNodeCollector, cameraState: CameraRenderState) {
+        pose.pushPose()
+        applyCenteredBlockRotation(pose, discShelfFrameRotation(state.facing))
+        val light = state.lightCoords
+        for (slot in state.slots) {
+            pose.pushPose()
+            applyDiscShelfSlotTransform(pose, slot.index)
+            collector.submitCustomGeometry(pose, RenderTypes.text(slot.texture)) { capturedPose, consumer ->
+                drawDiscShelfSlot(capturedPose, consumer, light)
+            }
+            pose.popPose()
         }
+        pose.popPose()
+    }
 
-        return resource
+    private fun getItemTexture(stack: ItemStack): Identifier {
+        val id = BuiltInRegistries.ITEM.getKey(stack.item)
+        val resource = cobblemonResource("textures/block/disc_shelf/${id.path}.png")
+        return if (Minecraft.getInstance().resourceManager.getResource(resource).isEmpty) unknownTexture else resource
     }
 }

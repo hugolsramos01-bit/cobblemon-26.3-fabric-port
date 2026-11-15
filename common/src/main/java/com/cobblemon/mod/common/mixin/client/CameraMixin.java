@@ -14,12 +14,12 @@ import com.cobblemon.mod.common.client.render.camera.MountedCameraRenderer;
 import com.cobblemon.mod.common.duck.CameraDuck;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.client.Camera;
+import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -30,7 +30,7 @@ import org.spongepowered.asm.mixin.injection.At;
 public abstract class CameraMixin implements CameraDuck {
     @Shadow private float eyeHeight;
     @Shadow private float eyeHeightOld;
-    @Shadow private BlockGetter level;
+    @Shadow private Level level;
     @Shadow private Entity entity;
     @Final @Shadow private Vector3f forwards;
     @Final @Shadow private Vector3f up;
@@ -60,9 +60,13 @@ public abstract class CameraMixin implements CameraDuck {
     @Override public float cobblemon$getYRot() { return yRot; }
     @Override public void cobblemon$setYRot(float yRot) { this.yRot = yRot; }
 
-    @WrapOperation(method = "setup", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Camera;setPosition(DDD)V"))
-    public void cobblemon$positionCamera(Camera instance, double x, double y, double z, Operation<Void> original, @Local(ordinal = 1, argsOnly = true) boolean thirdPersonReverse) {
-        Entity entity = instance.getEntity();
+    @WrapOperation(method = "alignWithEntity", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Camera;setPosition(DDD)V"))
+    public void cobblemon$positionCamera(Camera instance, double x, double y, double z, Operation<Void> original) {
+        Entity entity = this.entity;
+        if (entity == null) {
+            original.call(instance, x, y, z);
+            return;
+        }
         Entity vehicle = entity.getVehicle();
         MountedPokemonAnimationRenderController.INSTANCE.reset();
 
@@ -71,9 +75,10 @@ public abstract class CameraMixin implements CameraDuck {
                 instance,
                 entity,
                 vehicle,
-                thirdPersonReverse,
+                Minecraft.getInstance().options.getCameraType().isMirrored(),
                 eyeHeight,
-                eyeHeightOld
+                eyeHeightOld,
+                new Vec3(x, y, z)
             );
 
             if(position != null) {

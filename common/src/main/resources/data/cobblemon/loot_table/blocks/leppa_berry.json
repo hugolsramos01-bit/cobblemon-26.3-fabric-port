@@ -1,8 +1,8 @@
 {
   "type": "minecraft:block",
-  "functions": [
+  "modifier": [
     {
-      "function": "minecraft:explosion_decay"
+      "type": "minecraft:explosion_decay"
     }
   ],
   "pools": [
@@ -15,15 +15,13 @@
         }
       ],
       "rolls": 1,
-      "conditions": [
-        {
-          "condition": "minecraft:block_state_property",
-          "block": "cobblemon:leppa_berry",
-          "properties": {
-            "age": "0"
-          }
+      "condition": {
+        "type": "minecraft:match_block",
+        "block": "cobblemon:leppa_berry",
+        "state": {
+          "age": "0"
         }
-      ]
+      }
     }
   ]
 }

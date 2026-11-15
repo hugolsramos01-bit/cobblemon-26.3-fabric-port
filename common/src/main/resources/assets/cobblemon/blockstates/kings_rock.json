@@ -1,18 +1,18 @@
 {
   "variants": {
     "facing=south": {
-      "model": "cobblemon:block/kings_rock",
+      "model": "cobblemon:block/kings_rock_block",
       "y": 180
     },
     "facing=west": {
-      "model": "cobblemon:block/kings_rock",
+      "model": "cobblemon:block/kings_rock_block",
       "y": 270
     },
     "facing=north": {
-      "model": "cobblemon:block/kings_rock"
+      "model": "cobblemon:block/kings_rock_block"
     },
     "facing=east": {
-      "model": "cobblemon:block/kings_rock",
+      "model": "cobblemon:block/kings_rock_block",
       "y": 90
     }
   }

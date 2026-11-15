@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:power_lens"
+        "recipes": "cobblemon:power_lens"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

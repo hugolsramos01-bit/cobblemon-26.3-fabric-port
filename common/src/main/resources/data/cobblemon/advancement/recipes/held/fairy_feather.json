@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:fairy_feather"
+        "recipes": "cobblemon:fairy_feather"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

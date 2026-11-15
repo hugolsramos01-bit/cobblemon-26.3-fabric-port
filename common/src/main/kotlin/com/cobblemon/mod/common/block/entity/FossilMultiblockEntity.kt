@@ -8,6 +8,7 @@
 
 package com.cobblemon.mod.common.block.entity
 
+import com.cobblemon.mod.common.util.CobblemonInteractionResults
 import com.cobblemon.mod.common.*
 import com.cobblemon.mod.common.CobblemonSounds
 import com.cobblemon.mod.common.api.multiblock.MultiblockEntity
@@ -24,6 +25,8 @@ import com.cobblemon.mod.common.item.components.TMMoveComponent
 import com.cobblemon.mod.common.item.interactive.TechnicalMachineItem
 import com.cobblemon.mod.common.util.DataKeys
 import com.cobblemon.mod.common.util.tmList
+import net.minecraft.world.level.storage.ValueInput
+import net.minecraft.world.level.storage.ValueOutput
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.core.HolderLookup
@@ -39,7 +42,6 @@ import net.minecraft.util.RandomSource
 import net.minecraft.world.level.ChunkPos
 import net.minecraft.world.Containers
 import net.minecraft.world.InteractionResult
-import net.minecraft.world.ItemInteractionResult
 import net.minecraft.world.InteractionHand
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.Pose
@@ -102,10 +104,11 @@ open class FossilMultiblockEntity(
             }
         }
         get() {
-            if(masterBlockPos != null && masterBlockPos != blockPos) {
-                val chunkPos = ChunkPos(masterBlockPos)
+            val masterPos = masterBlockPos
+            if (masterPos != null && masterPos != blockPos) {
+                val chunkPos = ChunkPos.containing(masterPos)
                 if (level?.chunkSource?.hasChunk(chunkPos.x, chunkPos.z) == true) {
-                    val entity: FossilMultiblockEntity? = level?.getBlockEntity(masterBlockPos) as? FossilMultiblockEntity?
+                    val entity: FossilMultiblockEntity? = level?.getBlockEntity(masterPos) as? FossilMultiblockEntity?
                     field = entity?.multiblockStructure
                 }
             }
@@ -131,43 +134,42 @@ open class FossilMultiblockEntity(
             }
 
             if (itemToDrop != null) {
-                Containers.dropItemStack(level, worldPosition.x.toDouble(), worldPosition.y.toDouble(), worldPosition.z.toDouble(), ItemStack(itemToDrop))
+                level?.let { world ->
+                    Containers.dropItemStack(world, worldPosition.x.toDouble(), worldPosition.y.toDouble(), worldPosition.z.toDouble(), ItemStack(itemToDrop))
+                }
             }
         }
     }
 
-    override fun loadAdditional(nbt: CompoundTag, registryLookup: HolderLookup.Provider) {
+    override fun preRemoveSideEffects(pos: BlockPos, state: BlockState) {
+        val currentLevel = level
+        if (currentLevel != null && state.block is MonitorBlock) {
+            dropDisk(currentLevel, pos, state)
+        }
+        super.preRemoveSideEffects(pos, state)
+    }
+
+    override fun loadAdditional(nbt: ValueInput) {
         val oldMultiblockStructure = this.multiblockStructure as? FossilMultiblockStructure
-        multiblockStructure = if (nbt.contains(DataKeys.MULTIBLOCK_STORAGE)) {
+        multiblockStructure = nbt.child(DataKeys.MULTIBLOCK_STORAGE).map { structureInput ->
             if (oldMultiblockStructure?.fossilState != null) {
-                // Copy the fossilState's previous animation time to the new instance
-                // Otherwise the fetus animation gets interrupted on every block update
-                val animAge = oldMultiblockStructure.fossilState.peekAge() // If someone knows a better way to fetch the age, please do.
+                // Preserve animation age across client updates of the same structure.
+                val animAge = oldMultiblockStructure.fossilState.peekAge()
                 val partialTicks = oldMultiblockStructure.fossilState.getPartialTicks()
-                FossilMultiblockStructure.fromNbt(nbt.getCompound(DataKeys.MULTIBLOCK_STORAGE), registryLookup, animAge, partialTicks)
+                FossilMultiblockStructure.load(structureInput, animAge, partialTicks)
             } else {
-                FossilMultiblockStructure.fromNbt(nbt.getCompound(DataKeys.MULTIBLOCK_STORAGE), registryLookup)
+                FossilMultiblockStructure.load(structureInput)
             }
-        } else {
-            null
-        }
-        masterBlockPos = if (nbt.contains(DataKeys.CONTROLLER_BLOCK)) {
-            NbtUtils.readBlockPos(nbt, DataKeys.CONTROLLER_BLOCK).get()
-        } else {
-            null
-        }
-        diskStack = if (nbt.contains(DataKeys.MONITOR_DISK)) {
-            ItemStack.parse(registryLookup, nbt.get(DataKeys.MONITOR_DISK)).orElse(ItemStack.EMPTY)
-        } else {
-            ItemStack.EMPTY
-        }
+        }.orElse(null)
+        masterBlockPos = nbt.read(DataKeys.CONTROLLER_BLOCK, BlockPos.CODEC).orElse(null)
+        diskStack = nbt.read(DataKeys.MONITOR_DISK, ItemStack.CODEC).orElse(ItemStack.EMPTY)
         updateMonitorScreen()
     }
 
-    override fun saveAdditional(nbt: CompoundTag, registryLookup: HolderLookup.Provider) {
-        super.saveAdditional(nbt, registryLookup)
+    override fun saveAdditional(nbt: ValueOutput) {
+        super.saveAdditional(nbt)
         if (!diskStack.isEmpty) {
-            nbt.put(DataKeys.MONITOR_DISK, ItemStack.CODEC.encodeStart(NbtOps.INSTANCE, diskStack).orThrow)
+            nbt.store(DataKeys.MONITOR_DISK, ItemStack.CODEC, diskStack)
         }
     }
 
@@ -178,18 +180,18 @@ open class FossilMultiblockEntity(
         pos: BlockPos,
         player: Player,
         hand: InteractionHand
-    ): ItemInteractionResult {
+    ): InteractionResult {
         val handStack = player.getItemInHand(hand)
-        if (porygonProcess != PorygonProcessType.INACTIVE) return ItemInteractionResult.FAIL
-        if (!isValidDisk(handStack) && !isPorygonItem(handStack)) return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION
-        if (multiblockStructure != null) return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION
+        if (porygonProcess != PorygonProcessType.INACTIVE) return InteractionResult.FAIL
+        if (!isValidDisk(handStack) && !isPorygonItem(handStack)) return InteractionResult.TRY_WITH_EMPTY_HAND
+        if (multiblockStructure != null) return InteractionResult.TRY_WITH_EMPTY_HAND
 
         if (level.isClientSide) {
             //Start Porygon process on Client Side for sounds
             if (isPorygonItem(handStack)) {
                 startPorygonProcess(handStack.copyWithCount(1), level)
             }
-            return ItemInteractionResult.SUCCESS
+            return InteractionResult.SUCCESS
         }
 
         //Porygon Item interaction
@@ -221,13 +223,13 @@ open class FossilMultiblockEntity(
 
             startPorygonProcess(newItem, level)
 
-            return ItemInteractionResult.sidedSuccess(level.isClientSide)
+            return CobblemonInteractionResults.sidedSuccess(level.isClientSide)
         }
 
         val newDisk = handStack.copyWithCount(1)
         // In creative, prevent duplicate ejection spam when repeatedly inserting the same disk.
         if (player.isCreative && !diskStack.isEmpty && ItemStack.isSameItemSameComponents(diskStack, newDisk)) {
-            return ItemInteractionResult.sidedSuccess(level.isClientSide)
+            return CobblemonInteractionResults.sidedSuccess(level.isClientSide)
         }
 
         val oldStack = diskStack
@@ -250,7 +252,7 @@ open class FossilMultiblockEntity(
         updateMonitorScreen()
         markUpdated(level, pos, state)
 
-        return ItemInteractionResult.sidedSuccess(level.isClientSide)
+        return CobblemonInteractionResults.sidedSuccess(level.isClientSide)
     }
 
     fun handleUseWithoutItem(
@@ -270,7 +272,7 @@ open class FossilMultiblockEntity(
         updateMonitorScreen()
         markUpdated(level, pos, state)
 
-        return InteractionResult.sidedSuccess(level.isClientSide)
+        return CobblemonInteractionResults.sidedSuccess(level.isClientSide)
     }
 
     fun dropDisk(level: Level, pos: BlockPos, state: BlockState) {
@@ -429,11 +431,11 @@ open class FossilMultiblockEntity(
         if (world is ServerLevel) {
             if (oldProcess == PorygonProcessType.UPGRADE){
                 val facing = blockState.getValue(HorizontalDirectionalBlock.FACING).opposite
-                val offset = facing.normal
+                val offset = facing
 
-                val particleX = blockPos.x + 0.5 + offset.x * 0.6
+                val particleX = blockPos.x + 0.5 + offset.stepX * 0.6
                 val particleY = blockPos.y + 0.7
-                val particleZ = blockPos.z + 0.5 + offset.z * 0.6
+                val particleZ = blockPos.z + 0.5 + offset.stepZ * 0.6
 
                 world.sendParticles(
                     ParticleTypes.LARGE_SMOKE,
@@ -637,7 +639,7 @@ open class FossilMultiblockEntity(
 
         val spawnPos = findSafeSpawnPos(world, entity, blockPos, spawnDirection) ?: return
 
-        entity.moveTo(
+        entity.setPos(
             spawnPos.x + 0.5,
             spawnPos.y.toDouble(),
             spawnPos.z +0.5
@@ -650,15 +652,15 @@ open class FossilMultiblockEntity(
 
         val candidates = mutableListOf<BlockPos>()
 
-        val forward = facing.normal
-        val right = facing.clockWise.normal
+        val forward = facing
+        val right = facing.clockWise
 
         for (forwardDist in 1..2) {
             for (sideOffset in -forwardDist..forwardDist) {
 
                 val pos = origin
-                    .offset(forward.x * forwardDist, 0, forward.z * forwardDist)
-                    .offset(right.x * sideOffset, 0, right.z * sideOffset)
+                    .offset(forward.stepX * forwardDist, 0, forward.stepZ * forwardDist)
+                    .offset(right.stepX * sideOffset, 0, right.stepZ * sideOffset)
 
                 candidates.add(pos)
             }

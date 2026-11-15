@@ -8,6 +8,10 @@
 
 package com.cobblemon.mod.common.api.pokedex
 
+import com.cobblemon.mod.common.util.writeCollection
+
+import com.cobblemon.mod.common.util.readCollection
+
 import com.bedrockk.molang.runtime.struct.QueryStruct
 import com.bedrockk.molang.runtime.value.DoubleValue
 import com.cobblemon.mod.common.api.molang.MoLangFunctions.addStandardFunctions
@@ -21,7 +25,7 @@ import com.mojang.serialization.codecs.ListCodec
 import com.mojang.serialization.codecs.PrimitiveCodec
 import com.mojang.serialization.codecs.RecordCodecBuilder
 import net.minecraft.network.RegistryFriendlyByteBuf
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 
 /**
  * Dex recorded information about a particular Pokémon species. This includes all forms and their information.
@@ -50,7 +54,7 @@ class SpeciesDexRecord {
     }
 
     @Transient
-    lateinit var id: ResourceLocation
+    lateinit var id: Identifier
     /** The highest level of the species that the player has owned. */
     var highestLevel = -1
         private set
@@ -95,7 +99,7 @@ class SpeciesDexRecord {
     @Transient
     lateinit var pokedexManager: AbstractPokedexManager
 
-    fun initialize(pokedexManager: AbstractPokedexManager, id: ResourceLocation) {
+    fun initialize(pokedexManager: AbstractPokedexManager, id: Identifier) {
         this.id = id
         this.pokedexManager = pokedexManager
         this.formRecords.forEach { it.value.initialize(this, it.key) }
@@ -113,9 +117,11 @@ class SpeciesDexRecord {
     }
 
     fun addInformation(pokedexEntityData: PokedexEntityData, knowledge: PokedexEntryProgress) {
-        aspects.addAll(pokedexEntityData.pokemon.aspects)
-        if (knowledge == PokedexEntryProgress.OWNED) {
-            highestLevel = maxOf(highestLevel, pokedexEntityData.pokemon.level)
+        if (pokedexEntityData.disguise == null) {
+            aspects.addAll(pokedexEntityData.pokemon.aspects)
+            if (knowledge == PokedexEntryProgress.OWNED) {
+                highestLevel = maxOf(highestLevel, pokedexEntityData.pokemon.level)
+            }
         }
     }
 
@@ -127,7 +133,8 @@ class SpeciesDexRecord {
     /** Returns true if the given Pokémon contains new information. Internal because it's only to be called from [FormDexRecord.wouldBeDifferent]. */
     internal fun wouldBeDifferent(pokemon: Pokemon) = pokemon.aspects.any { it !in aspects }
 
-    internal fun wouldBeDifferent(pokedexEntityData: PokedexEntityData) = pokedexEntityData.pokemon.aspects.any { it !in aspects }
+    internal fun wouldBeDifferent(pokedexEntityData: PokedexEntityData) =
+        pokedexEntityData.disguise == null && pokedexEntityData.pokemon.aspects.any { it !in aspects }
 
     fun getOrCreateFormRecord(formName: String): FormDexRecord {
         return formRecords.getOrPut(formName.lowercase()) {

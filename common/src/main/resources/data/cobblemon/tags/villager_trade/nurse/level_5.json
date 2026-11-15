@@ -1,0 +1,11 @@
+{
+  "replace": false,
+  "values": [
+    "cobblemon:nurse/5/emerald_and_bottle_antidote",
+    "cobblemon:nurse/5/emerald_and_bottle_awakening",
+    "cobblemon:nurse/5/emerald_and_bottle_burn_heal",
+    "cobblemon:nurse/5/emerald_and_bottle_ice_heal",
+    "cobblemon:nurse/5/emerald_and_bottle_paralyze_heal",
+    "cobblemon:nurse/5/emerald_and_bowl_vivichoke_dip"
+  ]
+}

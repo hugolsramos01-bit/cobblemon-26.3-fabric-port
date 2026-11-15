@@ -17,7 +17,9 @@
       "conditions": {
         "items": [
           {
-            "items": ["cobblemon:health_mochi"]
+            "items": [
+              "cobblemon:health_mochi"
+            ]
           }
         ]
       }
@@ -27,7 +29,9 @@
       "conditions": {
         "items": [
           {
-            "items": ["cobblemon:muscle_mochi"]
+            "items": [
+              "cobblemon:muscle_mochi"
+            ]
           }
         ]
       }
@@ -37,7 +41,9 @@
       "conditions": {
         "items": [
           {
-            "items": ["cobblemon:resist_mochi"]
+            "items": [
+              "cobblemon:resist_mochi"
+            ]
           }
         ]
       }
@@ -47,7 +53,9 @@
       "conditions": {
         "items": [
           {
-            "items": ["cobblemon:genius_mochi"]
+            "items": [
+              "cobblemon:genius_mochi"
+            ]
           }
         ]
       }
@@ -57,7 +65,9 @@
       "conditions": {
         "items": [
           {
-            "items": ["cobblemon:clever_mochi"]
+            "items": [
+              "cobblemon:clever_mochi"
+            ]
           }
         ]
       }
@@ -67,7 +77,9 @@
       "conditions": {
         "items": [
           {
-            "items": ["cobblemon:swift_mochi"]
+            "items": [
+              "cobblemon:swift_mochi"
+            ]
           }
         ]
       }
@@ -77,20 +89,36 @@
       "conditions": {
         "items": [
           {
-            "items": ["cobblemon:fresh_start_mochi"]
+            "items": [
+              "cobblemon:fresh_start_mochi"
+            ]
           }
         ]
       }
     }
   },
   "requirements": [
-    ["health_mochi"],
-    ["muscle_mochi"],
-    ["resist_mochi"],
-    ["genius_mochi"],
-    ["clever_mochi"],
-    ["swift_mochi"],
-    ["fresh_start_mochi"]
+    [
+      "health_mochi"
+    ],
+    [
+      "muscle_mochi"
+    ],
+    [
+      "resist_mochi"
+    ],
+    [
+      "genius_mochi"
+    ],
+    [
+      "clever_mochi"
+    ],
+    [
+      "swift_mochi"
+    ],
+    [
+      "fresh_start_mochi"
+    ]
   ],
   "sends_telemetry_event": false
 }

@@ -21,7 +21,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipe": "cobblemon:grass_gem_block"
+        "recipes": "cobblemon:grass_gem_block"
       }
     }
   },

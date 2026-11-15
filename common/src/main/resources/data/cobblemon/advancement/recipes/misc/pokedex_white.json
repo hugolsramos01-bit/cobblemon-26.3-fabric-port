@@ -13,7 +13,7 @@
       },
       "trigger": "minecraft:inventory_changed"
     },
-	"has_pokedex": {
+    "has_pokedex": {
       "conditions": {
         "items": [
           {
@@ -25,7 +25,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:pokedex_white"
+        "recipes": "cobblemon:pokedex_white"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -33,7 +33,7 @@
   "requirements": [
     [
       "has_apricorn",
-	  "has_pokedex",
+      "has_pokedex",
       "has_the_recipe"
     ]
   ],

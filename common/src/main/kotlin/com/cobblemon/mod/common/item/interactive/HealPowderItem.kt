@@ -24,11 +24,12 @@ import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.ItemStack
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.InteractionHand
-import net.minecraft.world.InteractionResultHolder
+import com.cobblemon.mod.common.util.CobblemonInteractionResults
+import net.minecraft.world.InteractionResult
 import net.minecraft.world.item.Items
 import net.minecraft.world.level.Level
 
-class HealPowderItem : CobblemonItem(Properties()), PokemonSelectingItem {
+class HealPowderItem(properties: net.minecraft.world.item.Item.Properties) : CobblemonItem(properties), PokemonSelectingItem {
     override val bagItem = object : BagItem {
         override val itemName = "item.cobblemon.heal_powder"
         override val returnItem = Items.AIR
@@ -50,16 +51,16 @@ class HealPowderItem : CobblemonItem(Properties()), PokemonSelectingItem {
         player: ServerPlayer,
         stack: ItemStack,
         pokemon: Pokemon
-    ): InteractionResultHolder<ItemStack>? {
+    ): InteractionResult? {
         val currentStatus = pokemon.status?.status
         return if (currentStatus != null) {
             pokemon.status = null
             pokemon.entity?.playSound(CobblemonSounds.MEDICINE_HERB_USE, 1F, 1F)
             pokemon.decrementFriendship(CobblemonMechanics.remedies.getFriendshipDrop("heal_powder", runtime))
             stack.consume(1, player)
-            InteractionResultHolder.success(stack)
+            CobblemonInteractionResults.success(stack)
         } else {
-            InteractionResultHolder.fail(stack)
+            CobblemonInteractionResults.fail(stack)
         }
     }
 
@@ -68,10 +69,10 @@ class HealPowderItem : CobblemonItem(Properties()), PokemonSelectingItem {
         battlePokemon.entity?.playSound(CobblemonSounds.MEDICINE_HERB_USE, 1F, 1F)
     }
 
-    override fun use(world: Level, user: Player, hand: InteractionHand): InteractionResultHolder<ItemStack> {
+    override fun use(world: Level, user: Player, hand: InteractionHand): InteractionResult {
         if (user is ServerPlayer) {
             return use(user, user.getItemInHand(hand))
         }
-        return InteractionResultHolder.success(user.getItemInHand(hand))
+        return CobblemonInteractionResults.success(user.getItemInHand(hand))
     }
 }

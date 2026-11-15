@@ -3,7 +3,7 @@
   "criteria": {
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:campfire_pot/pink_aprijuice"
+        "recipes": "cobblemon:campfire_pot/pink_aprijuice"
       },
       "trigger": "minecraft:recipe_unlocked"
     },
@@ -33,7 +33,7 @@
       "has_the_recipe",
       "has_flower"
     ],
-	[
+    [
       "has_the_recipe",
       "has_apricorn"
     ]

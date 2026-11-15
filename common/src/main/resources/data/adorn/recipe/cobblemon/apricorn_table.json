@@ -7,12 +7,8 @@
     "# #"
   ],
   "key": {
-    "S": {
-      "item": "cobblemon:apricorn_slab"
-    },
-    "#": {
-      "tag": "c:rods/wooden"
-    }
+    "S": "cobblemon:apricorn_slab",
+    "#": "#c:rods/wooden"
   },
   "result": {
     "id": "adorn:cobblemon/apricorn_table",

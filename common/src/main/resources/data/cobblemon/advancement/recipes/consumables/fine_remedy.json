@@ -6,8 +6,8 @@
         "items": [
           {
             "items": [
-				"cobblemon:remedy"
-			]
+              "cobblemon:remedy"
+            ]
           }
         ]
       },
@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:fine_remedy"
+        "recipes": "cobblemon:fine_remedy"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

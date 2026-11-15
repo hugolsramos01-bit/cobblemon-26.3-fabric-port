@@ -21,7 +21,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipe": "cobblemon:tm_machine"
+        "recipes": "cobblemon:tm_machine"
       }
     }
   },

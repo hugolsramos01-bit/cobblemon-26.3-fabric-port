@@ -40,7 +40,7 @@ import com.cobblemon.mod.common.util.nextBetween
 import com.cobblemon.mod.common.util.resolve
 import kotlin.random.Random
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.components.EditBox
 import net.minecraft.client.gui.screens.Screen
 import net.minecraft.client.resources.sounds.SimpleSoundInstance
@@ -141,9 +141,9 @@ class DialogueScreen(var dialogueDTO: DialogueDTO) : Screen("gui.dialogue".asTra
         )
     }
 
-    override fun renderBackground(context: GuiGraphics, mouseX: Int, mouseY: Int, delta: Float) {}
+    override fun extractBackground(context: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, delta: Float) {}
 
-    override fun renderBlurredBackground(delta: Float) {}
+    override fun extractBlurredBackground(graphics: GuiGraphicsExtractor) {}
 
     override fun init() {
         super.init()
@@ -154,7 +154,7 @@ class DialogueScreen(var dialogueDTO: DialogueDTO) : Screen("gui.dialogue".asTra
 
         val currentSpeaker = dialogueDTO.currentPageDTO.speaker
         gibber = dialogueDTO.currentPageDTO.gibber ?: currentSpeaker?.let { speakers[it]?.gibber }
-        gibberSounds = gibber?.sounds?.mapNotNull { BuiltInRegistries.SOUND_EVENT.get(it) } ?: emptyList()
+        gibberSounds = gibber?.sounds?.mapNotNull { BuiltInRegistries.SOUND_EVENT.getValue(it) } ?: emptyList()
 
         expressionsToRun = dialogueDTO.currentPageDTO.clientActions.map { it.asExpressionLike() }
         val centerX = scaledWidth / 2F
@@ -249,7 +249,7 @@ class DialogueScreen(var dialogueDTO: DialogueDTO) : Screen("gui.dialogue".asTra
 
     fun renderInput() = gibber?.graduallyShowText != true || gibberDone
 
-    override fun render(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int, delta: Float) {
+    override fun extractRenderState(guiGraphics: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, delta: Float) {
         val gibber = gibber
         if (gibber != null) {
             playGibberSpeak(
@@ -262,7 +262,7 @@ class DialogueScreen(var dialogueDTO: DialogueDTO) : Screen("gui.dialogue".asTra
         if (renderInput()) {
             dialogueTimerWidget.ratio = if (remainingSeconds <= 0) -1F else remainingSeconds / dialogueDTO.dialogueInput.deadline
         }
-        super.render(guiGraphics, mouseX, mouseY, delta)
+        super.extractRenderState(guiGraphics, mouseX, mouseY, delta)
         expressionsToRun.forEach { runtime.resolve(it) }
         expressionsToRun = emptyList()
     }
@@ -287,13 +287,17 @@ class DialogueScreen(var dialogueDTO: DialogueDTO) : Screen("gui.dialogue".asTra
         EscapeDialoguePacket().sendToServer()
     }
 
-    override fun keyPressed(keyCode: Int, scanCode: Int, modifiers: Int): Boolean {
+    override fun keyPressed(event: net.minecraft.client.input.KeyEvent): Boolean {
+    val keyCode = event.key()
+    val scanCode = event.keycode()
+    val modifiers = event.modifiers()
+
         if (isInventoryKeyPressed(minecraft, keyCode, scanCode) && focused !is EditBox) {
             onClose()
             return true
         }
 
-        return super.keyPressed(keyCode, scanCode, modifiers)
+        return super.keyPressed(event)
     }
 
     fun playGibberSpeak(delta: Float, text: String, gibber: DialogueGibberDTO) {

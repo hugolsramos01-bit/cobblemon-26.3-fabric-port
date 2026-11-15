@@ -25,7 +25,6 @@ import com.mojang.serialization.codecs.RecordCodecBuilder
 import net.minecraft.core.UUIDUtil
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.nbt.StringTag
-import net.minecraft.nbt.Tag
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.ComponentSerialization
 import java.util.*
@@ -79,17 +78,15 @@ internal class ClientPokemonP1(
         other.benchedMoves.copyFrom(this.benchedMoves)
         other.scaleModifier = this.scaleModifier
         this.features.forEach { featureNbt ->
-            val featureId = featureNbt.getString(FEATURE_ID)
+            val featureId = featureNbt.getString(FEATURE_ID).orElse("")
             if (featureId.isEmpty()) {
                 return@forEach
             }
             val speciesFeatureProviders = SpeciesFeatures.getFeaturesFor(this.species)
                 .filterIsInstance<SynchronizedSpeciesFeatureProvider<*>>()
             val feature = speciesFeatureProviders.firstNotNullOfOrNull { provider -> provider(featureNbt) } ?: return@forEach
-            if (
-                featureNbt.contains("keys", Tag.TAG_STRING.toInt()) &&
-                !featureNbt.getList("keys", Tag.TAG_STRING.toInt()).contains(StringTag.valueOf(featureId))
-            ) {
+            val featureKeys = featureNbt.getList("keys").orElse(null)
+            if (featureKeys != null && !featureKeys.contains(StringTag.valueOf(featureId))) {
                 return@forEach
             }
             other.features.removeIf { it.name == feature.name }

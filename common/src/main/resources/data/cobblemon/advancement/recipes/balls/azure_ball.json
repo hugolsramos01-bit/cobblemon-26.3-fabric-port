@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:azure_ball"
+        "recipes": "cobblemon:azure_ball"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

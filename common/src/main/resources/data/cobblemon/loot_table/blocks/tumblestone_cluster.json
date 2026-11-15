@@ -11,23 +11,21 @@
             {
               "type": "minecraft:item",
               "name": "cobblemon:tumblestone_cluster",
-              "conditions": [
-                {
-                  "condition": "minecraft:match_tool",
-                  "predicate": {
-                    "predicates": {
-                      "minecraft:enchantments": [
-                        {
-                          "enchantments": "minecraft:silk_touch",
-                          "levels": {
-                            "min": 1
-                          }
+              "condition": {
+                "type": "minecraft:match_tool",
+                "predicate": {
+                  "predicates": {
+                    "minecraft:enchantments": [
+                      {
+                        "enchantments": "minecraft:silk_touch",
+                        "levels": {
+                          "min": 1
                         }
-                      ]
-                    }
+                      }
+                    ]
                   }
                 }
-              ]
+              }
             },
             {
               "type": "minecraft:alternatives",
@@ -35,36 +33,34 @@
                 {
                   "type": "minecraft:item",
                   "name": "cobblemon:tumblestone",
-                  "functions": [
+                  "modifier": [
                     {
-                      "function": "minecraft:set_count",
+                      "type": "minecraft:set_count",
                       "count": 4,
                       "add": false
                     },
                     {
-                      "function": "minecraft:apply_bonus",
+                      "type": "minecraft:apply_bonus",
                       "enchantment": "minecraft:fortune",
                       "formula": "minecraft:ore_drops"
                     }
                   ],
-                  "conditions": [
-                    {
-                      "condition": "minecraft:match_tool",
-                      "predicate": {}
-                    }
-                  ]
+                  "condition": {
+                    "type": "minecraft:match_tool",
+                    "predicate": {}
+                  }
                 },
                 {
                   "type": "minecraft:item",
                   "name": "cobblemon:tumblestone",
-                  "functions": [
+                  "modifier": [
                     {
-                      "function": "minecraft:set_count",
+                      "type": "minecraft:set_count",
                       "count": 2,
                       "add": false
                     },
                     {
-                      "function": "minecraft:explosion_decay"
+                      "type": "minecraft:explosion_decay"
                     }
                   ]
                 }

@@ -18,8 +18,9 @@ import com.cobblemon.mod.common.client.render.drawScaledText
 import com.cobblemon.mod.common.pokemon.Pokemon
 import com.cobblemon.mod.common.util.cobblemonResource
 import com.cobblemon.mod.common.util.lang
+import com.mojang.blaze3d.platform.InputConstants
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.resources.sounds.SimpleSoundInstance
 import net.minecraft.network.chat.Component
 import net.minecraft.sounds.SoundEvent
@@ -58,11 +59,7 @@ class PartyWidget(
         resource = swapButtonResource,
         activeResource = swapButtonActiveResource,
         clickAction = {
-            swapEnabled = !swapEnabled
-            if (!swapEnabled) {
-                swapSource = null
-                draggedSlot = null
-            }
+            enableSwap(!swapEnabled)
             Minecraft.getInstance().soundManager.play(SimpleSoundInstance.forUI(CobblemonSounds.GUI_CLICK, 1.0F))
         }
     )
@@ -100,10 +97,9 @@ class PartyWidget(
         }
     }
 
-    override fun renderWidget(context: GuiGraphics, pMouseX: Int, pMouseY: Int, pPartialTicks: Float) {
-        val matrices = context.pose()
+    override fun extractWidgetRenderState(context: GuiGraphicsExtractor, pMouseX: Int, pMouseY: Int, pPartialTicks: Float) {
         blitk(
-            matrixStack = matrices,
+            context = context,
             texture = backgroundResource,
             x = x,
             y = y,
@@ -122,10 +118,10 @@ class PartyWidget(
             shadow = true
         )
 
-        swapButton.render(context, pMouseX, pMouseY, pPartialTicks)
+        swapButton.extractRenderState(context, pMouseX, pMouseY, pPartialTicks)
 
         blitk(
-            matrixStack = matrices,
+            context = context,
             texture = swapButtonIconResource,
             x = (x + 90) / SCALE,
             y = (y - 6) / SCALE,
@@ -134,79 +130,89 @@ class PartyWidget(
             scale = SCALE
         )
 
-        partySlots.forEach { it.render(context, pMouseX, pMouseY, pPartialTicks) }
+        partySlots.forEach { it.extractRenderState(context, pMouseX, pMouseY, pPartialTicks) }
 
         if (draggedSlot != null) {
-            matrices.pushPose()
-            matrices.translate(0.0, 0.0, 500.0)
-            draggedSlot!!.render(context, pMouseX, pMouseY, pPartialTicks)
-            matrices.popPose()
+            // Extract the dragged slot last so it stays above the party slots.
+            draggedSlot!!.extractRenderState(context, pMouseX, pMouseY, pPartialTicks)
         }
     }
 
-    override fun mouseClicked(pMouseX: Double, pMouseY: Double, pButton: Int): Boolean {
-        if (swapButton.isHovered) {
-            swapButton.onPress()
-            swapButton.buttonActive = swapEnabled
+    override fun mouseClicked(event: net.minecraft.client.input.MouseButtonEvent, doubleClick: Boolean): Boolean {
+        if (!active || !visible || event.button() != InputConstants.MOUSE_BUTTON_LEFT) return false
+        if (swapButton.isButtonHovered(event.x(), event.y())) {
+            swapButton.onPress(event)
+            return true
         }
 
+        val index = getIndexFromPos(event.x(), event.y())
+        if (index < 0) return false
+        val pokemon = partyList[index] ?: return true
         if (swapEnabled) {
-            val index = getIndexFromPos(pMouseX, pMouseY)
-            if (index > -1) {
-                val sourcePokemon = partyList[index]
-                if (sourcePokemon != null) {
-                    swapSource = index
-                    draggedSlot = PartySlotWidget(
-                        pX = pMouseX - (PartySlotWidget.WIDTH / 2),
-                        pY = pMouseY - (PartySlotWidget.HEIGHT / 2),
-                        partyWidget = this,
-                        summary = summary,
-                        pokemon = sourcePokemon,
-                        index = -1,
-                        isClientPartyMember = isParty
-                    )
-                    playSound(CobblemonSounds.PC_GRAB)
-                }
-            }
+            swapSource = index
+            draggedSlot = PartySlotWidget(
+                pX = event.x() - PartySlotWidget.WIDTH / 2,
+                pY = event.y() - PartySlotWidget.HEIGHT / 2,
+                partyWidget = this,
+                summary = summary,
+                pokemon = pokemon,
+                index = -1,
+                isClientPartyMember = isParty
+            )
+            playSound(CobblemonSounds.PC_GRAB)
+        } else if (summary.selectedPokemon.uuid != pokemon.uuid) {
+            summary.switchSelection(index)
+            playSound(CobblemonSounds.GUI_CLICK)
         }
-        return super.mouseClicked(pMouseX, pMouseY, pButton)
+        // Keep focus on this panel so 26.3 dispatches drag/release to the same owner.
+        return true
     }
 
-    override fun mouseReleased(pMouseX: Double, pMouseY: Double, pButton: Int): Boolean {
-        if (swapEnabled) {
-            if (swapSource != null) {
-                val index = getIndexFromPos(pMouseX, pMouseY)
-                if (index > -1 && index != swapSource) {
-                    summary.swapPartySlot(swapSource!!, index)
-                }
-                swapSource = null
-                draggedSlot = null
-                playSound(CobblemonSounds.PC_DROP)
-            }
+    override fun mouseReleased(event: net.minecraft.client.input.MouseButtonEvent): Boolean {
+        if (event.button() != InputConstants.MOUSE_BUTTON_LEFT) return false
+        val source = swapSource ?: return false
+        val target = getIndexFromPos(event.x(), event.y())
+        cancelDrag()
+        if (swapEnabled && target >= 0 && target != source) {
+            summary.swapPartySlot(source, target)
+        }
+        playSound(CobblemonSounds.PC_DROP)
+        return true
+    }
+
+    override fun mouseDragged(event: net.minecraft.client.input.MouseButtonEvent, deltaX: Double, deltaY: Double): Boolean {
+        if (!swapEnabled || swapSource == null || event.button() != InputConstants.MOUSE_BUTTON_LEFT) return false
+        if (!isWithinScreen(event.x(), event.y())) {
+            cancelDrag()
+            playSound(CobblemonSounds.PC_DROP)
+        } else {
+            // Only the temporary preview moves. Party cards keep their layout coordinates.
+            draggedSlot?.setPosition(
+                (event.x() - PartySlotWidget.WIDTH / 2).toInt(),
+                (event.y() - PartySlotWidget.HEIGHT / 2).toInt()
+            )
         }
         return true
     }
 
+    override fun isMouseOver(mouseX: Double, mouseY: Double): Boolean = active && visible &&
+        (isWithinScreen(mouseX, mouseY) || swapButton.isButtonHovered(mouseX, mouseY))
+
+    private fun cancelDrag() {
+        swapSource = null
+        draggedSlot = null
+    }
+
     fun enableSwap(boolean: Boolean = true) {
-        swapEnabled = boolean
-        swapButton.buttonActive = boolean
+        swapEnabled = boolean && isParty
+        swapButton.buttonActive = swapEnabled
+        if (!swapEnabled) cancelDrag()
     }
 
     private fun getIndexFromPos(mouseX: Double, mouseY: Double): Int {
-        for (index in 0..5) {
-            var posX = x + 6
-            var posY = y + 7
-            if (index > 0) {
-                val isEven = index % 2 == 0
-                val offsetIndex = (index - (if (isEven) 0 else 1)) / 2
-                val offsetX = if (isEven) 0 else 51
-                val offsetY = if (isEven) 0 else 8
-
-                posX += offsetX
-                posY += (32 * offsetIndex) + offsetY
-            }
-            if (mouseX.toInt() in posX..(posX + PartySlotWidget.WIDTH)
-                && mouseY.toInt() in posY..(posY + PartySlotWidget.HEIGHT)) {
+        for ((index, slot) in partySlots.withIndex()) {
+            if (mouseX >= slot.x && mouseX < slot.x + slot.width
+                && mouseY >= slot.y && mouseY < slot.y + slot.height) {
                 return index
             }
         }
@@ -217,6 +223,6 @@ class PartyWidget(
         Minecraft.getInstance().soundManager.play(SimpleSoundInstance.forUI(soundEvent, 1.0F))
     }
 
-    fun isWithinScreen(mouseX: Double, mouseY: Double): Boolean = mouseX.toInt() in x..(x + WIDTH)
-            && mouseY.toInt() in y..(y + HEIGHT)
+    fun isWithinScreen(mouseX: Double, mouseY: Double): Boolean = mouseX >= x && mouseX < x + WIDTH
+            && mouseY >= y && mouseY < y + HEIGHT
 }

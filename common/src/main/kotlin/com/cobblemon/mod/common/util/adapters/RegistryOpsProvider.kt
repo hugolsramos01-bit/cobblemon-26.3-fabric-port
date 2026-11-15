@@ -23,7 +23,21 @@ import net.minecraft.resources.RegistryOps
  * Used when as a fallback when manually encoding/decoding registry-backed values (e.g., items, predicates).
  */
 object RegistryAccessResolver {
+    private val operationAccess = ThreadLocal<RegistryAccess>()
+
+    /** Use the packet's registries on Netty threads and restore any enclosing operation. */
+    fun <T> withAccess(access: RegistryAccess, action: () -> T): T {
+        val previous = operationAccess.get()
+        operationAccess.set(access)
+        return try {
+            action()
+        } finally {
+            if (previous == null) operationAccess.remove() else operationAccess.set(previous)
+        }
+    }
+
     fun getAccess(): RegistryAccess {
+        operationAccess.get()?.let { return it }
         try {
             Cobblemon.implementation
         } catch (e: UninitializedPropertyAccessException) {

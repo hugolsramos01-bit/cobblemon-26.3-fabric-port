@@ -8,6 +8,10 @@
 
 package com.cobblemon.mod.common.api.pokedex
 
+import com.cobblemon.mod.common.util.writeCollection
+
+import com.cobblemon.mod.common.util.readCollection
+
 import com.bedrockk.molang.runtime.struct.QueryStruct
 import com.bedrockk.molang.runtime.struct.VariableStruct
 import com.bedrockk.molang.runtime.value.DoubleValue
@@ -151,11 +155,13 @@ class FormDexRecord {
                     this
                 ),
                 ifSucceeded = {
-                    genders.add(pokedexEntityData.pokemon.gender)
-                    if (knowledge == PokedexEntryProgress.OWNED) {
-                        highestLevel = maxOf(highestLevel, pokedexEntityData.pokemon.level)
+                    if (pokedexEntityData.disguise == null) {
+                        genders.add(pokedexEntityData.pokemon.gender)
+                        if (knowledge == PokedexEntryProgress.OWNED) {
+                            highestLevel = maxOf(highestLevel, pokedexEntityData.pokemon.level)
+                        }
+                        seenShinyStates.add(if (pokedexEntityData.pokemon.shiny) "shiny" else "normal")
                     }
-                    seenShinyStates.add(if (pokedexEntityData.pokemon.shiny) "shiny" else "normal")
                     if (knowledge.ordinal > this.knowledge.ordinal) {
                         this.knowledge = knowledge
                     }
@@ -175,6 +181,9 @@ class FormDexRecord {
     }
 
     fun wouldBeDifferent(pokedexEntityData: PokedexEntityData, knowledge: PokedexEntryProgress): Boolean {
+        if (pokedexEntityData.disguise != null) {
+            return knowledge.ordinal > this.knowledge.ordinal
+        }
         return pokedexEntityData.pokemon.gender !in genders
                 || (pokedexEntityData.pokemon.shiny && "shiny" !in seenShinyStates)
                 || (!pokedexEntityData.pokemon.shiny && "normal" !in seenShinyStates)

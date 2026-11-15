@@ -43,11 +43,7 @@ class FossilAnalyzerBlock(settings: Properties) : MultiblockBlock(settings), Wor
         return FossilAnalyzerBlockEntity(pos, state, FossilMultiblockBuilder(pos))
     }
 
-    override fun codec(): MapCodec<out BaseEntityBlock> {
-        return CODEC
-    }
-
-    override fun <T : BlockEntity?> getTicker(
+override fun <T : BlockEntity> getTicker(
         world: Level,
         state: BlockState,
         type: BlockEntityType<T>
@@ -75,6 +71,5 @@ class FossilAnalyzerBlock(settings: Properties) : MultiblockBlock(settings), Wor
     companion object {
         val ON = BooleanProperty.create("on")
 
-        val CODEC = simpleCodec(::FossilAnalyzerBlock)
     }
 }

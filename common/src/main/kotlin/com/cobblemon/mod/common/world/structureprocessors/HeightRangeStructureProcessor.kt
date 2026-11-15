@@ -34,7 +34,7 @@ class HeightRangeStructureProcessor(
 	val minOffset: Int,
 	val maxOffset: Int,
 	val reference: HeightReference = HeightReference.SEA_LEVEL
-) : StructureProcessor() {
+	) : StructureProcessor {
 
 	fun isValidPlacement(
 		chunkGenerator: ChunkGenerator,
@@ -48,14 +48,14 @@ class HeightRangeStructureProcessor(
 
 	override fun processBlock(
 		world: LevelReader,
-		pos: BlockPos,
-		pivot: BlockPos,
-		originalBlockInfo: StructureTemplate.StructureBlockInfo,
-		currentBlockInfo: StructureTemplate.StructureBlockInfo,
+		targetPosition: BlockPos,
+		referencePos: BlockPos,
+		templateRelativePos: BlockPos,
+		processedBlockInfo: StructureTemplate.StructureBlockInfo,
 		data: StructurePlaceSettings
-	): StructureTemplate.StructureBlockInfo = currentBlockInfo
+	): StructureTemplate.StructureBlockInfo? = processedBlockInfo
 
-	override fun getType() = CobblemonProcessorTypes.HEIGHT_RANGE
+	override fun codec() = CODEC
 
 	enum class HeightReference(private val id: String, private val type: Heightmap.Types?) {
 		SEA_LEVEL("sea_level", null),

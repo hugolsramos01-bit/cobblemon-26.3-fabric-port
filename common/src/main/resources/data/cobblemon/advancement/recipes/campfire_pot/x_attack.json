@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:campfire_pot/x_attack"
+        "recipes": "cobblemon:campfire_pot/x_attack"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

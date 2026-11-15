@@ -82,8 +82,6 @@ import net.neoforged.neoforge.event.entity.player.PlayerEvent
 import net.neoforged.neoforge.event.entity.player.PlayerWakeUpEvent
 import net.neoforged.neoforge.event.level.BlockEvent
 import net.neoforged.neoforge.event.server.ServerAboutToStartEvent
-import net.neoforged.neoforge.event.village.VillagerTradesEvent
-import net.neoforged.neoforge.event.village.WandererTradesEvent
 import net.neoforged.neoforge.registries.DeferredRegister
 import net.neoforged.neoforge.registries.NeoForgeRegistries
 import net.neoforged.neoforge.registries.RegisterEvent
@@ -129,8 +127,6 @@ class CobblemonNeoForge : CobblemonImplementation {
             addListener(::registerCommands)
             addListener(::onReload)
             addListener(::addCobblemonStructures)
-            addListener(::onVillagerTradesRegistry)
-            addListener(::onWanderingTraderRegistry)
             addListener(::onLootTableLoad)
         }
         NeoForgePlatformEventHandler.register()
@@ -278,6 +274,7 @@ class CobblemonNeoForge : CobblemonImplementation {
                 helper.register(PlatformTypeDataSerializer.ID, PlatformTypeDataSerializer)
                 helper.register(IdentifierDataSerializer.ID, IdentifierDataSerializer)
                 helper.register(UUIDSetDataSerializer.ID, UUIDSetDataSerializer)
+                helper.register(OptionalUUIDDataSerializer.ID, OptionalUUIDDataSerializer)
                 helper.register(NPCPlayerTextureSerializer.ID, NPCPlayerTextureSerializer)
             }
         }
@@ -480,19 +477,6 @@ class CobblemonNeoForge : CobblemonImplementation {
                     helper.register(identifier, effect)
                 }
             }
-        }
-    }
-
-    private fun onVillagerTradesRegistry(e: VillagerTradesEvent) {
-        CobblemonTradeOffers.tradeOffersFor(e.type).forEach { tradeOffer ->
-            // Will never be null between 1 n 5
-            e.trades[tradeOffer.requiredLevel]?.addAll(tradeOffer.tradeOffers)
-        }
-    }
-
-    private fun onWanderingTraderRegistry(e: WandererTradesEvent) {
-        CobblemonTradeOffers.resolveWanderingTradeOffers().forEach { tradeOffer ->
-            if (tradeOffer.isRareTrade) e.rareTrades.addAll(tradeOffer.tradeOffers) else e.genericTrades.addAll(tradeOffer.tradeOffers)
         }
     }
 

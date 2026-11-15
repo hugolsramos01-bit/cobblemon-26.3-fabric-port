@@ -14,14 +14,14 @@ import com.cobblemon.mod.common.api.text.bold
 import com.cobblemon.mod.common.client.CobblemonResources
 import com.cobblemon.mod.common.client.gui.CobblemonRenderable
 import com.cobblemon.mod.common.client.render.drawScaledText
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.components.Button
 import net.minecraft.client.gui.narration.NarrationElementOutput
 import net.minecraft.client.resources.sounds.SimpleSoundInstance
 import net.minecraft.client.sounds.SoundManager
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.MutableComponent
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 
 class SummaryButton(
     var buttonX: Float,
@@ -30,8 +30,8 @@ class SummaryButton(
     val buttonHeight: Number,
     val clickAction: OnPress,
     private val text: MutableComponent = Component.empty(),
-    private val resource: ResourceLocation,
-    private val activeResource: ResourceLocation? = null,
+    private val resource: Identifier,
+    private val activeResource: Identifier? = null,
     private val renderRequirement: ((button: SummaryButton) -> Boolean) = { true },
     private val clickRequirement: ((button: SummaryButton) -> Boolean) = { true },
     private val hoverTexture: Boolean = true,
@@ -48,12 +48,12 @@ class SummaryButton(
 
     var buttonActive = false
 
-    override fun mouseDragged(d: Double, e: Double, i: Int, f: Double, g: Double) = false
+    override fun mouseDragged(event: net.minecraft.client.input.MouseButtonEvent, dragX: Double, dragY: Double) = false
 
     override fun defaultButtonNarrationText(builder: NarrationElementOutput) {
     }
 
-    public override fun renderWidget(context: GuiGraphics, pMouseX: Int, pMouseY: Int, pPartialTicks: Float) {
+    public override fun extractContents(context: GuiGraphicsExtractor, pMouseX: Int, pMouseY: Int, pPartialTicks: Float) {
         if (!this.renderRequirement.invoke(this)) {
             return
         }
@@ -61,7 +61,7 @@ class SummaryButton(
 
         // Render Button
         blitk(
-            matrixStack = matrices,
+            context = context,
             texture = if (buttonActive && activeResource != null) activeResource else resource,
             x = buttonX / scale,
             y = buttonY / scale,
@@ -85,9 +85,9 @@ class SummaryButton(
         )
     }
 
-    override fun mouseClicked(mouseX: Double, mouseY: Double, button: Int): Boolean {
-        if (this.clickRequirement.invoke(this) && isButtonHovered(mouseX, mouseY)) {
-            super.mouseClicked(mouseX, mouseY, button)
+    override fun mouseClicked(event: net.minecraft.client.input.MouseButtonEvent, doubleClick: Boolean): Boolean {
+        if (this.clickRequirement.invoke(this) && isButtonHovered(event.x(), event.y())) {
+            super.mouseClicked(event, doubleClick)
         }
         return false
     }

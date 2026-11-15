@@ -9,7 +9,6 @@
 package com.cobblemon.mod.common.item.crafting.brewingstand
 
 import net.minecraft.world.item.ItemStack
-import net.minecraft.world.item.Items
 import net.minecraft.world.item.crafting.RecipeInput
 
 class BrewingStandInput(
@@ -17,11 +16,11 @@ class BrewingStandInput(
     private val bottles: List<ItemStack>
 ) : RecipeInput {
 
-    override fun getItem(index: Int): ItemStack? {
+    override fun getItem(index: Int): ItemStack {
         return when (index) {
             0 -> ingredient
-            in 1..3 -> bottles.getOrNull(index - 1)
-            else -> null
+            in 1..3 -> bottles.getOrNull(index - 1) ?: ItemStack.EMPTY
+            else -> throw IndexOutOfBoundsException("Brewing stand slot: $index")
         }
     }
 

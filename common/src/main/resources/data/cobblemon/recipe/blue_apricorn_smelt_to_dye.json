@@ -2,9 +2,7 @@
     "type": "minecraft:smelting",
     "category": "misc",
     "group": "apricorn",
-    "ingredient": {
-        "item": "cobblemon:blue_apricorn"
-    },
+    "ingredient": "cobblemon:blue_apricorn",
     "result": {
         "id": "minecraft:blue_dye"
     },

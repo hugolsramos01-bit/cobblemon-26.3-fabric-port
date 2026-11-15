@@ -9,12 +9,11 @@
 package com.cobblemon.mod.common.integration.jei.cooking
 
 import com.cobblemon.mod.common.CobblemonItems
-import com.cobblemon.mod.common.CobblemonRecipeTypes
+import com.cobblemon.mod.common.client.recipe.ClientCobblemonRecipeSnapshot
 import com.cobblemon.mod.common.integration.jei.CobblemonJeiProvider
 import mezz.jei.api.registration.IRecipeCatalystRegistration
 import mezz.jei.api.registration.IRecipeCategoryRegistration
 import mezz.jei.api.registration.IRecipeRegistration
-import net.minecraft.client.Minecraft
 
 class CampfirePotJeiProvider : CobblemonJeiProvider {
     override fun registerCategory(registration: IRecipeCategoryRegistration) {
@@ -22,13 +21,10 @@ class CampfirePotJeiProvider : CobblemonJeiProvider {
     }
 
     override fun registerRecipes(registration: IRecipeRegistration) {
-        val recipeManger = Minecraft.getInstance().level?.recipeManager ?: throw IllegalStateException("Recipe manager not found")
-
-        val shapelessRecipes = recipeManger.getAllRecipesFor(CobblemonRecipeTypes.COOKING_POT_SHAPELESS).map { it.value }
-        val cookingRecipes = recipeManger.getAllRecipesFor(CobblemonRecipeTypes.COOKING_POT_COOKING).map { it.value }
-
-        registration.addRecipes(CampfirePotRecipeCategory.RECIPE_TYPE, shapelessRecipes)
-        registration.addRecipes(CampfirePotRecipeCategory.RECIPE_TYPE, cookingRecipes)
+        val recipes = ClientCobblemonRecipeSnapshot.snapshot().cookingPotRecipes
+        if (recipes.isNotEmpty()) {
+            registration.addRecipes(CampfirePotRecipeCategory.RECIPE_TYPE, recipes)
+        }
     }
 
     override fun registerRecipeCatalsysts(registration: IRecipeCatalystRegistration) {

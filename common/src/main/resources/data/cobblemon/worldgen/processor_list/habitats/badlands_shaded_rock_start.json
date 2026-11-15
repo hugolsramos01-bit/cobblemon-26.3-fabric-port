@@ -19,7 +19,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:air"
+                        "id": "minecraft:air"
                     }
                 },
                 {
@@ -32,7 +32,7 @@
                         "predicate_type": "minecraft:block_match"
                     },
                     "output_state": {
-                        "Name": "minecraft:coarse_dirt"
+                        "id": "minecraft:coarse_dirt"
                     }
                 },
                 {
@@ -45,7 +45,7 @@
                         "predicate_type": "minecraft:block_match"
                     },
                     "output_state": {
-                        "Name": "minecraft:grass_block"
+                        "id": "minecraft:grass_block"
                     }
                 },
                 {
@@ -58,7 +58,7 @@
                         "predicate_type": "minecraft:block_match"
                     },
                     "output_state": {
-                        "Name": "minecraft:dirt"
+                        "id": "minecraft:dirt"
                     }
                 },
                 {
@@ -71,7 +71,7 @@
                         "predicate_type": "minecraft:block_match"
                     },
                     "output_state": {
-                        "Name": "minecraft:terracotta"
+                        "id": "minecraft:terracotta"
                     }
                 },
                 {
@@ -84,7 +84,7 @@
                         "predicate_type": "minecraft:block_match"
                     },
                     "output_state": {
-                        "Name": "minecraft:red_terracotta"
+                        "id": "minecraft:red_terracotta"
                     }
                 },
                 {
@@ -97,7 +97,7 @@
                         "predicate_type": "minecraft:block_match"
                     },
                     "output_state": {
-                        "Name": "minecraft:white_terracotta"
+                        "id": "minecraft:white_terracotta"
                     }
                 },
                 {
@@ -110,7 +110,7 @@
                         "predicate_type": "minecraft:block_match"
                     },
                     "output_state": {
-                        "Name": "minecraft:brown_terracotta"
+                        "id": "minecraft:brown_terracotta"
                     }
                 },
                 {
@@ -123,7 +123,7 @@
                         "predicate_type": "minecraft:block_match"
                     },
                     "output_state": {
-                        "Name": "minecraft:light_gray_terracotta"
+                        "id": "minecraft:light_gray_terracotta"
                     }
                 },
                 {
@@ -136,7 +136,7 @@
                         "predicate_type": "minecraft:block_match"
                     },
                     "output_state": {
-                        "Name": "minecraft:yellow_terracotta"
+                        "id": "minecraft:yellow_terracotta"
                     }
                 }
             ]
@@ -155,7 +155,7 @@
                             "predicate_type": "minecraft:always_true"
                         },
                         "output_state": {
-                            "Name": "minecraft:terracotta"
+                            "id": "minecraft:terracotta"
                         }
                     }
                 ]

@@ -33,7 +33,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipe": "cobblemon:disc_shelf"
+        "recipes": "cobblemon:disc_shelf"
       }
     }
   },

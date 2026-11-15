@@ -17,7 +17,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:suspicious_gravel"
+                        "id": "minecraft:suspicious_gravel"
                     }
                 },
                 {
@@ -30,7 +30,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:skeleton_skull"
+                        "id": "minecraft:skeleton_skull"
                     }
                 },
                 {
@@ -43,7 +43,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:air"
+                        "id": "minecraft:air"
                     }
                 },
                 {
@@ -56,7 +56,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:skeleton_skull"
+                        "id": "minecraft:skeleton_skull"
                     }
                 },
                 {
@@ -69,7 +69,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:air"
+                        "id": "minecraft:air"
                     }
                 },
                 {
@@ -79,8 +79,8 @@
                     },
                     "input_predicate": {
                         "block_state": {
-                            "Name": "minecraft:chest",
-                            "Properties": {
+                            "id": "minecraft:chest",
+                            "properties": {
                                 "facing": "north",
                                 "type": "single",
                                 "waterlogged": "false"
@@ -93,8 +93,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "cobblemon:gilded_chest",
-                        "Properties": {
+                        "id": "cobblemon:gilded_chest",
+                        "properties": {
                             "facing": "north"
                         }
                     }
@@ -106,8 +106,8 @@
                     },
                     "input_predicate": {
                         "block_state": {
-                            "Name": "minecraft:chest",
-                            "Properties": {
+                            "id": "minecraft:chest",
+                            "properties": {
                                 "facing": "south",
                                 "type": "single",
                                 "waterlogged": "false"
@@ -120,8 +120,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "cobblemon:gilded_chest",
-                        "Properties": {
+                        "id": "cobblemon:gilded_chest",
+                        "properties": {
                             "facing": "south"
                         }
                     }
@@ -133,8 +133,8 @@
                     },
                     "input_predicate": {
                         "block_state": {
-                            "Name": "minecraft:chest",
-                            "Properties": {
+                            "id": "minecraft:chest",
+                            "properties": {
                                 "facing": "east",
                                 "type": "single",
                                 "waterlogged": "false"
@@ -147,8 +147,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "cobblemon:gilded_chest",
-                        "Properties": {
+                        "id": "cobblemon:gilded_chest",
+                        "properties": {
                             "facing": "east"
                         }
                     }
@@ -160,8 +160,8 @@
                     },
                     "input_predicate": {
                         "block_state": {
-                            "Name": "minecraft:chest",
-                            "Properties": {
+                            "id": "minecraft:chest",
+                            "properties": {
                                 "facing": "west",
                                 "type": "single",
                                 "waterlogged": "false"
@@ -174,8 +174,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "cobblemon:gilded_chest",
-                        "Properties": {
+                        "id": "cobblemon:gilded_chest",
+                        "properties": {
                             "facing": "west"
                         }
                     }
@@ -195,8 +195,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:skeleton_skull",
-                        "Properties": {
+                        "id": "minecraft:skeleton_skull",
+                        "properties": {
                             "rotation": "1"
                         }
                     }
@@ -211,8 +211,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:skeleton_skull",
-                        "Properties": {
+                        "id": "minecraft:skeleton_skull",
+                        "properties": {
                             "rotation": "2"
                         }
                     }
@@ -227,8 +227,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:skeleton_skull",
-                        "Properties": {
+                        "id": "minecraft:skeleton_skull",
+                        "properties": {
                             "rotation": "3"
                         }
                     }
@@ -243,8 +243,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:skeleton_skull",
-                        "Properties": {
+                        "id": "minecraft:skeleton_skull",
+                        "properties": {
                             "rotation": "4"
                         }
                     }
@@ -259,8 +259,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:skeleton_skull",
-                        "Properties": {
+                        "id": "minecraft:skeleton_skull",
+                        "properties": {
                             "rotation": "5"
                         }
                     }
@@ -275,8 +275,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:skeleton_skull",
-                        "Properties": {
+                        "id": "minecraft:skeleton_skull",
+                        "properties": {
                             "rotation": "6"
                         }
                     }
@@ -291,8 +291,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:skeleton_skull",
-                        "Properties": {
+                        "id": "minecraft:skeleton_skull",
+                        "properties": {
                             "rotation": "7"
                         }
                     }
@@ -307,8 +307,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:skeleton_skull",
-                        "Properties": {
+                        "id": "minecraft:skeleton_skull",
+                        "properties": {
                             "rotation": "8"
                         }
                     }
@@ -323,8 +323,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:skeleton_skull",
-                        "Properties": {
+                        "id": "minecraft:skeleton_skull",
+                        "properties": {
                             "rotation": "9"
                         }
                     }
@@ -339,8 +339,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:skeleton_skull",
-                        "Properties": {
+                        "id": "minecraft:skeleton_skull",
+                        "properties": {
                             "rotation": "10"
                         }
                     }
@@ -355,8 +355,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:skeleton_skull",
-                        "Properties": {
+                        "id": "minecraft:skeleton_skull",
+                        "properties": {
                             "rotation": "11"
                         }
                     }
@@ -371,8 +371,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:skeleton_skull",
-                        "Properties": {
+                        "id": "minecraft:skeleton_skull",
+                        "properties": {
                             "rotation": "12"
                         }
                     }
@@ -387,8 +387,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:skeleton_skull",
-                        "Properties": {
+                        "id": "minecraft:skeleton_skull",
+                        "properties": {
                             "rotation": "13"
                         }
                     }
@@ -403,8 +403,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:skeleton_skull",
-                        "Properties": {
+                        "id": "minecraft:skeleton_skull",
+                        "properties": {
                             "rotation": "14"
                         }
                     }
@@ -419,8 +419,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:skeleton_skull",
-                        "Properties": {
+                        "id": "minecraft:skeleton_skull",
+                        "properties": {
                             "rotation": "15"
                         }
                     }
@@ -428,8 +428,8 @@
                 {
                     "input_predicate": {
                         "block_state": {
-                            "Name": "minecraft:stone_brick_slab",
-                            "Properties": {
+                            "id": "minecraft:stone_brick_slab",
+                            "properties": {
                                 "half": "bottom",
                                 "waterlogged": "false"
                             }
@@ -441,8 +441,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:mossy_stone_brick_slab",
-                        "Properties": {
+                        "id": "minecraft:mossy_stone_brick_slab",
+                        "properties": {
                             "type": "bottom",
                             "waterlogged": "false"
                         }
@@ -451,8 +451,8 @@
                 {
                     "input_predicate": {
                         "block_state": {
-                            "Name": "minecraft:stone_brick_stairs",
-                            "Properties": {
+                            "id": "minecraft:stone_brick_stairs",
+                            "properties": {
                                 "facing": "west",
                                 "half": "bottom",
                                 "shape": "straight",
@@ -466,8 +466,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:mossy_stone_brick_stairs",
-                        "Properties": {
+                        "id": "minecraft:mossy_stone_brick_stairs",
+                        "properties": {
                             "facing": "west",
                             "half": "bottom",
                             "shape": "straight",
@@ -478,8 +478,8 @@
                 {
                     "input_predicate": {
                         "block_state": {
-                            "Name": "minecraft:stone_brick_stairs",
-                            "Properties": {
+                            "id": "minecraft:stone_brick_stairs",
+                            "properties": {
                                 "facing": "east",
                                 "half": "bottom",
                                 "shape": "straight",
@@ -493,8 +493,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:mossy_stone_brick_stairs",
-                        "Properties": {
+                        "id": "minecraft:mossy_stone_brick_stairs",
+                        "properties": {
                             "facing": "east",
                             "half": "bottom",
                             "shape": "straight",
@@ -505,8 +505,8 @@
                 {
                     "input_predicate": {
                         "block_state": {
-                            "Name": "minecraft:stone_brick_stairs",
-                            "Properties": {
+                            "id": "minecraft:stone_brick_stairs",
+                            "properties": {
                                 "facing": "south",
                                 "half": "bottom",
                                 "shape": "straight",
@@ -520,8 +520,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:mossy_stone_brick_stairs",
-                        "Properties": {
+                        "id": "minecraft:mossy_stone_brick_stairs",
+                        "properties": {
                             "facing": "south",
                             "half": "bottom",
                             "shape": "straight",
@@ -532,8 +532,8 @@
                 {
                     "input_predicate": {
                         "block_state": {
-                            "Name": "minecraft:stone_brick_stairs",
-                            "Properties": {
+                            "id": "minecraft:stone_brick_stairs",
+                            "properties": {
                                 "facing": "north",
                                 "half": "bottom",
                                 "shape": "straight",
@@ -547,8 +547,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:mossy_stone_brick_stairs",
-                        "Properties": {
+                        "id": "minecraft:mossy_stone_brick_stairs",
+                        "properties": {
                             "facing": "north",
                             "half": "bottom",
                             "shape": "straight",
@@ -559,8 +559,8 @@
                 {
                     "input_predicate": {
                         "block_state": {
-                            "Name": "minecraft:stone_brick_stairs",
-                            "Properties": {
+                            "id": "minecraft:stone_brick_stairs",
+                            "properties": {
                                 "facing": "west",
                                 "half": "top",
                                 "shape": "straight",
@@ -574,8 +574,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:mossy_stone_brick_stairs",
-                        "Properties": {
+                        "id": "minecraft:mossy_stone_brick_stairs",
+                        "properties": {
                             "facing": "west",
                             "half": "top",
                             "shape": "straight",
@@ -586,8 +586,8 @@
                 {
                     "input_predicate": {
                         "block_state": {
-                            "Name": "minecraft:stone_brick_stairs",
-                            "Properties": {
+                            "id": "minecraft:stone_brick_stairs",
+                            "properties": {
                                 "facing": "east",
                                 "half": "top",
                                 "shape": "straight",
@@ -601,8 +601,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:mossy_stone_brick_stairs",
-                        "Properties": {
+                        "id": "minecraft:mossy_stone_brick_stairs",
+                        "properties": {
                             "facing": "east",
                             "half": "top",
                             "shape": "straight",
@@ -613,8 +613,8 @@
                 {
                     "input_predicate": {
                         "block_state": {
-                            "Name": "minecraft:stone_brick_stairs",
-                            "Properties": {
+                            "id": "minecraft:stone_brick_stairs",
+                            "properties": {
                                 "facing": "north",
                                 "half": "top",
                                 "shape": "straight",
@@ -628,8 +628,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:mossy_stone_brick_stairs",
-                        "Properties": {
+                        "id": "minecraft:mossy_stone_brick_stairs",
+                        "properties": {
                             "facing": "north",
                             "half": "top",
                             "shape": "straight",
@@ -640,8 +640,8 @@
                 {
                     "input_predicate": {
                         "block_state": {
-                            "Name": "minecraft:stone_brick_stairs",
-                            "Properties": {
+                            "id": "minecraft:stone_brick_stairs",
+                            "properties": {
                                 "facing": "south",
                                 "half": "top",
                                 "shape": "straight",
@@ -655,8 +655,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:mossy_stone_brick_stairs",
-                        "Properties": {
+                        "id": "minecraft:mossy_stone_brick_stairs",
+                        "properties": {
                             "facing": "south",
                             "half": "top",
                             "shape": "straight",
@@ -667,8 +667,8 @@
                 {
                     "input_predicate": {
                         "block_state": {
-                            "Name": "minecraft:stone_brick_stairs",
-                            "Properties": {
+                            "id": "minecraft:stone_brick_stairs",
+                            "properties": {
                                 "facing": "south",
                                 "half": "top",
                                 "shape": "outer_left",
@@ -682,8 +682,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:mossy_stone_brick_stairs",
-                        "Properties": {
+                        "id": "minecraft:mossy_stone_brick_stairs",
+                        "properties": {
                             "facing": "south",
                             "half": "top",
                             "shape": "outer_left",
@@ -694,8 +694,8 @@
                 {
                     "input_predicate": {
                         "block_state": {
-                            "Name": "minecraft:stone_brick_stairs",
-                            "Properties": {
+                            "id": "minecraft:stone_brick_stairs",
+                            "properties": {
                                 "facing": "north",
                                 "half": "top",
                                 "shape": "outer_left",
@@ -709,8 +709,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:mossy_stone_brick_stairs",
-                        "Properties": {
+                        "id": "minecraft:mossy_stone_brick_stairs",
+                        "properties": {
                             "facing": "north",
                             "half": "top",
                             "shape": "outer_left",
@@ -721,8 +721,8 @@
                 {
                     "input_predicate": {
                         "block_state": {
-                            "Name": "minecraft:stone_brick_stairs",
-                            "Properties": {
+                            "id": "minecraft:stone_brick_stairs",
+                            "properties": {
                                 "facing": "east",
                                 "half": "top",
                                 "shape": "outer_left",
@@ -736,8 +736,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:mossy_stone_brick_stairs",
-                        "Properties": {
+                        "id": "minecraft:mossy_stone_brick_stairs",
+                        "properties": {
                             "facing": "east",
                             "half": "top",
                             "shape": "outer_left",
@@ -748,8 +748,8 @@
                 {
                     "input_predicate": {
                         "block_state": {
-                            "Name": "minecraft:stone_brick_stairs",
-                            "Properties": {
+                            "id": "minecraft:stone_brick_stairs",
+                            "properties": {
                                 "facing": "west",
                                 "half": "top",
                                 "shape": "outer_left",
@@ -763,8 +763,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:mossy_stone_brick_stairs",
-                        "Properties": {
+                        "id": "minecraft:mossy_stone_brick_stairs",
+                        "properties": {
                             "facing": "west",
                             "half": "top",
                             "shape": "outer_left",
@@ -775,8 +775,8 @@
                 {
                     "input_predicate": {
                         "block_state": {
-                            "Name": "minecraft:stone_brick_stairs",
-                            "Properties": {
+                            "id": "minecraft:stone_brick_stairs",
+                            "properties": {
                                 "facing": "south",
                                 "half": "top",
                                 "shape": "outer_right",
@@ -790,8 +790,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:mossy_stone_brick_stairs",
-                        "Properties": {
+                        "id": "minecraft:mossy_stone_brick_stairs",
+                        "properties": {
                             "facing": "south",
                             "half": "top",
                             "shape": "outer_right",
@@ -802,8 +802,8 @@
                 {
                     "input_predicate": {
                         "block_state": {
-                            "Name": "minecraft:stone_brick_stairs",
-                            "Properties": {
+                            "id": "minecraft:stone_brick_stairs",
+                            "properties": {
                                 "facing": "north",
                                 "half": "top",
                                 "shape": "outer_right",
@@ -817,8 +817,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:mossy_stone_brick_stairs",
-                        "Properties": {
+                        "id": "minecraft:mossy_stone_brick_stairs",
+                        "properties": {
                             "facing": "north",
                             "half": "top",
                             "shape": "outer_right",
@@ -829,8 +829,8 @@
                 {
                     "input_predicate": {
                         "block_state": {
-                            "Name": "minecraft:stone_brick_stairs",
-                            "Properties": {
+                            "id": "minecraft:stone_brick_stairs",
+                            "properties": {
                                 "facing": "east",
                                 "half": "top",
                                 "shape": "outer_right",
@@ -844,8 +844,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:mossy_stone_brick_stairs",
-                        "Properties": {
+                        "id": "minecraft:mossy_stone_brick_stairs",
+                        "properties": {
                             "facing": "east",
                             "half": "top",
                             "shape": "outer_right",
@@ -856,8 +856,8 @@
                 {
                     "input_predicate": {
                         "block_state": {
-                            "Name": "minecraft:stone_brick_stairs",
-                            "Properties": {
+                            "id": "minecraft:stone_brick_stairs",
+                            "properties": {
                                 "facing": "west",
                                 "half": "top",
                                 "shape": "outer_right",
@@ -871,8 +871,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:mossy_stone_brick_stairs",
-                        "Properties": {
+                        "id": "minecraft:mossy_stone_brick_stairs",
+                        "properties": {
                             "facing": "west",
                             "half": "top",
                             "shape": "outer_right",
@@ -883,8 +883,8 @@
                 {
                     "input_predicate": {
                         "block_state": {
-                            "Name": "minecraft:stone_brick_stairs",
-                            "Properties": {
+                            "id": "minecraft:stone_brick_stairs",
+                            "properties": {
                                 "facing": "south",
                                 "half": "bottom",
                                 "shape": "outer_left",
@@ -898,8 +898,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:mossy_stone_brick_stairs",
-                        "Properties": {
+                        "id": "minecraft:mossy_stone_brick_stairs",
+                        "properties": {
                             "facing": "south",
                             "half": "bottom",
                             "shape": "outer_left",
@@ -910,8 +910,8 @@
                 {
                     "input_predicate": {
                         "block_state": {
-                            "Name": "minecraft:stone_brick_stairs",
-                            "Properties": {
+                            "id": "minecraft:stone_brick_stairs",
+                            "properties": {
                                 "facing": "north",
                                 "half": "bottom",
                                 "shape": "outer_left",
@@ -925,8 +925,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:mossy_stone_brick_stairs",
-                        "Properties": {
+                        "id": "minecraft:mossy_stone_brick_stairs",
+                        "properties": {
                             "facing": "north",
                             "half": "bottom",
                             "shape": "outer_left",
@@ -937,8 +937,8 @@
                 {
                     "input_predicate": {
                         "block_state": {
-                            "Name": "minecraft:stone_brick_stairs",
-                            "Properties": {
+                            "id": "minecraft:stone_brick_stairs",
+                            "properties": {
                                 "facing": "east",
                                 "half": "bottom",
                                 "shape": "outer_left",
@@ -952,8 +952,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:mossy_stone_brick_stairs",
-                        "Properties": {
+                        "id": "minecraft:mossy_stone_brick_stairs",
+                        "properties": {
                             "facing": "east",
                             "half": "bottom",
                             "shape": "outer_left",
@@ -964,8 +964,8 @@
                 {
                     "input_predicate": {
                         "block_state": {
-                            "Name": "minecraft:stone_brick_stairs",
-                            "Properties": {
+                            "id": "minecraft:stone_brick_stairs",
+                            "properties": {
                                 "facing": "west",
                                 "half": "bottom",
                                 "shape": "outer_left",
@@ -979,8 +979,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:mossy_stone_brick_stairs",
-                        "Properties": {
+                        "id": "minecraft:mossy_stone_brick_stairs",
+                        "properties": {
                             "facing": "west",
                             "half": "bottom",
                             "shape": "outer_left",
@@ -991,8 +991,8 @@
                 {
                     "input_predicate": {
                         "block_state": {
-                            "Name": "minecraft:stone_brick_stairs",
-                            "Properties": {
+                            "id": "minecraft:stone_brick_stairs",
+                            "properties": {
                                 "facing": "north",
                                 "half": "bottom",
                                 "shape": "outer_right",
@@ -1006,8 +1006,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:mossy_stone_brick_stairs",
-                        "Properties": {
+                        "id": "minecraft:mossy_stone_brick_stairs",
+                        "properties": {
                             "facing": "north",
                             "half": "bottom",
                             "shape": "outer_right",
@@ -1018,8 +1018,8 @@
                 {
                     "input_predicate": {
                         "block_state": {
-                            "Name": "minecraft:stone_brick_stairs",
-                            "Properties": {
+                            "id": "minecraft:stone_brick_stairs",
+                            "properties": {
                                 "facing": "south",
                                 "half": "bottom",
                                 "shape": "outer_right",
@@ -1033,8 +1033,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:mossy_stone_brick_stairs",
-                        "Properties": {
+                        "id": "minecraft:mossy_stone_brick_stairs",
+                        "properties": {
                             "facing": "south",
                             "half": "bottom",
                             "shape": "outer_right",
@@ -1045,8 +1045,8 @@
                 {
                     "input_predicate": {
                         "block_state": {
-                            "Name": "minecraft:stone_brick_stairs",
-                            "Properties": {
+                            "id": "minecraft:stone_brick_stairs",
+                            "properties": {
                                 "facing": "east",
                                 "half": "bottom",
                                 "shape": "outer_right",
@@ -1060,8 +1060,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:mossy_stone_brick_stairs",
-                        "Properties": {
+                        "id": "minecraft:mossy_stone_brick_stairs",
+                        "properties": {
                             "facing": "east",
                             "half": "bottom",
                             "shape": "outer_right",
@@ -1072,8 +1072,8 @@
                 {
                     "input_predicate": {
                         "block_state": {
-                            "Name": "minecraft:stone_brick_stairs",
-                            "Properties": {
+                            "id": "minecraft:stone_brick_stairs",
+                            "properties": {
                                 "facing": "west",
                                 "half": "bottom",
                                 "shape": "outer_right",
@@ -1087,8 +1087,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:mossy_stone_brick_stairs",
-                        "Properties": {
+                        "id": "minecraft:mossy_stone_brick_stairs",
+                        "properties": {
                             "facing": "west",
                             "half": "bottom",
                             "shape": "outer_right",
@@ -1106,7 +1106,7 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:cracked_stone_bricks"
+                        "id": "minecraft:cracked_stone_bricks"
                     }
                 },
                 {
@@ -1119,14 +1119,14 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:mossy_stone_bricks"
+                        "id": "minecraft:mossy_stone_bricks"
                     }
                 },
                 {
                     "input_predicate": {
                         "block_state": {
-                            "Name": "minecraft:stone_brick_stairs",
-                            "Properties": {
+                            "id": "minecraft:stone_brick_stairs",
+                            "properties": {
                                 "facing": "south",
                                 "half": "top",
                                 "shape": "inner_left",
@@ -1140,8 +1140,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:mossy_stone_brick_stairs",
-                        "Properties": {
+                        "id": "minecraft:mossy_stone_brick_stairs",
+                        "properties": {
                             "facing": "south",
                             "half": "top",
                             "shape": "inner_left",
@@ -1152,8 +1152,8 @@
                 {
                     "input_predicate": {
                         "block_state": {
-                            "Name": "minecraft:stone_brick_stairs",
-                            "Properties": {
+                            "id": "minecraft:stone_brick_stairs",
+                            "properties": {
                                 "facing": "north",
                                 "half": "top",
                                 "shape": "inner_left",
@@ -1167,8 +1167,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:mossy_stone_brick_stairs",
-                        "Properties": {
+                        "id": "minecraft:mossy_stone_brick_stairs",
+                        "properties": {
                             "facing": "north",
                             "half": "top",
                             "shape": "inner_left",
@@ -1179,8 +1179,8 @@
                 {
                     "input_predicate": {
                         "block_state": {
-                            "Name": "minecraft:stone_brick_stairs",
-                            "Properties": {
+                            "id": "minecraft:stone_brick_stairs",
+                            "properties": {
                                 "facing": "east",
                                 "half": "top",
                                 "shape": "inner_left",
@@ -1194,8 +1194,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:mossy_stone_brick_stairs",
-                        "Properties": {
+                        "id": "minecraft:mossy_stone_brick_stairs",
+                        "properties": {
                             "facing": "east",
                             "half": "top",
                             "shape": "inner_left",
@@ -1206,8 +1206,8 @@
                 {
                     "input_predicate": {
                         "block_state": {
-                            "Name": "minecraft:stone_brick_stairs",
-                            "Properties": {
+                            "id": "minecraft:stone_brick_stairs",
+                            "properties": {
                                 "facing": "west",
                                 "half": "top",
                                 "shape": "inner_left",
@@ -1221,8 +1221,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:mossy_stone_brick_stairs",
-                        "Properties": {
+                        "id": "minecraft:mossy_stone_brick_stairs",
+                        "properties": {
                             "facing": "west",
                             "half": "top",
                             "shape": "inner_left",
@@ -1233,8 +1233,8 @@
                 {
                     "input_predicate": {
                         "block_state": {
-                            "Name": "minecraft:stone_brick_stairs",
-                            "Properties": {
+                            "id": "minecraft:stone_brick_stairs",
+                            "properties": {
                                 "facing": "south",
                                 "half": "top",
                                 "shape": "inner_right",
@@ -1248,8 +1248,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:mossy_stone_brick_stairs",
-                        "Properties": {
+                        "id": "minecraft:mossy_stone_brick_stairs",
+                        "properties": {
                             "facing": "south",
                             "half": "top",
                             "shape": "inner_right",
@@ -1260,8 +1260,8 @@
                 {
                     "input_predicate": {
                         "block_state": {
-                            "Name": "minecraft:stone_brick_stairs",
-                            "Properties": {
+                            "id": "minecraft:stone_brick_stairs",
+                            "properties": {
                                 "facing": "north",
                                 "half": "top",
                                 "shape": "inner_right",
@@ -1275,8 +1275,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:mossy_stone_brick_stairs",
-                        "Properties": {
+                        "id": "minecraft:mossy_stone_brick_stairs",
+                        "properties": {
                             "facing": "north",
                             "half": "top",
                             "shape": "inner_right",
@@ -1287,8 +1287,8 @@
                 {
                     "input_predicate": {
                         "block_state": {
-                            "Name": "minecraft:stone_brick_stairs",
-                            "Properties": {
+                            "id": "minecraft:stone_brick_stairs",
+                            "properties": {
                                 "facing": "east",
                                 "half": "top",
                                 "shape": "inner_right",
@@ -1302,8 +1302,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:mossy_stone_brick_stairs",
-                        "Properties": {
+                        "id": "minecraft:mossy_stone_brick_stairs",
+                        "properties": {
                             "facing": "east",
                             "half": "top",
                             "shape": "inner_right",
@@ -1314,8 +1314,8 @@
                 {
                     "input_predicate": {
                         "block_state": {
-                            "Name": "minecraft:stone_brick_stairs",
-                            "Properties": {
+                            "id": "minecraft:stone_brick_stairs",
+                            "properties": {
                                 "facing": "west",
                                 "half": "top",
                                 "shape": "inner_right",
@@ -1329,8 +1329,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:mossy_stone_brick_stairs",
-                        "Properties": {
+                        "id": "minecraft:mossy_stone_brick_stairs",
+                        "properties": {
                             "facing": "west",
                             "half": "top",
                             "shape": "inner_right",
@@ -1341,8 +1341,8 @@
                 {
                     "input_predicate": {
                         "block_state": {
-                            "Name": "minecraft:stone_brick_stairs",
-                            "Properties": {
+                            "id": "minecraft:stone_brick_stairs",
+                            "properties": {
                                 "facing": "south",
                                 "half": "bottom",
                                 "shape": "inner_left",
@@ -1356,8 +1356,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:mossy_stone_brick_stairs",
-                        "Properties": {
+                        "id": "minecraft:mossy_stone_brick_stairs",
+                        "properties": {
                             "facing": "south",
                             "half": "bottom",
                             "shape": "inner_left",
@@ -1368,8 +1368,8 @@
                 {
                     "input_predicate": {
                         "block_state": {
-                            "Name": "minecraft:stone_brick_stairs",
-                            "Properties": {
+                            "id": "minecraft:stone_brick_stairs",
+                            "properties": {
                                 "facing": "north",
                                 "half": "bottom",
                                 "shape": "inner_left",
@@ -1383,8 +1383,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:mossy_stone_brick_stairs",
-                        "Properties": {
+                        "id": "minecraft:mossy_stone_brick_stairs",
+                        "properties": {
                             "facing": "north",
                             "half": "bottom",
                             "shape": "inner_left",
@@ -1395,8 +1395,8 @@
                 {
                     "input_predicate": {
                         "block_state": {
-                            "Name": "minecraft:stone_brick_stairs",
-                            "Properties": {
+                            "id": "minecraft:stone_brick_stairs",
+                            "properties": {
                                 "facing": "east",
                                 "half": "bottom",
                                 "shape": "inner_left",
@@ -1410,8 +1410,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:mossy_stone_brick_stairs",
-                        "Properties": {
+                        "id": "minecraft:mossy_stone_brick_stairs",
+                        "properties": {
                             "facing": "east",
                             "half": "bottom",
                             "shape": "inner_left",
@@ -1422,8 +1422,8 @@
                 {
                     "input_predicate": {
                         "block_state": {
-                            "Name": "minecraft:stone_brick_stairs",
-                            "Properties": {
+                            "id": "minecraft:stone_brick_stairs",
+                            "properties": {
                                 "facing": "west",
                                 "half": "bottom",
                                 "shape": "inner_left",
@@ -1437,8 +1437,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:mossy_stone_brick_stairs",
-                        "Properties": {
+                        "id": "minecraft:mossy_stone_brick_stairs",
+                        "properties": {
                             "facing": "west",
                             "half": "bottom",
                             "shape": "inner_left",
@@ -1449,8 +1449,8 @@
                 {
                     "input_predicate": {
                         "block_state": {
-                            "Name": "minecraft:stone_brick_stairs",
-                            "Properties": {
+                            "id": "minecraft:stone_brick_stairs",
+                            "properties": {
                                 "facing": "north",
                                 "half": "bottom",
                                 "shape": "inner_right",
@@ -1464,8 +1464,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:mossy_stone_brick_stairs",
-                        "Properties": {
+                        "id": "minecraft:mossy_stone_brick_stairs",
+                        "properties": {
                             "facing": "north",
                             "half": "bottom",
                             "shape": "inner_right",
@@ -1476,8 +1476,8 @@
                 {
                     "input_predicate": {
                         "block_state": {
-                            "Name": "minecraft:stone_brick_stairs",
-                            "Properties": {
+                            "id": "minecraft:stone_brick_stairs",
+                            "properties": {
                                 "facing": "south",
                                 "half": "bottom",
                                 "shape": "inner_right",
@@ -1491,8 +1491,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:mossy_stone_brick_stairs",
-                        "Properties": {
+                        "id": "minecraft:mossy_stone_brick_stairs",
+                        "properties": {
                             "facing": "south",
                             "half": "bottom",
                             "shape": "inner_right",
@@ -1503,8 +1503,8 @@
                 {
                     "input_predicate": {
                         "block_state": {
-                            "Name": "minecraft:stone_brick_stairs",
-                            "Properties": {
+                            "id": "minecraft:stone_brick_stairs",
+                            "properties": {
                                 "facing": "east",
                                 "half": "bottom",
                                 "shape": "inner_right",
@@ -1518,8 +1518,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:mossy_stone_brick_stairs",
-                        "Properties": {
+                        "id": "minecraft:mossy_stone_brick_stairs",
+                        "properties": {
                             "facing": "east",
                             "half": "bottom",
                             "shape": "inner_right",
@@ -1530,8 +1530,8 @@
                 {
                     "input_predicate": {
                         "block_state": {
-                            "Name": "minecraft:stone_brick_stairs",
-                            "Properties": {
+                            "id": "minecraft:stone_brick_stairs",
+                            "properties": {
                                 "facing": "west",
                                 "half": "bottom",
                                 "shape": "inner_right",
@@ -1545,8 +1545,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:mossy_stone_brick_stairs",
-                        "Properties": {
+                        "id": "minecraft:mossy_stone_brick_stairs",
+                        "properties": {
                             "facing": "west",
                             "half": "bottom",
                             "shape": "inner_right",
@@ -1557,8 +1557,8 @@
                 {
                     "input_predicate": {
                         "block_state": {
-                            "Name": "minecraft:chest",
-                            "Properties": {
+                            "id": "minecraft:chest",
+                            "properties": {
                                 "facing": "north",
                                 "type": "single",
                                 "waterlogged": "false"
@@ -1571,8 +1571,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "cobblemon:gimmighoul_chest",
-                        "Properties": {
+                        "id": "cobblemon:gimmighoul_chest",
+                        "properties": {
                             "facing": "north"
                         }
                     }
@@ -1580,8 +1580,8 @@
                 {
                     "input_predicate": {
                         "block_state": {
-                            "Name": "minecraft:chest",
-                            "Properties": {
+                            "id": "minecraft:chest",
+                            "properties": {
                                 "facing": "south",
                                 "type": "single",
                                 "waterlogged": "false"
@@ -1594,8 +1594,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "cobblemon:gimmighoul_chest",
-                        "Properties": {
+                        "id": "cobblemon:gimmighoul_chest",
+                        "properties": {
                             "facing": "south"
                         }
                     }
@@ -1603,8 +1603,8 @@
                 {
                     "input_predicate": {
                         "block_state": {
-                            "Name": "minecraft:chest",
-                            "Properties": {
+                            "id": "minecraft:chest",
+                            "properties": {
                                 "facing": "east",
                                 "type": "single",
                                 "waterlogged": "false"
@@ -1617,8 +1617,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "cobblemon:gimmighoul_chest",
-                        "Properties": {
+                        "id": "cobblemon:gimmighoul_chest",
+                        "properties": {
                             "facing": "east"
                         }
                     }
@@ -1626,8 +1626,8 @@
                 {
                     "input_predicate": {
                         "block_state": {
-                            "Name": "minecraft:chest",
-                            "Properties": {
+                            "id": "minecraft:chest",
+                            "properties": {
                                 "facing": "west",
                                 "type": "single",
                                 "waterlogged": "false"
@@ -1640,8 +1640,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "cobblemon:gimmighoul_chest",
-                        "Properties": {
+                        "id": "cobblemon:gimmighoul_chest",
+                        "properties": {
                             "facing": "west"
                         }
                     }
@@ -1660,8 +1660,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:barrel",
-                        "Properties": {
+                        "id": "minecraft:barrel",
+                        "properties": {
                             "facing": "up",
                             "open": "false"
                         }
@@ -1681,8 +1681,8 @@
                         "predicate_type": "minecraft:always_true"
                     },
                     "output_state": {
-                        "Name": "minecraft:barrel",
-                        "Properties": {
+                        "id": "minecraft:barrel",
+                        "properties": {
                             "facing": "up",
                             "open": "false"
                         }

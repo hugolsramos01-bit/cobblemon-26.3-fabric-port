@@ -18,6 +18,7 @@ import net.minecraft.world.entity.ai.behavior.declarative.BehaviorBuilder
 import net.minecraft.world.entity.ai.behavior.declarative.Trigger
 import net.minecraft.world.entity.ai.memory.MemoryModuleType
 import net.minecraft.world.entity.schedule.Activity
+import net.minecraft.server.level.ServerLevel
 
 class SwitchToFightTaskConfig : SingleTaskConfig {
     val activity = Activity.FIGHT
@@ -32,7 +33,8 @@ class SwitchToFightTaskConfig : SingleTaskConfig {
             it.present(MemoryModuleType.ATTACK_TARGET)
         ).apply(it) { _ ->
             Trigger { world, entity, _ ->
-                if (entity.commandSenderWorld.getCurrentDifficultyAt(entity.blockPosition()).difficulty == Difficulty.PEACEFUL) {
+                val serverLevel = entity.level() as? ServerLevel ?: return@Trigger false
+                if (serverLevel.getCurrentDifficultyAt(entity.blockPosition()).difficulty == Difficulty.PEACEFUL) {
                     return@Trigger false
                 }
 

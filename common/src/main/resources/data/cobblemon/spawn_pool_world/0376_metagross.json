@@ -10,7 +10,7 @@
                 "natural"
             ],
             "type": "pokemon",
-            "spawnablePositionType": "grounded",
+            "spawnablePositionType": "airborne",
             "bucket": "ultra-rare",
             "level": "45-60",
             "weight": 2.0,

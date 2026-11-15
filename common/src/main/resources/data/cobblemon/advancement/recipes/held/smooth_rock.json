@@ -39,7 +39,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:smooth_rock"
+        "recipes": "cobblemon:smooth_rock"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

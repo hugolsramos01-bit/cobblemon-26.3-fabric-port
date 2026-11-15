@@ -12,16 +12,17 @@ import java.util.List;
 
 import com.cobblemon.mod.common.integration.AdornCompatibility;
 import juuxel.adorn.block.variant.BlockVariantSet;
-import juuxel.adorn.block.variant.BlockVariantSets;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Pseudo;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 // There appears to be a data driven way to do this now, however I am not sure how it works since there is no wiki or anything so yolo
-@Mixin(BlockVariantSets.class)
+@Pseudo
+@Mixin(targets = "juuxel.adorn.block.variant.BlockVariantSets", remap = false)
 public abstract class AdornRegisterInvoker {
     @Final
     @Shadow(remap = false)

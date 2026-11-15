@@ -1,29 +1,27 @@
 {
   "type": "minecraft:block",
-  "functions": [
+  "modifier": [
     {
-      "function": "minecraft:explosion_decay"
+      "type": "minecraft:explosion_decay"
     }
   ],
   "pools": [
     {
       "bonus_rolls": 0.0,
-      "conditions": [
-        {
-          "block": "cobblemon:galarica_nut_bush",
-          "condition": "minecraft:block_state_property",
-          "properties": {
-            "age": "3"
-          }
+      "condition": {
+        "block": "cobblemon:galarica_nut_bush",
+        "type": "minecraft:match_block",
+        "state": {
+          "age": "3"
         }
-      ],
+      },
       "entries": [
         {
           "type": "minecraft:item",
           "name": "cobblemon:galarica_nuts"
         }
       ],
-      "functions": [
+      "modifier": [
         {
           "add": false,
           "count": {
@@ -31,12 +29,12 @@
             "max": 3.0,
             "min": 2.0
           },
-          "function": "minecraft:set_count"
+          "type": "minecraft:set_count"
         },
         {
           "enchantment": "minecraft:fortune",
           "formula": "minecraft:uniform_bonus_count",
-          "function": "minecraft:apply_bonus",
+          "type": "minecraft:apply_bonus",
           "parameters": {
             "bonusMultiplier": 1
           }
@@ -46,22 +44,20 @@
     },
     {
       "bonus_rolls": 0.0,
-      "conditions": [
-        {
-          "block": "cobblemon:galarica_nut_bush",
-          "condition": "minecraft:block_state_property",
-          "properties": {
-            "age": "2"
-          }
+      "condition": {
+        "block": "cobblemon:galarica_nut_bush",
+        "type": "minecraft:match_block",
+        "state": {
+          "age": "2"
         }
-      ],
+      },
       "entries": [
         {
           "type": "minecraft:item",
           "name": "cobblemon:galarica_nuts"
         }
       ],
-      "functions": [
+      "modifier": [
         {
           "add": false,
           "count": {
@@ -69,12 +65,12 @@
             "max": 2.0,
             "min": 1.0
           },
-          "function": "minecraft:set_count"
+          "type": "minecraft:set_count"
         },
         {
           "enchantment": "minecraft:fortune",
           "formula": "minecraft:uniform_bonus_count",
-          "function": "minecraft:apply_bonus",
+          "type": "minecraft:apply_bonus",
           "parameters": {
             "bonusMultiplier": 1
           }

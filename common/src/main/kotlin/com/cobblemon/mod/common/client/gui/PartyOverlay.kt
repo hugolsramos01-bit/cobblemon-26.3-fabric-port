@@ -35,17 +35,15 @@ import java.util.UUID
 import net.minecraft.client.DeltaTracker
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.Gui
-import net.minecraft.client.gui.GuiGraphics
-import net.minecraft.client.gui.components.toasts.AdvancementToast
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.components.toasts.Toast
 import net.minecraft.client.gui.screens.ChatScreen
 import net.minecraft.client.gui.screens.Screen
-import net.minecraft.resources.ResourceLocation
-import net.minecraft.util.Mth
+import net.minecraft.resources.Identifier
 import kotlin.math.ceil
 import kotlin.math.floor
 
-class PartyOverlay : Gui(Minecraft.getInstance()) {
+class PartyOverlay {
 
     companion object {
         private const val SLOT_HEIGHT = 30
@@ -74,11 +72,11 @@ class PartyOverlay : Gui(Minecraft.getInstance()) {
         fun canRender(): Boolean {
             val minecraft = Minecraft.getInstance()
             // Hiding if a Screen is open and not exempt
-            if (minecraft.screen != null) {
-                if (!screenExemptions.contains(minecraft.screen?.javaClass as Class<out Screen>))
+            if (minecraft.gui.screen() != null) {
+                if (!screenExemptions.contains(minecraft.gui.screen()?.javaClass as Class<out Screen>))
                     return false
             }
-            if (minecraft.options.hideGui || minecraft.debugOverlay.showDebugScreen()) {
+            if (minecraft.gui.hud.isHidden() || minecraft.debugOverlay.showDebugScreen()) {
                 return false
             }
             // Hiding if toggled via Keybind
@@ -92,11 +90,11 @@ class PartyOverlay : Gui(Minecraft.getInstance()) {
     private val stateAtIndex = hashMapOf<Int, Pair<UUID, FloatingState>>()
 
     val starterToast = CobblemonToast(
-        Mth.createInsecureUUID(),
+        UUID.randomUUID(),
         listOf(CobblemonItems.POKE_BALL.defaultInstance),
         lang("ui.starter.choose_starter_title", SummaryBinding.boundKey().displayName).red(),
         lang("ui.starter.choose_starter_description", SummaryBinding.boundKey().displayName).darkGray(),
-        AdvancementToast.BACKGROUND_SPRITE,
+        com.cobblemon.mod.common.api.toast.Toast.VANILLA_BACKGROUND_SPRITE,
         -1F,
         0
     )
@@ -105,7 +103,7 @@ class PartyOverlay : Gui(Minecraft.getInstance()) {
 
     fun resetAttachedToast() {
         val minecraft = Minecraft.getInstance()
-        minecraft.toasts.clear()
+        minecraft.gui.toastManager().clear()
         starterToast.nextVisibility = Toast.Visibility.SHOW
         attachedToast = false
     }
@@ -120,7 +118,7 @@ class PartyOverlay : Gui(Minecraft.getInstance()) {
         return state.second
     }
 
-    override fun render(context: GuiGraphics, tickCounter: DeltaTracker) {
+    fun render(context: GuiGraphicsExtractor, tickCounter: DeltaTracker) {
         if (!canRender()) return
 
         val partialDeltaTicks = tickCounter.realtimeDeltaTicks
@@ -137,7 +135,7 @@ class PartyOverlay : Gui(Minecraft.getInstance()) {
                 !CobblemonClient.checkedStarterScreen
             ) {
                 // Adding starter toast on start and connect of client to server.
-                minecraft.toasts.addToast(this.starterToast)
+                minecraft.gui.toastManager().addToast(this.starterToast)
                 this.attachedToast = true
             }
             return // Don't render the stuff below if no Pokémon in party
@@ -166,7 +164,7 @@ class PartyOverlay : Gui(Minecraft.getInstance()) {
                 val y = startY + indexOffsetY + portraitFrameOffsetY
 
                 blitk(
-                    matrixStack = matrices,
+                    context = context,
                     texture = portraitBackground,
                     x = panelX + portraitFrameOffsetX + selectedOffsetX,
                     y = y,
@@ -181,11 +179,10 @@ class PartyOverlay : Gui(Minecraft.getInstance()) {
                     y + PORTRAIT_DIAMETER
                 )
 
-                matrices.pushPose()
+                matrices.pushMatrix()
                 matrices.translate(
-                    panelX + portraitFrameOffsetX + selectedOffsetX + PORTRAIT_DIAMETER / 2.0 - 1.0,
-                    y.toDouble() - 12,
-                    0.0
+                    (panelX + portraitFrameOffsetX + selectedOffsetX + PORTRAIT_DIAMETER / 2.0 - 1.0).toFloat(),
+                    (y.toDouble() - 12).toFloat()
                 )
 
                 val shouldAnimate = when (Cobblemon.config.partyPortraitAnimations) {
@@ -196,14 +193,14 @@ class PartyOverlay : Gui(Minecraft.getInstance()) {
 
                 drawPosablePortrait(
                     identifier = pokemon.species.resourceIdentifier,
-                    matrixStack = matrices,
+                    context = context,
                     doQuirks = false,
                     partialTicks = if (shouldAnimate) partialDeltaTicks else 0F,
                     contextScale = pokemon.form.baseScale,
                     state = getPokemonState(index = index, pokemonUUID = pokemon.uuid).also { it.currentAspects = pokemon.aspects }
                 )
 
-                matrices.popPose()
+                matrices.popMatrix()
                 context.disableScissor()
             }
 
@@ -219,7 +216,7 @@ class PartyOverlay : Gui(Minecraft.getInstance()) {
             else partySlotCollapsed
 
             blitk(
-                matrixStack = matrices,
+                context = context,
                 texture = slotTexture,
                 x = panelX,
                 y = indexY,
@@ -257,7 +254,7 @@ class PartyOverlay : Gui(Minecraft.getInstance()) {
 
                 if (displayLevelScroll) {
                     blitk(
-                        matrixStack = matrices,
+                        context = context,
                         texture = levelScroll,
                         x = (panelX + selectedOffsetX + portraitFrameOffsetX + 2),
                         y = (indexY + portraitFrameOffsetY + 2 + levelScrollPositionOffset),
@@ -271,7 +268,7 @@ class PartyOverlay : Gui(Minecraft.getInstance()) {
                 val stateIcon = pokemon.state.getIcon(pokemon)
                 if (stateIcon != null) {
                     blitk(
-                        matrixStack = matrices,
+                        context = context,
                         texture = stateIcon,
                         x = (panelX + selectedOffsetX + 8) / SCALE,
                         y = (indexY + portraitFrameOffsetY + 1) / SCALE,
@@ -319,7 +316,7 @@ class PartyOverlay : Gui(Minecraft.getInstance()) {
 
                 if (pokemon.gender != Gender.GENDERLESS) {
                     blitk(
-                        matrixStack = matrices,
+                        context = context,
                         texture = if (pokemon.gender == Gender.MALE) genderIconMale else genderIconFemale,
                         x = (panelX + selectedOffsetX + 40) / SCALE,
                         y = (indexY + 25)  / SCALE,
@@ -337,7 +334,7 @@ class PartyOverlay : Gui(Minecraft.getInstance()) {
                 val (red, green) = getDepletableRedGreen(hpRatio)
 
                 blitk(
-                    matrixStack = matrices,
+                    context = context,
                     texture = CobblemonResources.WHITE,
                     x = panelX + selectedOffsetX + 46,
                     y = indexY + (barHeightMax - hpBarHeight) + 5,
@@ -396,7 +393,7 @@ class PartyOverlay : Gui(Minecraft.getInstance()) {
                 val expBarHeight = expRatio * barHeightMax
 
                 blitk(
-                    matrixStack = matrices,
+                    context = context,
                     texture = CobblemonResources.WHITE,
                     x = panelX + selectedOffsetX + 49,
                     y = indexY + (barHeightMax - expBarHeight) + 5,
@@ -493,7 +490,7 @@ class PartyOverlay : Gui(Minecraft.getInstance()) {
 
                 if (evoPopupTransparency > 0) {
                     blitk(
-                        matrixStack = matrices,
+                        context = context,
                         texture = newEvoPopup,
                         x = (panelX + selectedOffsetX + (if (expTextTransparency > 0 && movePopupTransparency > 0) 78F else 56.5F)) / SCALE,
                         y = (indexY + 4 + evoPopupYOffset) / SCALE,
@@ -505,7 +502,7 @@ class PartyOverlay : Gui(Minecraft.getInstance()) {
                 }
                 if (movePopupTransparency > 0) {
                     blitk(
-                        matrixStack = matrices,
+                        context = context,
                         texture = newMovesPopup,
                         x = (panelX + selectedOffsetX + 56.5F) / SCALE,
                         y = (indexY + (if (expTextTransparency > 0) 4 else 17) + movePopupYOffset) / SCALE,
@@ -519,7 +516,7 @@ class PartyOverlay : Gui(Minecraft.getInstance()) {
                 val ballIcon = pokemon.caughtBall.name.toAssetPath("textures/gui/ball/", ".png")
                 val ballHeight = 22
                 blitk(
-                    matrixStack = matrices,
+                    context = context,
                     texture = ballIcon,
                     x = (panelX + selectedOffsetX + 43.5) / SCALE,
                     y = (indexY + 22) / SCALE,
@@ -534,7 +531,7 @@ class PartyOverlay : Gui(Minecraft.getInstance()) {
                 if (!pokemon.isFainted() && status != null) {
                     val statusName = status.showdownName
                     blitk(
-                        matrixStack = matrices,
+                        context = context,
                         texture = cobblemonResource("textures/gui/party/status_$statusName.png"),
                         x = panelX + selectedOffsetX + 51,
                         y = indexY + 8,
@@ -547,11 +544,11 @@ class PartyOverlay : Gui(Minecraft.getInstance()) {
                 val heldItem = pokemon.heldItemNoCopy()
                 if (!heldItem.isEmpty) {
                     renderScaledGuiItemIcon(
+                        context = context,
                         itemStack = heldItem,
                         x = panelX + selectedOffsetX + 12.0,
                         y = indexY + 14.0,
                         scale = 0.5,
-                        matrixStack = matrices,
                         zTranslation = 0.0F
                     )
                 }

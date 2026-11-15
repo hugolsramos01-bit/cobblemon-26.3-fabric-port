@@ -3,7 +3,10 @@
   "criteria": {
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:campfire_pot/numb_candy"
+        "recipes": [
+          "cobblemon:campfire_pot/numb_candy_l",
+          "cobblemon:campfire_pot/numb_candy_xl"
+        ]
       },
       "trigger": "minecraft:recipe_unlocked"
     },

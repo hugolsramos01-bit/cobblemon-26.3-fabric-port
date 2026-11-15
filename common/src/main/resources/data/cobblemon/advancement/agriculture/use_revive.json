@@ -18,19 +18,25 @@
         "item": "cobblemon:revive"
       }
     },
-	"use_max_revive": {
+    "use_max_revive": {
       "trigger": "cobblemon:pokemon_interact",
       "conditions": {
         "item": "cobblemon:max_revive"
       }
     },
-	"use_revival_herb": {
+    "use_revival_herb": {
       "trigger": "cobblemon:pokemon_interact",
       "conditions": {
         "item": "cobblemon:revival_herb"
       }
     }
   },
-  "requirements": [[ "use_revive", "use_max_revive", "use_revival_herb" ]],
+  "requirements": [
+    [
+      "use_revive",
+      "use_max_revive",
+      "use_revival_herb"
+    ]
+  ],
   "sends_telemetry_event": false
 }

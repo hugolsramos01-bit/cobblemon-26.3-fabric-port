@@ -3,7 +3,7 @@
   "criteria": {
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:campfire_pot/big_malasada"
+        "recipes": "cobblemon:campfire_pot/big_malasada"
       },
       "trigger": "minecraft:recipe_unlocked"
     },
@@ -32,7 +32,7 @@
     [
       "has_the_recipe",
       "has_melon",
-	  "has_melons"
+      "has_melons"
     ]
   ],
   "rewards": {

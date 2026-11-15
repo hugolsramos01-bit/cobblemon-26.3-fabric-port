@@ -37,7 +37,9 @@ public class IngredientSlotMixin implements RecipeAwareSlot {
 			cancellable = true
 	)
 	private void cobblemon$mayPlace(ItemStack stack, CallbackInfoReturnable<Boolean> cir) {
-		if (BrewingStandRecipe.Companion.isInput(stack, cobblemon$recipeManager)) {
+		// Without the full recipe set the client predicts acceptance; the server menu
+		// applies the exact recipe check and remains authoritative.
+		if (cobblemon$recipeManager == null || BrewingStandRecipe.Companion.isInput(stack, cobblemon$recipeManager)) {
 			cir.setReturnValue(true);
 		}
 	}

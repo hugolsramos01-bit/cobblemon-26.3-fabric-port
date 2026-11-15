@@ -33,12 +33,12 @@ import com.cobblemon.mod.common.util.lang
 import com.cobblemon.mod.common.util.math.fromEulerXYZDegrees
 import com.cobblemon.mod.common.util.toAssetPath
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.narration.NarratableEntry
 import net.minecraft.client.gui.narration.NarrationElementOutput
 import net.minecraft.client.resources.sounds.SimpleSoundInstance
 import net.minecraft.client.sounds.SoundManager
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 import org.joml.Quaternionf
 import org.joml.Vector3f
 
@@ -104,12 +104,12 @@ class BattleSwitchPokemonSelection(
         return Pair(slotX, slotY)
     }
 
-    override fun renderWidget(context: GuiGraphics, mouseX: Int, mouseY: Int, delta: Float) {
+    override fun extractWidgetRenderState(context: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, delta: Float) {
         if (opacity <= 0.05F) return
 
         val matrixStack = context.pose()
         blitk(
-            matrixStack = matrixStack,
+            context = context,
             texture = underlayTexture,
             x = x,
             y = y,
@@ -131,7 +131,7 @@ class BattleSwitchPokemonSelection(
         for (index in 0 until 6) {
             val (slotX, slotY) = getSlotPosition(index)
             blitk(
-                matrixStack = matrixStack,
+                context = context,
                 texture = SwitchTile.partySelectDisabledResourse,
                 x = slotX,
                 y = slotY,
@@ -144,12 +144,12 @@ class BattleSwitchPokemonSelection(
 
         tiles.forEach { it.render(context, mouseX.toDouble(), mouseY.toDouble(), delta) }
         if(!request.forceSwitch) {
-            backButton.render(context, mouseX, mouseY, delta)
+            backButton.extractRenderState(context, mouseX, mouseY, delta)
         }
     }
 
     override fun mousePrimaryClicked(mouseX: Double, mouseY: Double): Boolean {
-        if (backButton.isHovered(mouseX, mouseY)) {
+        if (!request.forceSwitch && backButton.isHovered(mouseX, mouseY)) {
             battleGUI.changeActionSelection(null)
             playDownSound(Minecraft.getInstance().soundManager)
             return true
@@ -192,7 +192,7 @@ class BattleSwitchPokemonSelection(
 
         fun isHovered(mouseX: Double, mouseY: Double) = mouseX in x..(x + SELECT_WIDTH) && mouseY in (y..(y + SELECT_HEIGHT))
 
-        fun render(context: GuiGraphics, mouseX: Double, mouseY: Double, deltaTicks: Float) {
+        fun render(context: GuiGraphicsExtractor, mouseX: Double, mouseY: Double, deltaTicks: Float) {
             state.currentAspects = pokemon.aspects
             val matrixStack = context.pose()
             val healthRatioSplits = showdownPokemon.condition.split(" ")[0].split("/")
@@ -204,7 +204,7 @@ class BattleSwitchPokemonSelection(
                 val status = pokemon.status?.status?.showdownName
                 if (hpRatio > 0F && status != null) {
                     blitk(
-                        matrixStack = matrixStack,
+                        context = context,
                         texture = cobblemonResource("textures/gui/interact/party_select_status_$status.png"),
                         x = x + 27,
                         y = y + 24,
@@ -223,7 +223,7 @@ class BattleSwitchPokemonSelection(
                 }
 
                 blitk(
-                    matrixStack = matrixStack,
+                    context = context,
                     texture = if (!isFainted && !isCurrentlyInBattle) partySelectResource else partySelectDisabledResourse,
                     x = x,
                     y = y,
@@ -236,7 +236,7 @@ class BattleSwitchPokemonSelection(
                 val ballIcon = pokemon.caughtBall.name.toAssetPath("textures/gui/ball/", ".png")
                 val ballHeight = 22
                 blitk(
-                    matrixStack = matrixStack,
+                    context = context,
                     texture = ballIcon,
                     x = (x + 85) / SCALE,
                     y = (y - 3) / SCALE,
@@ -248,28 +248,27 @@ class BattleSwitchPokemonSelection(
                 )
 
                 // Render Pokémon
-                matrixStack.pushPose()
-                matrixStack.translate(x + SELECT_WIDTH - (25 / 2.0) - 4, y - 1.0, 0.0)
-                matrixStack.scale(2.5F, 2.5F, 1F)
+                matrixStack.pushMatrix()
+                matrixStack.translate((x + SELECT_WIDTH - (25 / 2.0) - 4).toFloat(), y - 1.0F)
+                matrixStack.scale(2.5F, 2.5F)
                 drawProfilePokemon(
                     species = pokemon.species.resourceIdentifier,
-                    matrixStack = matrixStack,
+                    context = context,
                     rotation = Quaternionf().fromEulerXYZDegrees(Vector3f(13F, 35F, 0F)),
                     state = state,
                     doQuirks = false,
                     scale = 4.5F,
                     partialTicks = deltaTicks
                 )
-                matrixStack.popPose()
+                matrixStack.popMatrix()
 
                 // Ensure elements are not hidden behind Pokémon render
-                matrixStack.pushPose()
-                matrixStack.translate(0.0, 0.0, 100.0)
+                context.nextStratum()
                 // Held Item
                 val heldItem = pokemon.heldItemNoCopy()
                 if (!heldItem.isEmpty) {
                     renderScaledGuiItemIcon(
-                        matrixStack = matrixStack,
+                        context = context,
                         itemStack = heldItem,
                         x = x + 81.0,
                         y = y + 11.0,
@@ -335,7 +334,7 @@ class BattleSwitchPokemonSelection(
                 val (red, green) = getDepletableRedGreen(hpRatio)
 
                 blitk(
-                    matrixStack = matrixStack,
+                    context = context,
                     texture = CobblemonResources.WHITE,
                     x = x + 1,
                     y = y + 22,
@@ -356,7 +355,6 @@ class BattleSwitchPokemonSelection(
                     scale = SCALE,
                     centered = true
                 )
-                matrixStack.popPose()
             } catch (exception: Exception) {
                 throw exception
             }

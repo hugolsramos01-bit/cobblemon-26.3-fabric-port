@@ -20,8 +20,8 @@ import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(BrewingStandMenu.class)
 public abstract class FabricBrewingStandMenuMixin {
-    @WrapOperation(method = "quickMoveStack", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/inventory/BrewingStandMenu$PotionSlot;mayPlaceItem(Lnet/minecraft/world/item/ItemStack;)Z"))
+    @WrapOperation(method = "quickMoveStack", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/inventory/BrewingStandMenu$PotionSlot;mayPlace(Lnet/minecraft/world/item/ItemStack;)Z"))
     private boolean cobblemon$isPotionBottle(ItemStack stack, Operation<Boolean> original, @Local(argsOnly = true) Player player) {
-        return BrewingStandRecipe.Companion.isBottle(stack, player.level().getRecipeManager()) || original.call(stack);
+        return BrewingStandRecipe.Companion.isBottle(stack, player.level().getServer().getRecipeManager()) || original.call(stack);
     }
 }

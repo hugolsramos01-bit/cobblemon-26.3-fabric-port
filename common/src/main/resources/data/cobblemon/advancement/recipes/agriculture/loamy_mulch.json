@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:loamy_mulch"
+        "recipes": "cobblemon:loamy_mulch"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

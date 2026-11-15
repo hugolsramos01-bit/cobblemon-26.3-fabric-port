@@ -21,7 +21,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipe": "cobblemon:shiny_stone_from_smelting_shiny_stone_ore"
+        "recipes": "cobblemon:shiny_stone_from_smelting_shiny_stone_ore"
       }
     }
   },

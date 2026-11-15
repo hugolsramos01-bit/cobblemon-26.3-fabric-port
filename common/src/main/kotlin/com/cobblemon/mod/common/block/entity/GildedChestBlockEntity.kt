@@ -17,6 +17,8 @@ import net.minecraft.core.Direction
 import net.minecraft.core.HolderLookup
 import net.minecraft.core.NonNullList
 import net.minecraft.nbt.CompoundTag
+import net.minecraft.world.level.storage.ValueOutput
+import net.minecraft.world.level.storage.ValueInput
 import net.minecraft.network.chat.Component
 import net.minecraft.sounds.SoundEvent
 import net.minecraft.sounds.SoundSource
@@ -24,6 +26,7 @@ import net.minecraft.world.ContainerHelper
 import net.minecraft.world.WorldlyContainer
 import net.minecraft.world.entity.player.Inventory
 import net.minecraft.world.entity.player.Player
+import net.minecraft.world.entity.ContainerUser
 import net.minecraft.world.inventory.AbstractContainerMenu
 import net.minecraft.world.inventory.ChestMenu
 import net.minecraft.world.item.ItemStack
@@ -77,15 +80,19 @@ class GildedChestBlockEntity(pos: BlockPos, state: BlockState, val type: Type = 
 
     override fun getItems() = inventoryContents
 
-    override fun startOpen(player: Player) {
-        if (!this.remove && !player.isSpectator && type != Type.FAKE) {
-            stateManager.incrementOpeners(player, level, blockPos, blockState)
+    override fun startOpen(player: ContainerUser) {
+        val livingEntity = player.livingEntity
+        val currentLevel = level ?: return
+        if (!this.remove && !livingEntity.isSpectator && type != Type.FAKE) {
+            stateManager.incrementOpeners(livingEntity, currentLevel, blockPos, blockState, player.containerInteractionRange)
         }
     }
 
-    override fun stopOpen(player: Player) {
-        if (!this.remove && !player.isSpectator) {
-            stateManager.decrementOpeners(player, level, blockPos, blockState)
+    override fun stopOpen(player: ContainerUser) {
+        val livingEntity = player.livingEntity
+        val currentLevel = level ?: return
+        if (!this.remove && !livingEntity.isSpectator) {
+            stateManager.decrementOpeners(livingEntity, currentLevel, blockPos, blockState)
         }
     }
 
@@ -149,24 +156,25 @@ class GildedChestBlockEntity(pos: BlockPos, state: BlockState, val type: Type = 
         world.blockEvent(pos, block, 1, newViewerCount)
     }
 
-    override fun saveAdditional(nbt: CompoundTag, registryLookup: HolderLookup.Provider) {
-        super.saveAdditional(nbt, registryLookup)
+    override fun saveAdditional(nbt: ValueOutput) {
+        super.saveAdditional(nbt)
         if (!trySaveLootTable(nbt)) {
-            ContainerHelper.saveAllItems(nbt, inventoryContents, registryLookup)
+            ContainerHelper.saveAllItems(nbt, inventoryContents)
         }
     }
 
-    override fun loadAdditional(nbt: CompoundTag, registryLookup: HolderLookup.Provider) {
-        super.loadAdditional(nbt, registryLookup)
+    override fun loadAdditional(nbt: ValueInput) {
+        super.loadAdditional(nbt)
         inventoryContents= NonNullList.withSize(containerSize, ItemStack.EMPTY)
         if (!tryLoadLootTable(nbt)) {
-            ContainerHelper.loadAllItems(nbt, inventoryContents, registryLookup)
+            ContainerHelper.loadAllItems(nbt, inventoryContents)
         }
     }
 
     fun tick() {
-        if (!this.remove) {
-            stateManager.recheckOpeners(level, blockPos, this.blockState)
+        val currentLevel = level
+        if (!this.remove && currentLevel != null) {
+            stateManager.recheckOpeners(currentLevel, blockPos, this.blockState)
         }
     }
 }

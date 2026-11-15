@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:scope_lens"
+        "recipes": "cobblemon:scope_lens"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

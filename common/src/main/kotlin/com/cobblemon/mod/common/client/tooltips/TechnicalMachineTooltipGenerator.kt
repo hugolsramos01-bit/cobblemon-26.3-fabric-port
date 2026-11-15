@@ -12,7 +12,6 @@ import com.cobblemon.mod.common.api.text.*
 import com.cobblemon.mod.common.item.interactive.TechnicalMachineItem
 import com.cobblemon.mod.common.item.components.TMMoveComponent
 import com.cobblemon.mod.common.util.lang
-import net.minecraft.core.component.DataComponents
 import net.minecraft.network.chat.Component
 import net.minecraft.world.item.ItemStack
 
@@ -24,13 +23,13 @@ object TechnicalMachineTooltipGenerator : TooltipGenerator() {
     private const val MAX_LINE_LENGTH = 35
 
     override fun generateCategoryTooltip(stack: ItemStack, lines: MutableList<Component>): MutableList<Component>? {
-        if (stack.get(DataComponents.HIDE_ADDITIONAL_TOOLTIP) != null) return null
+        if (stack.hidesCobblemonTooltip()) return null
         if (stack.item !is TechnicalMachineItem) return null
         return mutableListOf(technicalMachineItemClass)
     }
 
     override fun generateAdditionalTooltip(stack: ItemStack, lines: MutableList<Component>): MutableList<Component>? {
-        if (stack.get(DataComponents.HIDE_ADDITIONAL_TOOLTIP) != null) return null
+        if (stack.hidesCobblemonTooltip()) return null
         if (stack.item !is TechnicalMachineItem) return null
 
         val move = TMMoveComponent.getTMMove(stack) ?: return null

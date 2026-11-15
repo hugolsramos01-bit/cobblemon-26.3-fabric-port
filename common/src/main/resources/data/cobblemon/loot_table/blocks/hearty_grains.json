@@ -3,15 +3,13 @@
   "pools": [
     {
       "bonus_rolls": 0,
-      "conditions": [
-        {
-          "condition": "minecraft:block_state_property",
-          "block": "cobblemon:hearty_grains",
-          "properties": {
-            "half": "lower"
-          }
+      "condition": {
+        "type": "minecraft:match_block",
+        "block": "cobblemon:hearty_grains",
+        "state": {
+          "half": "lower"
         }
-      ],
+      },
       "entries": [
         {
           "type": "minecraft:item",
@@ -22,30 +20,29 @@
     },
     {
       "bonus_rolls": 0,
-      "conditions": [
-        {
-          "condition": "minecraft:block_state_property",
-          "block": "cobblemon:hearty_grains",
-          "properties": {
-            "half": "upper",
-            "age": "6"
-          }
+      "condition": {
+        "type": "minecraft:match_block",
+        "block": "cobblemon:hearty_grains",
+        "state": {
+          "half": "upper",
+          "age": "6"
         }
-      ],
+      },
       "entries": [
         {
           "type": "minecraft:item",
           "name": "cobblemon:hearty_grains",
-          "functions": [
+          "modifier": [
             {
-              "function": "minecraft:set_count",
+              "type": "minecraft:set_count",
               "count": {
+                "type": "minecraft:uniform",
                 "min": 2,
                 "max": 3
               }
             },
             {
-              "function": "minecraft:explosion_decay"
+              "type": "minecraft:explosion_decay"
             }
           ]
         }

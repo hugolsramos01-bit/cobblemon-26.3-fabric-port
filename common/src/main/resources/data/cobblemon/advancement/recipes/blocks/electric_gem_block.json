@@ -21,7 +21,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipe": "cobblemon:electric_gem_block"
+        "recipes": "cobblemon:electric_gem_block"
       }
     }
   },

@@ -15,31 +15,32 @@ import com.cobblemon.mod.common.client.entity.NPCClientDelegate
 import com.cobblemon.mod.common.client.entity.PokemonClientDelegate
 import com.cobblemon.mod.common.client.render.models.blockbench.FloatingState
 import com.cobblemon.mod.common.client.render.models.blockbench.PosableState
-import com.mojang.blaze3d.systems.RenderSystem
 import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.math.Axis
 import net.minecraft.client.Minecraft
-import net.minecraft.client.renderer.LightTexture
-import net.minecraft.client.renderer.MultiBufferSource
-import net.minecraft.client.renderer.entity.ItemRenderer
+import net.minecraft.client.renderer.SubmitNodeCollector
+import net.minecraft.client.renderer.entity.state.LivingEntityRenderState
+import net.minecraft.client.renderer.item.ItemStackRenderState
 import net.minecraft.client.renderer.texture.OverlayTexture
+import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.LivingEntity
+import net.minecraft.world.entity.ItemOwner
 import net.minecraft.world.item.ItemDisplayContext
 import net.minecraft.world.item.ItemStack
 import org.joml.Vector3f
 
 class HeldItemRenderer {
-    private val itemRenderer: ItemRenderer = Minecraft.getInstance().itemRenderer
-    private var displayContext: ItemDisplayContext = ItemDisplayContext.FIXED
+    private val itemModelResolver = Minecraft.getInstance().itemModelResolver
 
     companion object {
         const val ITEM_FACE = "item_face"
         const val ITEM_HAT = "item_hat"
         const val ITEM = "item"
+        private const val FULL_BRIGHT = 0x00F000F0
 
-        private fun PoseStack.setOriginAndScale(x:Float,y:Float,z:Float,scale:Float=1f) {
-            this.translate(x*.0625*scale, y*.0625*scale, z*.0625*scale)
-            this.scale(scale, scale, scale)
+        private fun PoseStack.setOriginAndScale(x: Float, y: Float, z: Float, scale: Float = 1f) {
+            translate(x * .0625 * scale, y * .0625 * scale, z * .0625 * scale)
+            scale(scale, scale, scale)
         }
     }
 
@@ -47,13 +48,17 @@ class HeldItemRenderer {
         item: ItemStack,
         state: PosableState,
         poseStack: PoseStack,
-        buffer: MultiBufferSource,
-        light: Int = LightTexture.pack(11, 7),
+        collector: SubmitNodeCollector,
+        light: Int = FULL_BRIGHT,
         frontLight: Boolean = false,
         entity: LivingEntity? = null
     ) {
-        if (!item.`is`(CobblemonItemTags.HIDDEN_ITEMS)) renderAtLocator(item, state, entity, poseStack, buffer, light, 0, frontLight)
-        for ( (targetLocator, item) in state.animationItems) renderAtLocator(item, state, entity, poseStack, buffer, light, 0, frontLight, targetLocator)
+        if (!item.`is`(CobblemonItemTags.HIDDEN_ITEMS)) {
+            renderAtLocator(item, state, entity, poseStack, collector, light, frontLight)
+        }
+        for ((targetLocator, animationItem) in state.animationItems) {
+            renderAtLocator(animationItem, state, entity, poseStack, collector, light, frontLight, targetLocator)
+        }
     }
 
     private fun renderAtLocator(
@@ -61,65 +66,64 @@ class HeldItemRenderer {
         state: PosableState,
         entity: LivingEntity?,
         poseStack: PoseStack,
-        buffer: MultiBufferSource,
+        collector: SubmitNodeCollector,
         light: Int,
-        seed: Int,
         frontLight: Boolean = false,
         targetLocator: String =
             if (item.`is`(WEARABLE_FACE_ITEMS) && state.locatorStates.containsKey(ITEM_FACE)) ITEM_FACE
             else if (item.`is`(WEARABLE_HAT_ITEMS) && state.locatorStates.containsKey(ITEM_HAT)) ITEM_HAT
             else ITEM
     ) {
-        if (item.isEmpty || !state.locatorStates.containsKey(targetLocator)) return
+        if (item.isEmpty) return
+        val locator = state.locatorStates[targetLocator] ?: return
+        val level = entity?.level() ?: Minecraft.getInstance().level ?: return
+        val owner: ItemOwner = entity ?: Minecraft.getInstance().player ?: return
 
         poseStack.pushPose()
-        RenderSystem.applyModelViewMatrix()
+        poseStack.mulPose(locator.matrix)
+        val isLeft = when (state.currentModel?.getLocatorDisplayContext(targetLocator)) {
+            ItemDisplayContext.THIRD_PERSON_LEFT_HAND -> true
+            else -> false
+        }
+        val displayContext = state.currentModel?.getLocatorDisplayContext(targetLocator)
+            ?: if ((item.`is`(WEARABLE_FACE_ITEMS) && targetLocator == ITEM_FACE) ||
+                (item.`is`(WEARABLE_HAT_ITEMS) && targetLocator == ITEM_HAT)
+            ) ItemDisplayContext.HEAD else ItemDisplayContext.FIXED
 
-        displayContext = state.currentModel?.getLocatorDisplayContext(targetLocator)?:
-            if ((item.`is`(WEARABLE_FACE_ITEMS) && targetLocator==ITEM_FACE) || (item.`is`(WEARABLE_HAT_ITEMS) && targetLocator== ITEM_HAT)) ItemDisplayContext.HEAD
-            else ItemDisplayContext.FIXED
-
-        val isLeft = displayContext==ItemDisplayContext.THIRD_PERSON_LEFT_HAND
-
-        poseStack.mulPose(state.locatorStates[targetLocator]!!.matrix)
         when (displayContext) {
             ItemDisplayContext.FIXED -> {
-                poseStack.setOriginAndScale(0f,.5f,0f, .5f)
-                poseStack.mulPose(Axis.XP.rotationDegrees(90.0f))
+                poseStack.setOriginAndScale(0f, .5f, 0f, .5f)
+                poseStack.rotate(Axis.XP.rotationDegrees(90.0f))
             }
             ItemDisplayContext.THIRD_PERSON_RIGHT_HAND, ItemDisplayContext.THIRD_PERSON_LEFT_HAND -> {
-                //For Minecraft player models
                 if (state is NPCClientDelegate) {
-                    poseStack.mulPose(Axis.XP.rotationDegrees(-90.0f))
-                    poseStack.translate(0.025f * if (isLeft) 1 else -1 , 0.0f, 0.0f)
-                }
-                //for T-Posing Models
-                else if (state is PokemonClientDelegate || state is FloatingState) {
-                    poseStack.mulPose(Axis.YP.rotationDegrees(-90.0f * if (isLeft) -1f else 1f))
-                    poseStack.mulPose(Axis.ZP.rotationDegrees(90.0f * if (isLeft) -1f else 1f))
-                    poseStack.translate(0.0f,0.0f,-0.0625f) // offset item by -1/16 to recenter item onto the locator
+                    poseStack.rotate(Axis.XP.rotationDegrees(-90.0f))
+                    poseStack.translate(0.025f * if (isLeft) 1 else -1, 0.0f, 0.0f)
+                } else if (state is PokemonClientDelegate || state is FloatingState) {
+                    poseStack.rotate(Axis.YP.rotationDegrees(-90.0f * if (isLeft) -1f else 1f))
+                    poseStack.rotate(Axis.ZP.rotationDegrees(90.0f * if (isLeft) -1f else 1f))
+                    poseStack.translate(0.0f, 0.0f, -0.0625f)
                 }
             }
             ItemDisplayContext.HEAD -> {
                 if (state is NPCClientDelegate) {
-                    if (item.`is`(WEARABLE_FACE_ITEMS)) poseStack.setOriginAndScale(0f,-2f,7.25f, 0.62f)
-                    else if (item.`is`(WEARABLE_HAT_ITEMS)) poseStack.setOriginAndScale(0f,-10.25f,0f, 0.62f)
-                }
-                else {
-                    if (item.`is`(WEARABLE_FACE_ITEMS)) poseStack.setOriginAndScale(0f,1f,(7.25f)-.5f, 0.62f)
-                    else if (item.`is`(WEARABLE_HAT_ITEMS)) poseStack.setOriginAndScale(0f,(-7.25f)+.5f,0f, 0.62f)
+                    if (item.`is`(WEARABLE_FACE_ITEMS)) poseStack.setOriginAndScale(0f, -2f, 7.25f, 0.62f)
+                    else if (item.`is`(WEARABLE_HAT_ITEMS)) poseStack.setOriginAndScale(0f, -10.25f, 0f, 0.62f)
+                } else {
+                    if (item.`is`(WEARABLE_FACE_ITEMS)) poseStack.setOriginAndScale(0f, 1f, 6.75f, 0.62f)
+                    else if (item.`is`(WEARABLE_HAT_ITEMS)) poseStack.setOriginAndScale(0f, -6.75f, 0f, 0.62f)
                 }
             }
-            else -> {}
+            else -> Unit
         }
 
-        //Render front lighting for UI Models
-        if (frontLight) {
-            RenderSystem.setShaderLights(Vector3f(0F,0F,1F), Vector3f(0F,0F,1F))
+        val renderState = ItemStackRenderState()
+        if (entity != null) {
+            itemModelResolver.updateForLiving(renderState, item, displayContext, entity)
+        } else {
+            itemModelResolver.updateForTopItem(renderState, item, displayContext, level, owner, 0)
         }
-
-        itemRenderer.renderStatic(entity, item, displayContext, isLeft, poseStack, buffer, null, light, OverlayTexture.NO_OVERLAY, seed)
-
+        renderState.submit(poseStack, collector, if (frontLight) FULL_BRIGHT else light, OverlayTexture.NO_OVERLAY, 0)
         poseStack.popPose()
     }
 }

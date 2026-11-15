@@ -25,13 +25,12 @@ import com.cobblemon.mod.common.util.cobblemonResource
 import com.cobblemon.mod.common.util.lang
 import com.cobblemon.mod.common.util.math.fromEulerXYZDegrees
 import com.cobblemon.mod.common.util.toAssetPath
-import com.google.common.collect.Lists
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.Minecraft
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.components.Button
 import net.minecraft.client.sounds.SoundManager
 import net.minecraft.network.chat.Component
-import net.minecraft.resources.ResourceLocation
-import net.minecraft.util.FormattedCharSequence
+import net.minecraft.resources.Identifier
 import net.minecraft.world.item.ItemStack
 import org.joml.Quaternionf
 import org.joml.Vector3f
@@ -62,7 +61,7 @@ class PartySlotButton(
 
     private val renderablePokemon = pokemon.asRenderablePokemon().also { it.aspects = aspects }
 
-    override fun renderWidget(context: GuiGraphics, pMouseX: Int, pMouseY: Int, pPartialTicks: Float) {
+    override fun extractContents(context: GuiGraphicsExtractor, pMouseX: Int, pMouseY: Int, pPartialTicks: Float) {
         isHovered = pMouseX >= x && pMouseY >= y && pMouseX < x + width && pMouseY < y + height && enabled
         val alpha = if (enabled) 1.0 else 0.7
         val matrices = context.pose()
@@ -71,7 +70,7 @@ class PartySlotButton(
         val status = pokemon.status
         if (hpRatio > 0F && status != null) {
             blitk(
-                matrixStack = matrices,
+                context = context,
                 texture = cobblemonResource("textures/gui/interact/party_select_status_$status.png"),
                 x = x + 27,
                 y = y + 22,
@@ -90,7 +89,7 @@ class PartySlotButton(
         }
 
         blitk(
-            matrixStack = matrices,
+            context = context,
             texture = if (currentHealth <= 0F) slotFaintedResource else slotResource,
             x = x,
             y = y,
@@ -100,23 +99,23 @@ class PartySlotButton(
             textureHeight = height * 3
         )
 
-        context.pose().pushPose()
-        context.pose().translate(x.toDouble() + 13, y.toDouble() - 2, 0.0)
+        context.pose().pushMatrix()
+        context.pose().translate(x.toFloat() + 13.0F, y.toFloat() - 2.0F)
 
         drawProfilePokemon(
             renderablePokemon = renderablePokemon,
-            matrixStack = context.pose(),
+            context = context,
             rotation = Quaternionf().fromEulerXYZDegrees(Vector3f(13F, 35F, 0F)),
             state = state,
             scale = 10F,
             partialTicks = if (!isHovered) 0F else pPartialTicks
         )
-        context.pose().popPose()
+        context.pose().popMatrix()
 
         val ballIcon = pokemon.pokeball!!.asIdentifierDefaultingNamespace().toAssetPath("textures/gui/ball/", ".png")
         val ballHeight = 22
         blitk(
-            matrixStack = matrices,
+            context = context,
             texture = ballIcon,
             x = (x - 2) / SCALE,
             y = (y - 3) / SCALE,
@@ -127,8 +126,7 @@ class PartySlotButton(
         )
 
         // Ensure elements are not hidden behind Pokémon render
-        matrices.pushPose()
-        matrices.translate(0.0, 0.0, 100.0)
+        context.nextStratum()
         drawScaledText(
             context = context,
             text = lang("ui.lv.number", pokemon.level!!),
@@ -153,7 +151,7 @@ class PartySlotButton(
 
         if ("male" in pokemon.aspects || "female" in pokemon.aspects) {
             blitk(
-                matrixStack = matrices,
+                context = context,
                 texture = if ("male" in pokemon.aspects) PartySlotWidget.genderIconMale else PartySlotWidget.genderIconFemale,
                 x = (x + 60.5) / SCALE,
                 y = (y + 12.5) / SCALE,
@@ -170,7 +168,7 @@ class PartySlotButton(
         val (red, green) = getDepletableRedGreen(hpRatio)
 
         blitk(
-            matrixStack = matrices,
+            context = context,
             texture = CobblemonResources.WHITE,
             x = x + 1,
             y = y + 20,
@@ -195,20 +193,24 @@ class PartySlotButton(
         // Held Item
         if (!heldItem.isEmpty) {
             renderScaledGuiItemIcon(
+                context = context,
                 itemStack = heldItem,
                 x = x + 14.0,
                 y = y + 9.5,
                 scale = 0.5,
-                matrixStack = matrices
             )
         }
 
         // Hover Text
         if (isHovered && hoverText.isNotEmpty()) {
-            this.parent.setTooltipForNextRenderPass(Lists.transform<Component, FormattedCharSequence>(hoverText) { it.visualOrderText })
+            context.setTooltipForNextFrame(
+                Minecraft.getInstance().font,
+                hoverText.map { it.visualOrderText },
+                pMouseX,
+                pMouseY
+            )
         }
 
-        matrices.popPose()
     }
 
     override fun playDownSound(soundManager: SoundManager) {}

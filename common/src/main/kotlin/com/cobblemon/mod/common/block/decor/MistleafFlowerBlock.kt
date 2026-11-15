@@ -11,10 +11,12 @@ package com.cobblemon.mod.common.block.decor
 import com.cobblemon.mod.common.CobblemonBlockEntities
 import com.cobblemon.mod.common.block.entity.MistleafFlowerBlockEntity
 import net.minecraft.core.BlockPos
+import net.minecraft.core.Direction
 import net.minecraft.world.level.BlockGetter
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.LevelReader
 import net.minecraft.world.level.block.BaseEntityBlock
+import net.minecraft.world.level.block.BonemealSource
 import net.minecraft.world.level.block.Block
 import net.minecraft.world.level.block.EntityBlock
 import net.minecraft.world.level.block.SoundType
@@ -33,17 +35,17 @@ import net.minecraft.world.phys.shapes.CollisionContext
 import net.minecraft.world.phys.shapes.Shapes
 import net.minecraft.world.phys.shapes.VoxelShape
 
-class MistleafFlowerBlock(lightLevel: (BlockState) -> Int) :
+class MistleafFlowerBlock(properties: BlockBehaviour.Properties, lightLevel: (BlockState) -> Int) :
     EntityBlock,
     TallFlowerBlock(
-        Properties.of()
+        properties
             .mapColor(MapColor.PLANT)
-            .noCollission()
+            .noCollision()
             .instabreak()
             .sound(SoundType.GRASS)
             .offsetType(OffsetType.XZ)
             .ignitedByLava()
-            .pushReaction(PushReaction.DESTROY)
+            .pushReaction(PushReaction.POPPED)
             .lightLevel(lightLevel)
     ) {
 
@@ -56,7 +58,7 @@ class MistleafFlowerBlock(lightLevel: (BlockState) -> Int) :
     override fun createBlockStateDefinition(builder: StateDefinition.Builder<Block, BlockState>) {
         builder.add(HALF, GLOWING)
     }
-    override fun isValidBonemealTarget(level: LevelReader, pos: BlockPos, state: BlockState): Boolean {
+    override fun isValidBonemealTarget(level: LevelReader, pos: BlockPos, state: BlockState, source: BonemealSource): Boolean {
         return false
     }
 
@@ -66,13 +68,13 @@ class MistleafFlowerBlock(lightLevel: (BlockState) -> Int) :
         return MistleafFlowerBlockEntity(pos, state)
     }
 
-    override fun <T : BlockEntity?> getTicker(
+    override fun <T : BlockEntity> getTicker(
         level: Level,
         state: BlockState,
-        blockEntityType: BlockEntityType<T?>
-    ): BlockEntityTicker<T?>? {
+        blockEntityType: BlockEntityType<T>
+    ): BlockEntityTicker<T>? {
         return if (level.isClientSide) null else BaseEntityBlock.createTickerHelper(blockEntityType as BlockEntityType<*>,
-            CobblemonBlockEntities.MISTLEAF_FLOWER, MistleafFlowerBlockEntity::serverTick) as BlockEntityTicker<T?>?
+            CobblemonBlockEntities.MISTLEAF_FLOWER, MistleafFlowerBlockEntity::serverTick) as BlockEntityTicker<T>?
     }
 
     companion object {
@@ -81,7 +83,7 @@ class MistleafFlowerBlock(lightLevel: (BlockState) -> Int) :
     }
 
     override fun hasAnalogOutputSignal(state: BlockState): Boolean { return true }
-    override fun getAnalogOutputSignal(state: BlockState, level: Level, pos: BlockPos): Int {
+    override fun getAnalogOutputSignal(state: BlockState, level: Level, pos: BlockPos, direction: Direction): Int {
         return state.getValue(GLOWING) as Int
     }
 }

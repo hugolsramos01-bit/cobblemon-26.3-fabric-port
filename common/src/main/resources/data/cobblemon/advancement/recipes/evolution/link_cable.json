@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:link_cable"
+        "recipes": "cobblemon:link_cable"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

@@ -27,7 +27,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:icy_rock"
+        "recipes": "cobblemon:icy_rock"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

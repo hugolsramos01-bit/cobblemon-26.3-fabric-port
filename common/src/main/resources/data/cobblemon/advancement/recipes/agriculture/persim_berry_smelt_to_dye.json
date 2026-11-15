@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:persim_berry_smelt_to_dye"
+        "recipes": "cobblemon:persim_berry_smelt_to_dye"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

@@ -11,10 +11,10 @@ package com.cobblemon.mod.common.client.render.player
 import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.math.Axis
 import net.minecraft.client.Minecraft
-import net.minecraft.client.renderer.MultiBufferSource
+import net.minecraft.client.renderer.SubmitNodeCollector
 
 object FirstPersonRecallBallRenderer {
-    fun render(poseStack: PoseStack, buffer: MultiBufferSource, packedLight: Int, partialTicks: Float): Boolean {
+    fun render(poseStack: PoseStack, collector: SubmitNodeCollector, packedLight: Int, partialTicks: Float): Boolean {
         val player = Minecraft.getInstance().player ?: return false
         val anim = RecallArmAnimationTracker.get(player.uuid) ?: return false
         val rise = RecallArmAnimationTracker.raiseFactor(player.uuid)
@@ -22,9 +22,9 @@ object FirstPersonRecallBallRenderer {
         poseStack.pushPose()
         poseStack.translate(0.45, -0.55 - 0.6 * (1.0 - rise), -0.6)
         poseStack.scale(0.45F, -0.45F, -0.45F)
-        poseStack.mulPose(Axis.YP.rotationDegrees(180F))
-        poseStack.mulPose(Axis.XP.rotationDegrees(15F))
-        RecallArmAnimationTracker.renderBall(anim, poseStack, buffer, packedLight, partialTicks)
+        poseStack.rotate(Axis.YP.rotationDegrees(180F))
+        poseStack.rotate(Axis.XP.rotationDegrees(15F))
+        RecallArmAnimationTracker.renderBall(anim, poseStack, collector, packedLight, partialTicks)
         poseStack.popPose()
         return true
     }

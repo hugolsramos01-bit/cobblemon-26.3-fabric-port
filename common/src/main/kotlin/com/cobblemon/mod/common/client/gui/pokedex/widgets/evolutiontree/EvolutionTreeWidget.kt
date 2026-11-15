@@ -38,7 +38,8 @@ import com.cobblemon.mod.common.pokemon.RenderablePokemon
 import com.cobblemon.mod.common.util.asIdentifierDefaultingNamespace
 import com.cobblemon.mod.common.util.cobblemonResource
 import com.cobblemon.mod.common.util.lang
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
+import net.minecraft.client.renderer.RenderPipelines
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.MutableComponent
 
@@ -105,8 +106,8 @@ class EvolutionTreeWidget(
         }
     ).apply { addWidget(this) }
 
-    override fun renderWidget(
-        guiGraphics: GuiGraphics,
+    override fun extractWidgetRenderState(
+        guiGraphics: GuiGraphicsExtractor,
         mouseX: Int,
         mouseY: Int,
         partialTick: Float,
@@ -120,7 +121,7 @@ class EvolutionTreeWidget(
             shadow = true
         )
 
-        expandButton.render(guiGraphics, mouseX, mouseY, partialTick)
+        expandButton.extractRenderState(guiGraphics, mouseX, mouseY, partialTick)
 
         rootTreeDrawingNode?.let {
             enableScissors(guiGraphics)
@@ -245,7 +246,7 @@ class EvolutionTreeWidget(
     }
 
     private fun renderTreeDrawingNode(
-        guiGraphics: GuiGraphics,
+        guiGraphics: GuiGraphicsExtractor,
         treeDrawingNode: TreeDrawingNode<EvolutionNode>,
         mouseX: Int,
         mouseY: Int,
@@ -281,14 +282,16 @@ class EvolutionTreeWidget(
             val (_, firstChildY) = getDrawingCoordinates(treeDrawingNode.children.first())
             val (_, lastChildY) = getDrawingCoordinates(treeDrawingNode.children.last())
 
-            guiGraphics.hLine(
+            drawHorizontalLine(
+                guiGraphics,
                 treeForkStart,
                 treeForkEnd,
                 middleStart,
                 LINE_COLOR,
             )
 
-            guiGraphics.vLine(
+            drawVerticalLine(
+                guiGraphics,
                 treeForkEnd,
                 firstChildY + SCROLL_SLOT_SIZE / 2,
                 lastChildY + SCROLL_SLOT_SIZE / 2,
@@ -407,7 +410,7 @@ class EvolutionTreeWidget(
     }
 
     private fun drawEvolutionInfo(
-        guiGraphics: GuiGraphics,
+        guiGraphics: GuiGraphicsExtractor,
         renderData: RenderEvolutionData,
         lineStartX: Int,
         lineEndX: Int,
@@ -432,21 +435,24 @@ class EvolutionTreeWidget(
         }
 
         if (renderData.icons.isEmpty()) {
-            guiGraphics.hLine(
+            drawHorizontalLine(
+                guiGraphics,
                 lineStartX,
                 lineEndX,
                 lineY,
                 LINE_COLOR,
             )
         } else {
-            guiGraphics.hLine(
+            drawHorizontalLine(
+                guiGraphics,
                 lineStartX,
                 iconX - 1,
                 lineY,
                 LINE_COLOR,
             )
 
-            guiGraphics.hLine(
+            drawHorizontalLine(
+                guiGraphics,
                 iconX + iconSize,
                 lineEndX,
                 lineY,
@@ -454,7 +460,7 @@ class EvolutionTreeWidget(
             )
 
             blitk(
-                matrixStack = guiGraphics.pose(),
+                context = guiGraphics,
                 texture = slotResource,
                 x = iconX,
                 y = iconY,
@@ -466,10 +472,10 @@ class EvolutionTreeWidget(
             val item = renderData.icons[index.toInt()]
 
             renderScaledGuiItemIcon(
+                context = guiGraphics,
                 itemStack = item.defaultInstance,
                 x = lineXMiddle + ICON_X_PADDING,
                 y = lineY + ICON_Y_PADDING,
-                matrixStack = guiGraphics.pose(),
                 scale = PokedexGUIConstants.SCALE.toDouble(),
             )
         }
@@ -490,6 +496,30 @@ class EvolutionTreeWidget(
         ) {
             hoveredTooltips = renderData.tooltips
         }
+    }
+
+    private fun drawHorizontalLine(
+        context: GuiGraphicsExtractor,
+        startX: Int,
+        endX: Int,
+        y: Int,
+        color: Int,
+    ) {
+        val left = minOf(startX, endX)
+        val right = maxOf(startX, endX)
+        context.fill(RenderPipelines.GUI, left, y, right + 1, y + 1, color)
+    }
+
+    private fun drawVerticalLine(
+        context: GuiGraphicsExtractor,
+        x: Int,
+        startY: Int,
+        endY: Int,
+        color: Int,
+    ) {
+        val top = minOf(startY, endY)
+        val bottom = maxOf(startY, endY)
+        context.fill(RenderPipelines.GUI, x, top, x + 1, bottom + 1, color)
     }
 
     private fun getDrawingCoordinates(node: TreeDrawingNode<EvolutionNode>): Pair<Int, Int> {
@@ -522,17 +552,15 @@ class EvolutionTreeWidget(
         return mouseX >= startX && mouseX <= endX && mouseY >= startY && mouseY <= endY
     }
 
-    override fun mouseDragged(
-        mouseX: Double,
-        mouseY: Double,
-        button: Int,
-        deltaX: Double,
-        deltaY: Double
-    ): Boolean {
+    override fun mouseDragged(event: net.minecraft.client.input.MouseButtonEvent, deltaX: Double, deltaY: Double): Boolean {
+    val mouseX = event.x()
+    val mouseY = event.y()
+    val button = event.button()
+
         panningX += deltaX
         panningY += deltaY
 
-        val bounds = treeDrawingBounds ?: return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY)
+        val bounds = treeDrawingBounds ?: return super.mouseDragged(event, deltaX, deltaY)
         val treeHeight = bounds.height.coerceAtLeast(1)
         val treeWidth = bounds.width.coerceAtLeast(1)
 
@@ -549,14 +577,14 @@ class EvolutionTreeWidget(
         panningX = panningX.coerceIn(minPanningX, maxPanningX)
         panningY = panningY.coerceIn(minPanningY, maxPanningY)
 
-        return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY)
+        return super.mouseDragged(event, deltaX, deltaY)
     }
 
     fun isHovered(mouseX: Double, mouseY: Double): Boolean {
         return mouseX.toInt() in x..(x + width) && mouseY.toInt() in y..(y + height)
     }
 
-    fun enableScissors(guiGraphics: GuiGraphics) {
+    fun enableScissors(guiGraphics: GuiGraphicsExtractor) {
         guiGraphics.enableScissor(x + 1, y, x + width - 1, y + height)
     }
 

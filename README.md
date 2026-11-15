@@ -21,3 +21,7 @@ If you're interested in contributing to the project, you can simply fork the rep
 
 If you want a more involved role in the project, involving branches on the main repository instead of forking and involvement
 in design discussions, you can either apply in the `application-box` forum of our Discord or add and message Hiroku (`hiroku_dev`) on our Discord here: https://discord.gg/cobblemon.
+
+## Minecraft 26.3 port candidate
+
+This review branch targets Minecraft 26.3 on Fabric. See [PORTING-26.3.md](PORTING-26.3.md) for scope and [docs/26.3-validation.md](docs/26.3-validation.md) for verification steps. Optional user-supplied ambient sounds are documented in [docs/custom-pokemon-ambience.md](docs/custom-pokemon-ambience.md).

@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:flame_orb"
+        "recipes": "cobblemon:flame_orb"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

@@ -8,9 +8,10 @@
 
 package com.cobblemon.mod.common.item
 
-import net.minecraft.world.item.ItemNameBlockItem
+import net.minecraft.world.item.BlockItem
+import net.minecraft.world.entity.EquipmentSlot
 import net.minecraft.world.level.block.Block
 
-class WearableBlockItem(override val name: String, block: Block): ItemNameBlockItem(block, Properties()), WearableItem{
+class WearableBlockItem(properties: net.minecraft.world.item.Item.Properties, override val name: String, block: Block): BlockItem(block, properties.useItemDescriptionPrefix().equippable(EquipmentSlot.HEAD)), WearableItem{
 
 }

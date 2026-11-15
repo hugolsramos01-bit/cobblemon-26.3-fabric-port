@@ -8,15 +8,17 @@
 
 package com.cobblemon.mod.common.client.gui.toast
 
+import com.cobblemon.mod.common.api.gui.withTextAlpha
 import com.cobblemon.mod.common.net.messages.client.toast.ToastPacket
 import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.components.toasts.Toast
-import net.minecraft.client.gui.components.toasts.ToastComponent
+import net.minecraft.client.gui.components.toasts.ToastManager
+import net.minecraft.client.renderer.RenderPipelines
 import net.minecraft.world.item.ItemStack
 import net.minecraft.network.chat.Component
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 import net.minecraft.util.Mth
 import java.util.*
 import kotlin.math.min
@@ -29,7 +31,7 @@ class CobblemonToast(
     var icons: List<ItemStack>,
     var title: Component,
     var description: Component,
-    var frameTexture: ResourceLocation,
+    var frameTexture: Identifier,
     var progress: Float,
     var progressColor: Int,
     var durationMs: Long? = null
@@ -55,25 +57,29 @@ class CobblemonToast(
         return font.split(this.description, maxWidth)
     }
 
-    override fun render(context: GuiGraphics, manager: ToastComponent, startTime: Long): Toast.Visibility {
-        if (this.startTime == -1L) this.startTime = startTime
+    override fun getWantedVisibility(): Toast.Visibility = nextVisibility
 
-        val elapsedTime = startTime - this.startTime
+    override fun update(manager: ToastManager, time: Long) {
+        if (this.startTime == -1L) this.startTime = time
         val localDuration = this.durationMs
-        if (localDuration != null && elapsedTime >= localDuration) {
+        if (localDuration != null && time - this.startTime >= localDuration) {
             ToastTracker.remove(this)
-            return Toast.Visibility.HIDE
+            nextVisibility = Toast.Visibility.HIDE
         }
+    }
 
-        context.blitSprite(this.frameTexture, 0, 0, this.width(), this.height())
+    override fun extractRenderState(context: GuiGraphicsExtractor, font: Font, fullyVisibleForMs: Long) {
+        val elapsedTime = fullyVisibleForMs
+        val localDuration = this.durationMs
+        context.blitSprite(RenderPipelines.GUI_TEXTURED, this.frameTexture, 0, 0, this.width(), this.height())
 
         val maxWidth = 125
-        val textRenderer = manager.minecraft.font
+        val textRenderer = font
 
-        context.blitSprite(this.frameTexture, 0, 0, this.width(), this.height() + (getLines(textRenderer, maxWidth).size - 1) * 10)
+        context.blitSprite(RenderPipelines.GUI_TEXTURED, this.frameTexture, 0, 0, this.width(), this.height() + (getLines(textRenderer, maxWidth).size - 1) * 10)
 
-        context.drawString(textRenderer, this.title, 30, 7, this.title.style.color?.value ?: -1, false)
-        context.drawWordWrap(textRenderer, this.description, 30, 18, maxWidth, this.description.style.color?.value ?: -1)
+        context.text(textRenderer, this.title, 30, 7, withTextAlpha(this.title.style.color?.value ?: -1), false)
+        context.textWithWordWrap(textRenderer, this.description, 30, 18, maxWidth, withTextAlpha(this.description.style.color?.value ?: -1))
 
         val iconIndex = if (localDuration != null && localDuration > 0) {
             val repeatsPerIcon = 2
@@ -91,16 +97,15 @@ class CobblemonToast(
         }
 
         val icon = this.icons[iconIndex]
-        context.renderFakeItem(icon, 8, 8)
+        context.fakeItem(icon, 8, 8)
         if (this.hasProgressBar()) {
             context.fill(3, 28, 157, 29, -1)
-            val f = Mth.clampedLerp(this.lastProgress, this.progress, (startTime - this.lastTime).toFloat() / 100F)
+            val f = Mth.clampedLerp(this.lastProgress, this.progress, (fullyVisibleForMs - this.lastTime).toFloat() / 100F)
             context.fill(3, 28, (3F + 154F * f).toInt(), 29, this.progressColor)
             this.lastProgress = f
         }
 
-        this.lastTime = startTime
-        return this.nextVisibility
+        this.lastTime = fullyVisibleForMs
     }
 
     internal fun updateFrom(packet: ToastPacket) {

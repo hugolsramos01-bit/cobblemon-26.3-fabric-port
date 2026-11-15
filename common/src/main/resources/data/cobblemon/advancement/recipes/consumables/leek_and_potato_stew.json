@@ -51,13 +51,13 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:leek_and_potato_stew"
+        "recipes": "cobblemon:leek_and_potato_stew"
       },
       "trigger": "minecraft:recipe_unlocked"
     },
     "has_cooking_pot_recipe": {
       "conditions": {
-        "recipe": "cobblemon:cooking_pot/leek_and_potato_stew_from_cooking_pot"
+        "recipes": "cobblemon:campfire_pot/leek_and_potato_stew_in_campfire_pot"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -69,7 +69,7 @@
       "has_leek",
       "has_potato",
       "has_the_recipe",
-	  "has_cooking_pot_recipe"
+      "has_cooking_pot_recipe"
     ]
   ],
   "rewards": {

@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "cobblemon:serious_mint"
+        "recipes": "cobblemon:serious_mint"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
