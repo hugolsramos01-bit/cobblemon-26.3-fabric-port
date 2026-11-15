@@ -41,7 +41,7 @@ Algumas decisões de gameplay vão além da migração e podem diferir do Cobble
 
 A revisão Fabric testada passou nos testes comuns, em **34 GameTests de servidor**, na suíte de cliente, na validação do access widener e no build. O JAR também iniciou um cliente e um servidor separados do Gradle. O usuário confirmou em jogo o fluxo opcional de som ambiente. Esses testes cobrem cenários específicos, não todos os addons e configurações.
 
-Ainda faltam o teste com dois jogadores autenticados, uma verificação mais ampla de addons e a revisão dos avisos de distribuição de bibliotecas. NeoForge e TBCS estão fora do escopo atual. Consulte o [resumo para revisão](26.3-review-brief.md) e a [auditoria de procedência](26.3-provenance-review.md).
+Ainda faltam o teste com dois jogadores autenticados, uma verificação mais ampla de addons e a revisão dos avisos de distribuição de bibliotecas. NeoForge e TBCS estão fora do escopo atual. Consulte o [resumo para revisão](26.3-review-brief.md), a [auditoria de procedência](26.3-provenance-review.md) e o [inventário de bibliotecas](26.3-third-party-inventory.md).
 
 ## Compilar
 

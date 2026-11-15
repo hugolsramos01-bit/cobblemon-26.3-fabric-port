@@ -83,6 +83,6 @@ The port keeps Cobblemon's original Pokémon sound mappings. If you have audio y
 
 Bug reports are most useful with the Minecraft, Fabric and port versions, steps to reproduce, and the relevant log or crash report. For visual issues, include a screenshot when possible. Avoid including account details or private files.
 
-The original project was created by the [Cobblemon Team and its contributors](https://gitlab.com/cable-mc/cobblemon). This port is based on upstream commit `7511facebce13cc86706d49ae7ebab515e862fc8`; the upstream project's work and asset notices remain in the repository. See [the provenance review](docs/26.3-provenance-review.md) before redistributing builds.
+The original project was created by the [Cobblemon Team and its contributors](https://gitlab.com/cable-mc/cobblemon). This port is based on upstream commit `7511facebce13cc86706d49ae7ebab515e862fc8`; the upstream project's work and asset notices remain in the repository. See the [provenance review](docs/26.3-provenance-review.md) and [third-party component inventory](docs/26.3-third-party-inventory.md) before redistributing builds.
 
 Source code is covered by the repository's [MPL 2.0 license](LICENSE). Pokémon models and other assets can carry separate terms; consult their individual license files and the [Cobblemon Assets license](https://gitlab.com/cable-mc/cobblemon-assets/-/blob/master/LICENSE). Third-party libraries retain their own licenses.
