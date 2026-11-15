@@ -48,6 +48,11 @@ def parse_args() -> argparse.Namespace:
         default=RESOURCE_PACK_MINOR,
         help=f"Minor resource pack format (default: {RESOURCE_PACK_MINOR})",
     )
+    parser.add_argument(
+        "--force",
+        action="store_true",
+        help="Replace the output ZIP if it already exists",
+    )
     return parser.parse_args()
 
 
@@ -60,6 +65,8 @@ def main() -> int:
         raise SystemExit(f"Input folder does not exist: {source_dir}")
     if output == source_dir or source_dir in output.parents:
         raise SystemExit("Choose an output ZIP outside the input folder.")
+    if output.exists() and not args.force:
+        raise SystemExit(f"Output already exists: {output} (pass --force to replace it).")
     if args.pack_format < 1 or args.pack_format_minor < 0:
         raise SystemExit("Pack format must be positive and its minor version nonnegative.")
 
@@ -88,7 +95,7 @@ def main() -> int:
     sound_events = {
         f"pokemon.{species_id}.ambient": {
             "replace": True,
-            "sounds": [{"name": f"custom_ambient/{species_id}", "stream": True}],
+            "sounds": [{"name": f"cobblemon:custom_ambient/{species_id}", "stream": True}],
         }
         for species_id in clips
     }
