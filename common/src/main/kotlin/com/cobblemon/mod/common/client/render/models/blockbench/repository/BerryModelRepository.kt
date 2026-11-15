@@ -64,14 +64,14 @@ object BerryModelRepository : JsonDataRegistry<TexturedModel> {
             val flowerAtlasWidth = atlasWidth(flowerTex)
             val flowerAtlasHeight = atlasHeight(flowerTex)
             processedModels[it.fruitModelIdentifier] = fruitModel?.createWithUvOverride(
-                fruitTex.x,
-                fruitTex.y,
+                (fruitTex.u0 * fruitAtlasWidth).roundToInt(),
+                (fruitTex.v0 * fruitAtlasHeight).roundToInt(),
                 fruitAtlasWidth,
                 fruitAtlasHeight
             )?.bakeRoot()!!
             processedModels[it.flowerModelIdentifier] = flowerModel?.createWithUvOverride(
-                flowerTex.x,
-                flowerTex.y,
+                (flowerTex.u0 * flowerAtlasWidth).roundToInt(),
+                (flowerTex.v0 * flowerAtlasHeight).roundToInt(),
                 flowerAtlasWidth,
                 flowerAtlasHeight
             )?.bakeRoot()!!

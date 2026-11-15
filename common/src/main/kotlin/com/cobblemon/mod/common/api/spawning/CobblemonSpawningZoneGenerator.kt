@@ -100,7 +100,9 @@ object CobblemonSpawningZoneGenerator : SpawningZoneGenerator {
                         light = world.getMaxLocalRawBrightness(pos),
                         skyLight = skyLight
                     )
-                    spawningZoneInfluences.addAll(SpawningInfluenceDetector.detectors.flatMap { it.detectFromBlock(world, pos, state) })
+                    for (detector in SpawningInfluenceDetector.detectors) {
+                        spawningZoneInfluences.addAll(detector.detectFromBlock(world, pos, state))
+                    }
                     if (canSeeSky) {
                         skyLevel[x - input.baseX][z - input.baseZ] = y
                     }

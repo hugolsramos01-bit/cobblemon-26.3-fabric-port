@@ -28,6 +28,10 @@ import net.minecraft.world.phys.AABB
 import net.minecraft.world.phys.Vec3
 
 class BerryBlockRenderer(context: BlockEntityRendererProvider.Context) : BlockEntityRenderer<BerryBlockEntity, BerryBlockEntityRenderState> {
+    private data class BerryPlacement(val model: ModelPart, val position: Vec3, val rotation: Vec3)
+    private val berryGeometryCache = object : LinkedHashMap<List<BerryPlacement>, FrozenModelGeometry>(256, 0.75F, true) {
+        override fun removeEldestEntry(eldest: MutableMap.MutableEntry<List<BerryPlacement>, FrozenModelGeometry>?) = size > 512
+    }
     private val mulchModels = mapOf(
         MulchVariant.COARSE to CobblemonBakingOverrides.COARSE_MULCH,
         MulchVariant.GROWTH to CobblemonBakingOverrides.GROWTH_MULCH,
@@ -43,14 +47,13 @@ class BerryBlockRenderer(context: BlockEntityRendererProvider.Context) : BlockEn
 
     override fun extractRenderState(entity: BerryBlockEntity, state: BerryBlockEntityRenderState, tickDelta: Float, cameraPosition: Vec3, breakProgress: ModelFeatureRenderer.CrumblingOverlay?) {
         super.extractRenderState(entity, state, tickDelta, cameraPosition, breakProgress)
-        val berries = ModelGeometryCapture()
-        val pose = PoseStack()
+        val placements = mutableListOf<BerryPlacement>()
         val age = entity.blockState.getValue(BerryBlock.AGE)
         if (age == 0) {
             entity.berry()?.let { berry ->
                 BerryModelRepository.modelOf(berry.fruitModelIdentifier)?.let { model ->
                     val placement = berry.stageOnePositioning
-                    captureBerryModel(model, placement.position, placement.rotation, pose, berries, state.lightCoords)
+                    placements.add(BerryPlacement(model, placement.position, placement.rotation))
                 }
             }
         } else if (age > BerryBlock.MATURE_AGE) {
@@ -58,10 +61,18 @@ class BerryBlockRenderer(context: BlockEntityRendererProvider.Context) : BlockEn
             for ((berry, growth) in entity.berryAndGrowthPoint()) {
                 val id = if (isFlower) berry.flowerModelIdentifier else berry.fruitModelIdentifier
                 val model = BerryModelRepository.modelOf(id) ?: continue
-                captureBerryModel(model, growth.position, growth.rotation, pose, berries, state.lightCoords)
+                placements.add(BerryPlacement(model, growth.position, growth.rotation))
             }
         }
-        state.berryGeometry = berries.freeze()
+        state.berryGeometry = berryGeometryCache.getOrPut(placements.toList()) {
+            val capture = ModelGeometryCapture()
+            val capturePose = PoseStack()
+            for (placement in placements) {
+                captureBerryModel(placement.model, placement.position, placement.rotation, capturePose, capture, 0)
+            }
+            capture.freeze()
+        }
+        val pose = PoseStack()
         val mulch = ModelGeometryCapture()
         mulchModels[entity.mulchVariant]?.getModel()?.getQuads(entity.blockState, null, entity.level?.random)?.forEach { quad ->
             val instance = QuadInstance().also { it.setColor(-1); it.setLightCoords(state.lightCoords); it.setOverlayCoords(OverlayTexture.NO_OVERLAY) }
@@ -74,8 +85,9 @@ class BerryBlockRenderer(context: BlockEntityRendererProvider.Context) : BlockEn
         // Preserve the old enlarged berry culling box using the frame's native camera frustum.
         if (!cameraState.cullFrustum.isVisible(AABB.ofSize(Vec3.atLowerCornerOf(state.blockPos), 2.0, 4.0, 2.0))) return
         val berries = state.berryGeometry
+        val light = state.lightCoords
         if (!berries.isEmpty()) collector.submitCustomGeometry(pose, RenderTypes.entityCutout(BERRY_SPRITE_ATLAS.location())) { capturedPose, consumer ->
-            berries.draw(capturedPose, consumer)
+            berries.draw(capturedPose, consumer, light)
         }
         val mulch = state.mulchGeometry
         if (!mulch.isEmpty()) collector.submitCustomGeometry(pose, RenderTypes.cutoutMovingBlock()) { capturedPose, consumer ->

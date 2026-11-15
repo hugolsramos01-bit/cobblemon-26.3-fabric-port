@@ -60,6 +60,15 @@ class SpawningZone(
         }
     }
 
+    private val skyObstructionLevels: Array<IntArray> = Array(length) { x ->
+        IntArray(width) { z ->
+            (baseY + height - 1 downTo baseY).firstOrNull { y ->
+                val state = blocks[x][y - baseY][z].state
+                state.isSolid || !state.fluidState.isEmpty
+            } ?: Int.MIN_VALUE
+        }
+    }
+
     private val structureChunkCaches = mutableMapOf<ChunkPos, SpawnablePosition.StructureChunkCache>()
 
     fun getStructureCache(pos: BlockPos): SpawnablePosition.StructureChunkCache {
@@ -78,11 +87,7 @@ class SpawningZone(
 
     fun hasOpenSky(position: BlockPos): Boolean {
         if (!isInBounds(position.x, position.y, position.z)) return false
-        for (y in position.y + 1 until baseY + height) {
-            val state = getBlockState(position.x, y, position.z)
-            if (state.isSolid || !state.fluidState.isEmpty) return false
-        }
-        return true
+        return skyObstructionLevels[position.x - baseX][position.z - baseZ] <= position.y
     }
     fun getBlockData(x: Int, y: Int, z: Int): BlockData = blocks[x - baseX][y - baseY][z - baseZ]
     fun getBlockData(position: BlockPos) = getBlockData(position.x, position.y, position.z)

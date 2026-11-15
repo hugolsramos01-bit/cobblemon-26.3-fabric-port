@@ -31,10 +31,12 @@ class FrozenModelGeometry private constructor(
     fun visitPositions(visitor: (Float, Float, Float) -> Unit) {
         vertices.forEach { visitor(it.x, it.y, it.z) }
     }
-    fun draw(pose: PoseStack.Pose, consumer: VertexConsumer) {
+    fun draw(pose: PoseStack.Pose, consumer: VertexConsumer) = draw(pose, consumer, null)
+
+    fun draw(pose: PoseStack.Pose, consumer: VertexConsumer, lightOverride: Int?) {
         for (vertex in vertices) {
             consumer.addVertex(pose, vertex.x, vertex.y, vertex.z).setColor(colorOverride ?: vertex.color)
-                .setUv(vertex.u, vertex.v).setOverlay(vertex.overlay).setLight(vertex.light)
+                .setUv(vertex.u, vertex.v).setOverlay(vertex.overlay).setLight(lightOverride ?: vertex.light)
                 .setUv3(vertex.secondaryU, vertex.secondaryV)
                 .setNormal(pose, vertex.normalX, vertex.normalY, vertex.normalZ).setLineWidth(vertex.lineWidth)
         }
